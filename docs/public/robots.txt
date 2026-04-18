@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://rodindev.github.io/vitepress-openapi-docs/sitemap.xml

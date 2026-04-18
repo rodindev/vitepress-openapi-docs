@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <rect width="1200" height="630" fill="#ffffff" />
+
+  <g transform="translate(80 80)">
+    <rect width="40" height="40" rx="9" fill="#2563eb" />
+    <rect x="10" y="12.5" width="20" height="3.5" rx="1.75" fill="#ffffff" />
+    <rect x="10" y="18.75" width="15" height="3.5" rx="1.75" fill="#ffffff" fill-opacity="0.78" />
+    <rect x="10" y="25" width="12.5" height="3.5" rx="1.75" fill="#ffffff" fill-opacity="0.55" />
+    <text x="56" y="27"
+          font-family="ui-monospace, 'SF Mono', Menlo, Consolas, monospace"
+          font-size="18" font-weight="500" fill="#525252" letter-spacing="-0.3">
+      vitepress-openapi-docs
+    </text>
+  </g>
+
+  <text x="80" y="310"
+        font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+        font-size="92" font-weight="700" fill="#0a0a0a" letter-spacing="-3.5">
+    OpenAPI docs,
+  </text>
+  <text x="80" y="408"
+        font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+        font-size="92" font-weight="700" fill="#a3a3a3" letter-spacing="-3.5">
+    written in markdown.
+  </text>
+
+  <line x1="80" y1="490" x2="1120" y2="490" stroke="#e5e5e5" stroke-width="1" />
+
+  <text x="80" y="542"
+        font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif"
+        font-size="22" font-weight="500" fill="#171717">
+    Vue 3 · VitePress · OpenAPI 3.0 / 3.1 · Multi-API
+  </text>
+  <text x="1120" y="542" text-anchor="end"
+        font-family="ui-monospace, 'SF Mono', Menlo, Consolas, monospace"
+        font-size="22" font-weight="500" fill="#525252">
+    npm create vitepress-openapi-docs
+  </text>
+
+  <text x="80" y="580"
+        font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif"
+        font-size="15" font-weight="400" fill="#737373">
+    A Vue-native, composable alternative to Swagger UI, Scalar, and RapiDoc.
+  </text>
+</svg>

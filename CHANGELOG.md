@@ -1,0 +1,113 @@
+# Changelog
+
+All notable changes to `vitepress-openapi-docs` and `create-vitepress-openapi-docs`.
+
+Versioning: both packages move in lockstep until v1.0.
+
+## 1.0.0
+
+### Added
+
+- OAuth2 passthrough: `AuthControls` renders authorization URL, token URL, scopes list, and a token paste input for `oauth2` security schemes. Pasted tokens inject as `Bearer` in snippets and Try-It.
+- Structured `ParsedSecurityScheme` type — parser now extracts typed security scheme info (bearer, basic, apikey, oauth2) including apiKey header name and OAuth2 flow details.
+- `verbose` option on `openApiDocs()` — logs spec discovery, operation/schema/security-scheme counts, changelog status, page generation, and broken-embed scan.
+- `extractChangelog`, `SpecChangelog`, `ChangelogEntry`, and `OpenApiDocsPluginOptions` exported from `vitepress-openapi-docs/vitepress`.
+- `request-start`, `request-success`, `request-error` events forwarded from `<Playground>` through `<OpenApiEndpoint>` for analytics/error handling hooks.
+- `OperationJumper` focus trap: Tab/Shift+Tab cycle inside the dialog; focus returns to the trigger element on close.
+- Happy-path e2e Playwright test: full interaction chain (jumper → operation → try-it), schema/changelog page render, auth persistence.
+- `scripts/sync-versions.js` — lockstep version sync across `packages/core`, `packages/create`, and the scaffolder template.
+- `.npmignore` files for both packages.
+- `prepack` scripts on both packages to guarantee fresh `dist/` before publish.
+- Publish workflow now runs the full CI gauntlet (typecheck, lint, format, test, build, size) before npm publish.
+- `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, issue/PR templates.
+- Cookie-based API key auth shows a visible warning in `AuthControls` explaining that browsers cannot inject `Cookie` headers from JavaScript.
+- Multi-API prefix validation: `openApiDocs()` throws at build time when two or more specs are configured without a `prefix`, preventing silent URL collisions.
+- Parser tests for empty specs (zero operations) and webhook-only specs (no paths).
+- `EnhanceAppOptions` type exported for typed theme setup.
+
+### Changed
+
+- **Breaking:** `enhanceAppWithOpenApi(app, specs, changelogs, defaults)` is now `enhanceAppWithOpenApi({ app, specs, changelogs?, defaults? })`. An options object replaces positional args for clarity and extensibility.
+- `securitySchemes` on `ParsedSpec` is now `Record<string, ParsedSecurityScheme>` (was `Record<string, unknown>`).
+- `OpenApiEndpoint` auto-resolves apiKey header name from the spec's security scheme definition.
+- All spec-loading errors are now prefixed `[vitepress-openapi-docs]` with spec name and path.
+- Dogfood site uses a local spec snapshot (`docs/openapi/mock.json`) instead of fetching at build time.
+- Removed VitePress built-in search in favor of the `OperationJumper` (Cmd+K).
+- README rewritten as a shippable landing page with install/config snippets.
+- POST method badge color changed from green to blue to distinguish from GET.
+
+### Fixed
+
+- `oauth2` in the `auth` prop was silently mapped to `'none'` — now fully supported.
+- POST and GET method badges shared identical green colors (copy-paste error in DESIGN.md and SCSS). POST is now blue (`#dbeafe`/`#1e40af` light, `#172554`/`#93c5fd` dark).
+
+## 0.7.0
+
+### Added
+
+- `scanForBrokenEmbeds` is now wired into `openApiDocs`. Hand-written markdown pages that reference an unknown operation id fail the build by default (`onBrokenEmbed: 'error'`); use `'warn'` during iteration or `'ignore'` to disable.
+- `OpenApiDocsPluginOptions` is exported for typed plugin configuration.
+- `LICENSE` (MIT) shipped at the repo root.
+
+### Changed
+
+- Publish workflow now builds and publishes both `vitepress-openapi-docs` and `create-vitepress-openapi-docs` from the monorepo on `v*` tag push, with npm provenance.
+
+## 0.6.0
+
+### Added
+
+- `<OpenApiChangelog name="...">` — git-history-driven spec changelog. Diffs each commit pair: added / removed / renamed operations (matched by method + path) plus `info.title`, `info.version`, `info.description` changes. Empty state renders when a spec has fewer than two commits.
+- Per-spec changelog pages auto-generated at `/changelog/{specName}`, with a `Changelog` group in the sidebar.
+- `extractChangelog` and `scanForBrokenEmbeds` exported from `vitepress-openapi-docs/vitepress` for advanced pipelines.
+- `<OperationJumper>` — global Cmd+K / Ctrl+K fuzzy-search dialog across every registered spec. Keyboard navigation (↑↓/Enter/Esc), auto-mounted via VitePress's `layout-top` slot.
+- `fuzzyScore` / `rankByFuzzy` exported for custom UIs.
+- CI / deploy workflows now use `fetch-depth: 0` so the changelog extractor has real history.
+
+## 0.5.0
+
+### Added
+
+- `<OpenApiSchema spec-name="..." name="...">` — property table with required badges and clickable `$ref` links to other schema pages.
+- Parser now captures `componentSchemas` (post-dereference) and `requestSchemaRefs` / `responseSchemaRefs` (pre-dereference) so endpoint pages can render `Returns <User>` / `Accepts <User>` cross-links.
+- Per-spec schema pages auto-generated at `/schemas/{specName}/{typeName}`, with a `Schemas` group in the sidebar.
+- `guide/theming.md` documenting the `--vod-*` → `--vap-*` → `--vp-c-*` cascade.
+- `.github/workflows/deploy-docs.yml` publishing the dogfood site to GitHub Pages on push to `main`.
+
+## 0.4.0
+
+### Added
+
+- `<AuthControls>` + `useAuthState(specName)` — sessionStorage-backed credential store keyed `vod:auth:{specName}`. Input / "Clear credentials" button, SSR-safe, scheme-aware (`bearer`, `basic`, `apikey`).
+- Credentials auto-inject into both SDK snippets (visible) and the try-it panel (via vue-api-playground's `before-send` hook) — no prop round-tripping.
+- CSS-variable surface: `--vod-method-{get,post,put,patch,delete,head,options,trace}`, `--vod-font-{ui,mono}`, `--vod-surface`, `--vod-radius`, `--vod-focus-ring`. Cascade rides `--vap-*` when vue-api-playground is installed.
+
+### Changed
+
+- Scaffolder (`create-vitepress-openapi-docs`) writes atomically via a sibling staging dir then `rename`. SIGINT/SIGTERM trigger cleanup. Interactive prompts for existing-dir confirmation and spec source path; `--no-interactive` / `-y` for CI.
+- Scaffolder CLI: `--pm {npm|pnpm|yarn|bun}`, `--spec <path|url>`, `--force`, `--skip-install`.
+
+## 0.3.0
+
+### Added
+
+- `<SdkSnippets>` — tabbed code panel rendering curl + JavaScript fetch + Python (`requests`) + Node (`undici`) snippets for each operation. ARIA-compliant tab list.
+- `buildSnippets()` — OpenAPI-aware wrapper that composes vue-api-playground's raw generators with auth injection and `Content-Type` inference.
+- Real-spec matrix under `test/fixtures/specs/`: Petstore (full) plus curated subsets of GitHub, Twilio, OpenAI (3.1 with nullable-type arrays + deep oneOf), Stripe. Each spec is parsed and snippet-rendered for every operation on CI.
+
+## 0.2.0
+
+### Added
+
+- Multi-API support. `specs: []` accepts any number of OpenAPI documents; the sidebar wraps each in a top-level group when more than one is registered.
+- Per-spec URL prefixes (`prefix: '/api/...'`) applied to generated pages, rewrites, and sidebar links.
+
+## 0.1.0
+
+### Added
+
+- `openApiDocs(config)` — VitePress plugin entry. Parses specs via `@scalar/openapi-parser`, generates one markdown page per operation under `<srcDir>/_openapi/`, emits `rewrites` so each generated page serves at its public URL, registers a Vite virtual module (`virtual:vitepress-openapi-docs/specs`) with the parsed data.
+- `<OpenApiEndpoint id="...">` — the composability primitive. Renders summary, description, parameters, SDK snippets, and an interactive try-it panel for one operation.
+- `<OpenApiSpec name="...">` — renders every operation in a spec, grouped by tag.
+- `enhanceAppWithOpenApi({ app, specs })` — theme helper that wires the registry and registers the global components.
+- `create-vitepress-openapi-docs` scaffolder — `npm create vitepress-openapi-docs@latest my-api-docs` drops a working VitePress site with Petstore spec bundled.

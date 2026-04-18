@@ -1,0 +1,17 @@
+node_modules/
+dist/
+coverage/
+.DS_Store
+*.log
+**/.vitepress/cache/
+**/.vitepress/dist/
+*.timestamp-*.mjs
+docs/_openapi/
+.env
+.env.*
+!.env.example
+.gstack/
+test-results/
+playwright-report/
+.playwright/
+*.tsbuildinfo

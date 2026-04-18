@@ -1,0 +1,106 @@
+openapi: 3.0.3
+info:
+  title: Twilio Messaging (curated subset)
+  description: A small slice of the Twilio Programmable Messaging API to exercise HTTP basic auth, form-urlencoded bodies, and x-prefixed account path params.
+  version: '2010-04-01'
+servers:
+  - url: https://api.twilio.com/2010-04-01
+security:
+  - basicAuth: []
+paths:
+  /Accounts/{AccountSid}/Messages.json:
+    parameters:
+      - name: AccountSid
+        in: path
+        required: true
+        description: Account SID that owns the resource.
+        schema:
+          type: string
+    get:
+      tags: [messaging]
+      operationId: listMessage
+      summary: Retrieve a list of messages
+      parameters:
+        - name: To
+          in: query
+          schema:
+            type: string
+        - name: From
+          in: query
+          schema:
+            type: string
+        - name: PageSize
+          in: query
+          schema:
+            type: integer
+            default: 50
+            maximum: 1000
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  messages:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Message'
+                  next_page_uri:
+                    type: string
+                    nullable: true
+    post:
+      tags: [messaging]
+      operationId: createMessage
+      summary: Send a message
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required: [To, From]
+              properties:
+                To:
+                  type: string
+                From:
+                  type: string
+                Body:
+                  type: string
+                MediaUrl:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+  schemas:
+    Message:
+      type: object
+      properties:
+        sid:
+          type: string
+        account_sid:
+          type: string
+        to:
+          type: string
+        from:
+          type: string
+        body:
+          type: string
+        status:
+          type: string
+          enum: [queued, sending, sent, failed, delivered, undelivered]
+        date_created:
+          type: string
+          format: date-time

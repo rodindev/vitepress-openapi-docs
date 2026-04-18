@@ -1,0 +1,54 @@
+/* vitepress-openapi-docs — VitePress brand palette. Mid-blue consistent
+ * with vue-api-playground (sibling project, shared ecosystem look). */
+
+:root {
+  --vp-c-brand-1: #2563eb;
+  --vp-c-brand-2: #1d4ed8;
+  --vp-c-brand-3: #2563eb;
+  --vp-c-brand-soft: rgba(37, 99, 235, 0.14);
+}
+
+.dark {
+  --vp-c-brand-1: #60a5fa;
+  --vp-c-brand-2: #3b82f6;
+  --vp-c-brand-3: #93c5fd;
+  --vp-c-brand-soft: rgba(96, 165, 250, 0.16);
+}
+
+/* Hero — keep the project name on one line. */
+.VPHero .text {
+  font-size: 40px !important;
+  line-height: 1.2;
+}
+
+@media (min-width: 640px) {
+  .VPHero .text {
+    font-size: 48px !important;
+  }
+}
+
+/* Comparison table — keep it readable on narrow screens. */
+.vp-doc table {
+  display: table;
+  width: 100%;
+}
+
+.vp-doc table th,
+.vp-doc table td {
+  font-size: 14px;
+}
+
+/* Search trigger — space it from adjacent nav items. */
+.VPNavBarExtra + .vod-search-trigger,
+.vod-search-trigger {
+  margin-left: 0.75rem;
+}
+
+.vod-footer-badges {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 2rem;
+  font-size: 0.9rem;
+  color: var(--vp-c-text-2);
+}

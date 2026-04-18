@@ -1,0 +1,46 @@
+name: Bug report
+description: Report a bug in vitepress-openapi-docs
+labels: ['bug']
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the bug
+      placeholder: A clear description of what went wrong.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Configure openApiDocs with ...
+        2. Add <OpenApiEndpoint id="..." />
+        3. Run npm run dev
+        4. See error
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      placeholder: What you expected to happen.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Package version
+      placeholder: 1.0.0
+    validations:
+      required: true
+  - type: input
+    id: node
+    attributes:
+      label: Node.js version
+      placeholder: 22.x
+  - type: input
+    id: vitepress
+    attributes:
+      label: VitePress version
+      placeholder: 1.5.x

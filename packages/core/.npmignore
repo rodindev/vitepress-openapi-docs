@@ -1,0 +1,7 @@
+src/
+*.spec.ts
+vitest.config.ts
+vite.config.ts
+tsconfig.json
+tsconfig.tsbuildinfo
+coverage/

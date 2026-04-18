@@ -1,0 +1,16 @@
+node_modules
+dist
+coverage
+**/.vitepress/cache
+**/.vitepress/dist
+docs/_openapi
+packages/*/dist
+packages/*/tsconfig.tsbuildinfo
+test-results
+playwright-report
+package-lock.json
+CHANGELOG.md
+packages/create/template/docs/openapi
+docs/openapi
+DESIGN.md
+**/.vitepress/*.timestamp-*

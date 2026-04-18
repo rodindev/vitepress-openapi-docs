@@ -1,0 +1,169 @@
+openapi: 3.0.3
+info:
+  title: Stripe API (curated subset)
+  description: A small slice of the Stripe API exercising idempotency headers, expandable resources, and discriminated unions. Full Stripe spec is ~5 MB and intentionally NOT vendored.
+  version: '2024-06-20'
+servers:
+  - url: https://api.stripe.com/v1
+security:
+  - bearerAuth: []
+paths:
+  /customers:
+    post:
+      tags: [customers]
+      operationId: postCustomers
+      summary: Create a customer
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                name:
+                  type: string
+                metadata:
+                  type: object
+                  additionalProperties:
+                    type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+    get:
+      tags: [customers]
+      operationId: getCustomers
+      summary: List customers
+      parameters:
+        - name: email
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+            maximum: 100
+      responses:
+        '200':
+          description: OK
+  /payment_intents:
+    post:
+      tags: [payment_intents]
+      operationId: postPaymentIntents
+      summary: Create a PaymentIntent
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required: [amount, currency]
+              properties:
+                amount:
+                  type: integer
+                currency:
+                  type: string
+                customer:
+                  type: string
+                payment_method_types:
+                  type: array
+                  items:
+                    type: string
+                metadata:
+                  type: object
+                  additionalProperties:
+                    type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentIntent'
+  /payment_intents/{intent}:
+    parameters:
+      - name: intent
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [payment_intents]
+      operationId: getPaymentIntentsIntent
+      summary: Retrieve a PaymentIntent
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentIntent'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    Customer:
+      type: object
+      required: [id, object]
+      properties:
+        id:
+          type: string
+        object:
+          type: string
+          enum: [customer]
+        email:
+          type: string
+          nullable: true
+        name:
+          type: string
+          nullable: true
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+    PaymentIntent:
+      type: object
+      required: [id, object, amount, currency, status]
+      properties:
+        id:
+          type: string
+        object:
+          type: string
+          enum: [payment_intent]
+        amount:
+          type: integer
+        currency:
+          type: string
+        status:
+          type: string
+          enum:
+            [
+              requires_payment_method,
+              requires_confirmation,
+              requires_action,
+              processing,
+              requires_capture,
+              canceled,
+              succeeded,
+            ]
+        customer:
+          type: string
+          nullable: true
+        client_secret:
+          type: string
+          nullable: true

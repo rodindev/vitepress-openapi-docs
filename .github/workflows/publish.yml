@@ -4,21 +4,61 @@ on:
     tags:
       - 'v*'
 jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+      - run: npm ci
+      - name: Verify version matches tag
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          CORE=$(node -p "require('./packages/core/package.json').version")
+          CREATE=$(node -p "require('./packages/create/package.json').version")
+          if [ "$CORE" != "$TAG" ] || [ "$CREATE" != "$TAG" ]; then
+            echo "::error::Version mismatch: tag=$TAG core=$CORE create=$CREATE"
+            exit 1
+          fi
+      - run: npm run typecheck
+      - run: npm run lint:check
+      - run: npm run format:check
+      - run: npm run test:run
+      - run: npm run build
+      - run: npm run --workspace packages/core size
+
   publish:
+    needs: validate
     runs-on: ubuntu-latest
     permissions:
       contents: write
       id-token: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           registry-url: 'https://registry.npmjs.org'
-      - run: npm publish --provenance --access public
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run --workspace packages/core build
+      - run: npm run --workspace packages/create build
+      - name: Publish vitepress-openapi-docs
+        run: npm publish --workspace packages/core --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Publish create-vitepress-openapi-docs
+        run: npm publish --workspace packages/create --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create ${{ github.ref_name }} --generate-notes
+          TAG: ${{ github.ref_name }}
+        run: gh release create "$TAG" --generate-notes

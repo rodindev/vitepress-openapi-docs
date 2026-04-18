@@ -1,0 +1,165 @@
+openapi: 3.1.0
+info:
+  title: OpenAI API (curated subset)
+  description: A small subset of the OpenAI API covering chat completions and embeddings — exercises 3.1 features (nullable via type arrays, deep oneOf, large request bodies).
+  version: '2024-11-01'
+servers:
+  - url: https://api.openai.com/v1
+security:
+  - bearerAuth: []
+paths:
+  /chat/completions:
+    post:
+      tags: [chat]
+      operationId: createChatCompletion
+      summary: Create a chat completion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateChatCompletionRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatCompletion'
+  /embeddings:
+    post:
+      tags: [embeddings]
+      operationId: createEmbedding
+      summary: Create an embedding
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [model, input]
+              properties:
+                model:
+                  type: string
+                input:
+                  oneOf:
+                    - type: string
+                    - type: array
+                      items:
+                        type: string
+                encoding_format:
+                  type: string
+                  enum: [float, base64]
+                  default: float
+      responses:
+        '200':
+          description: OK
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    CreateChatCompletionRequest:
+      type: object
+      required: [model, messages]
+      properties:
+        model:
+          type: string
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChatMessage'
+        temperature:
+          type:
+            - number
+            - 'null'
+          default: 1
+          minimum: 0
+          maximum: 2
+        max_tokens:
+          type:
+            - integer
+            - 'null'
+        stream:
+          type: boolean
+          default: false
+        tools:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tool'
+    ChatMessage:
+      type: object
+      required: [role, content]
+      properties:
+        role:
+          type: string
+          enum: [system, user, assistant, tool]
+        content:
+          oneOf:
+            - type: string
+            - type: array
+              items:
+                $ref: '#/components/schemas/ContentPart'
+        name:
+          type: string
+    ContentPart:
+      oneOf:
+        - type: object
+          required: [type, text]
+          properties:
+            type:
+              type: string
+              enum: [text]
+            text:
+              type: string
+        - type: object
+          required: [type, image_url]
+          properties:
+            type:
+              type: string
+              enum: [image_url]
+            image_url:
+              type: object
+              properties:
+                url:
+                  type: string
+                detail:
+                  type: string
+                  enum: [auto, low, high]
+    Tool:
+      type: object
+      required: [type, function]
+      properties:
+        type:
+          type: string
+          enum: [function]
+        function:
+          type: object
+          required: [name]
+          properties:
+            name:
+              type: string
+            description:
+              type: string
+            parameters:
+              type: object
+              additionalProperties: true
+    ChatCompletion:
+      type: object
+      required: [id, choices]
+      properties:
+        id:
+          type: string
+        choices:
+          type: array
+          items:
+            type: object
+            properties:
+              index:
+                type: integer
+              message:
+                $ref: '#/components/schemas/ChatMessage'
+              finish_reason:
+                type: string
+                enum: [stop, length, tool_calls, content_filter]

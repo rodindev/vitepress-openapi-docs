@@ -1,0 +1,99 @@
+{
+  "name": "vitepress-openapi-docs",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Interactive OpenAPI documentation for VitePress. Lightweight, Vue-native, composable in markdown.",
+  "license": "MIT",
+  "main": "./dist/vitepress-openapi-docs.cjs",
+  "module": "./dist/vitepress-openapi-docs.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/vitepress-openapi-docs.js",
+      "require": "./dist/vitepress-openapi-docs.cjs"
+    },
+    "./vitepress": {
+      "types": "./dist/vitepress/index.d.ts",
+      "import": "./dist/vitepress-openapi-docs-vitepress.js",
+      "require": "./dist/vitepress-openapi-docs-vitepress.cjs"
+    },
+    "./styles": "./dist/vitepress-openapi-docs.css",
+    "./virtual": {
+      "types": "./dist/virtual.d.ts"
+    }
+  },
+  "sideEffects": [
+    "*.css"
+  ],
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "vitepress",
+    "openapi",
+    "vue",
+    "vue3",
+    "api",
+    "documentation",
+    "swagger",
+    "rest"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rodindev/vitepress-openapi-docs.git",
+    "directory": "packages/core"
+  },
+  "bugs": {
+    "url": "https://github.com/rodindev/vitepress-openapi-docs/issues"
+  },
+  "scripts": {
+    "build": "vite build",
+    "typecheck": "vue-tsc --noEmit -p tsconfig.json",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "size": "size-limit",
+    "prepack": "npm run build"
+  },
+  "size-limit": [
+    {
+      "name": "client bundle (min + gzip, excludes peer deps)",
+      "path": "dist/vitepress-openapi-docs.js",
+      "limit": "12 kB",
+      "ignore": [
+        "vue",
+        "vitepress",
+        "vue-api-playground",
+        "@scalar/openapi-parser",
+        "virtual:vitepress-openapi-docs/specs",
+        "virtual:vitepress-openapi-docs/changelogs"
+      ]
+    },
+    {
+      "name": "client styles (gzip)",
+      "path": "dist/vitepress-openapi-docs.css",
+      "limit": "3.5 kB"
+    }
+  ],
+  "peerDependencies": {
+    "vitepress": "^1.0.0",
+    "vue": "^3.3.0",
+    "vue-api-playground": "^2.2.0"
+  },
+  "dependencies": {
+    "@scalar/openapi-parser": "^0.25.8",
+    "dompurify": "^3.4.0",
+    "jsdom": "^26.1.0",
+    "marked": "^18.0.0"
+  },
+  "devDependencies": {
+    "@size-limit/preset-small-lib": "^12.1.0",
+    "@types/dompurify": "^3.0.5",
+    "@types/jsdom": "^28.0.1",
+    "@types/node": "^25.6.0",
+    "size-limit": "^12.1.0"
+  }
+}

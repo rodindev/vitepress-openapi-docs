@@ -1,0 +1,43 @@
+{
+  "name": "create-vitepress-openapi-docs",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Scaffold an interactive OpenAPI documentation site with VitePress.",
+  "license": "MIT",
+  "bin": {
+    "create-vitepress-openapi-docs": "./bin/index.js"
+  },
+  "files": [
+    "bin",
+    "dist",
+    "template"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "vitepress",
+    "openapi",
+    "scaffold",
+    "create"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rodindev/vitepress-openapi-docs.git",
+    "directory": "packages/create"
+  },
+  "bugs": {
+    "url": "https://github.com/rodindev/vitepress-openapi-docs/issues"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "prepack": "npm run build"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "typescript": "^5.7.0"
+  }
+}

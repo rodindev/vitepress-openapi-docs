@@ -1,0 +1,19 @@
+{
+  "name": "my-api-docs",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "vitepress dev docs",
+    "build": "vitepress build docs",
+    "preview": "vitepress preview docs"
+  },
+  "dependencies": {
+    "vitepress-openapi-docs": "^1.0.0",
+    "vue-api-playground": "^2.2.0"
+  },
+  "devDependencies": {
+    "vitepress": "^1.5.0",
+    "vue": "^3.5.0"
+  }
+}

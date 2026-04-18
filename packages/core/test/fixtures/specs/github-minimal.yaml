@@ -1,0 +1,174 @@
+openapi: 3.0.3
+info:
+  title: GitHub REST API (curated subset)
+  description: A small curated slice of the GitHub v3 API — enough to exercise OAuth2, path params, and nested schemas without vendoring the full 10 MB document.
+  version: '2022-11-28'
+servers:
+  - url: https://api.github.com
+security:
+  - bearerAuth: []
+paths:
+  /user:
+    get:
+      tags: [users]
+      operationId: users/get-authenticated
+      summary: Get the authenticated user
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivateUser'
+        '401':
+          description: Requires authentication
+  /repos/{owner}/{repo}:
+    get:
+      tags: [repos]
+      operationId: repos/get
+      summary: Get a repository
+      parameters:
+        - $ref: '#/components/parameters/owner'
+        - $ref: '#/components/parameters/repo'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FullRepository'
+  /repos/{owner}/{repo}/issues:
+    parameters:
+      - $ref: '#/components/parameters/owner'
+      - $ref: '#/components/parameters/repo'
+    get:
+      tags: [issues]
+      operationId: issues/list-for-repo
+      summary: List repository issues
+      parameters:
+        - name: state
+          in: query
+          schema:
+            type: string
+            enum: [open, closed, all]
+            default: open
+        - name: per_page
+          in: query
+          schema:
+            type: integer
+            default: 30
+            maximum: 100
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Issue'
+    post:
+      tags: [issues]
+      operationId: issues/create
+      summary: Create an issue
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title]
+              properties:
+                title:
+                  type: string
+                body:
+                  type: string
+                assignees:
+                  type: array
+                  items:
+                    type: string
+                labels:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '201':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Issue'
+components:
+  parameters:
+    owner:
+      name: owner
+      in: path
+      required: true
+      schema:
+        type: string
+    repo:
+      name: repo
+      in: path
+      required: true
+      schema:
+        type: string
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    PrivateUser:
+      type: object
+      required: [login, id]
+      properties:
+        login:
+          type: string
+        id:
+          type: integer
+        email:
+          type: string
+          nullable: true
+    FullRepository:
+      type: object
+      required: [id, name, full_name]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        full_name:
+          type: string
+        owner:
+          $ref: '#/components/schemas/PrivateUser'
+        private:
+          type: boolean
+        default_branch:
+          type: string
+    Issue:
+      type: object
+      required: [id, number, title]
+      properties:
+        id:
+          type: integer
+        number:
+          type: integer
+        title:
+          type: string
+        state:
+          type: string
+          enum: [open, closed]
+        user:
+          $ref: '#/components/schemas/PrivateUser'
+        labels:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              color:
+                type: string

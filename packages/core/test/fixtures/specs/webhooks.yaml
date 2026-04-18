@@ -1,0 +1,71 @@
+openapi: 3.0.3
+info:
+  title: Petstore Webhooks
+  description: Outbound webhook callbacks fired by the Petstore on state changes.
+  version: 1.0.0
+servers:
+  - url: https://petstore3.swagger.io/webhooks
+paths:
+  /pet.created:
+    post:
+      tags: [pet]
+      summary: Pet created
+      description: Delivered when a new pet is added to the store.
+      operationId: petCreated
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookEnvelope'
+      responses:
+        '200':
+          description: Acknowledged
+        '410':
+          description: Endpoint retired — stop sending.
+  /pet.updated:
+    post:
+      tags: [pet]
+      summary: Pet updated
+      operationId: petUpdated
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookEnvelope'
+      responses:
+        '200':
+          description: Acknowledged
+  /order.placed:
+    post:
+      tags: [order]
+      summary: Order placed
+      operationId: orderPlaced
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookEnvelope'
+      responses:
+        '200':
+          description: Acknowledged
+components:
+  schemas:
+    WebhookEnvelope:
+      type: object
+      required: [id, type, created, data]
+      properties:
+        id:
+          type: string
+          format: uuid
+        type:
+          type: string
+          example: pet.created
+        created:
+          type: string
+          format: date-time
+        data:
+          type: object
+          additionalProperties: true
