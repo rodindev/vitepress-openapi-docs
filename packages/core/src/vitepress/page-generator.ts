@@ -1,6 +1,7 @@
 import { mkdir, rm, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import type { ParsedSpec } from '../parser/types'
+import { humanizeId } from './humanize'
 
 export interface GeneratePagesOptions {
   /** Directory the generated `.md` files should be written to. */
@@ -40,6 +41,7 @@ export async function generatePages(
       const title = op.summary || `${op.method.toUpperCase()} ${op.path}`
       const description = op.description?.split('\n')[0] ?? title
       const fullId = `${spec.name}.${op.id}`
+      const heading = escapeMarkdown(op.summary || humanizeId(op.id))
       const body =
         '---\n' +
         `title: ${escapeYaml(title)}\n` +
@@ -49,7 +51,8 @@ export async function generatePages(
         'prev: false\n' +
         'next: false\n' +
         '---\n\n' +
-        `<OpenApiEndpoint id="${fullId}" />\n`
+        `# ${heading}\n\n` +
+        `<OpenApiEndpoint id="${escapeAttr(fullId)}" />\n`
       await writeFile(fullPath, body, 'utf8')
       pages.push({ file, url })
     }
@@ -71,7 +74,7 @@ export async function generatePages(
         'prev: false\n' +
         'next: false\n' +
         '---\n\n' +
-        `<OpenApiSchema spec-name="${spec.name}" name="${schema.name}" />\n`
+        `<OpenApiSchema spec-name="${escapeAttr(spec.name)}" name="${escapeAttr(schema.name)}" />\n`
       await writeFile(fullPath, body, 'utf8')
       pages.push({ file, url })
     }
@@ -89,7 +92,7 @@ export async function generatePages(
         'prev: false\n' +
         'next: false\n' +
         '---\n\n' +
-        `<OpenApiChangelog name="${spec.name}" />\n`,
+        `<OpenApiChangelog name="${escapeAttr(spec.name)}" />\n`,
       'utf8'
     )
     pages.push({ file: changelogFile, url: `/changelog/${spec.name}` })
@@ -99,4 +102,12 @@ export async function generatePages(
 
 function escapeYaml(value: string): string {
   return JSON.stringify(value)
+}
+
+function escapeMarkdown(value: string): string {
+  return value.replace(/</g, '&lt;').replace(/>/g, '&gt;')
+}
+
+function escapeAttr(value: string): string {
+  return value.replace(/&/g, '&amp;').replace(/"/g, '&quot;')
 }

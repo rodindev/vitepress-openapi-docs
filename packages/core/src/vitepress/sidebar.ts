@@ -1,4 +1,5 @@
 import type { ParsedSpec } from '../parser/types'
+import { humanizeId } from './humanize'
 
 export interface SidebarLink {
   text: string
@@ -48,7 +49,7 @@ function groupByTag(spec: ParsedSpec, prefix: string): SidebarGroup[] {
   for (const op of spec.operations) {
     const tag = op.tags[0] ?? 'Other'
     const link: SidebarLink = {
-      text: op.summary || op.id,
+      text: op.summary || humanizeId(op.id),
       link: `${prefix}/${op.id}`,
     }
     const existing = buckets.get(tag)

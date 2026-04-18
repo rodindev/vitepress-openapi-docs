@@ -59,7 +59,27 @@ The `changelogs` and `defaults` properties are optional — omit them if you don
 
 The `OperationJumper` enables **Cmd+K / Ctrl+K** fuzzy search across all operations.
 
-## 4. Gitignore
+## 4. Create a landing page
+
+The plugin generates a page per operation but **not** the index page for your API prefix. Create it yourself so `/<prefix>/` doesn't 404:
+
+<!-- prettier-ignore -->
+```md
+<!-- docs/api/index.md -->
+---
+title: API Reference
+---
+
+<OpenApiSpec name="api" />
+```
+
+`<OpenApiSpec>` renders every operation from the spec in a single scrollable page — a good default for the landing. You can also hand-write prose around individual `<OpenApiEndpoint>` embeds instead; see [Composing endpoints](/guide/composing-endpoints).
+
+::: tip
+The scaffolder (`npm create vitepress-openapi-docs@latest`) creates this file automatically. This step only applies when integrating into an existing site.
+:::
+
+## 5. Gitignore
 
 Add the generated pages directory:
 
@@ -67,7 +87,7 @@ Add the generated pages directory:
 docs/_openapi/
 ```
 
-## 5. TypeScript (optional)
+## 6. TypeScript (optional)
 
 Add virtual module types to `tsconfig.json`:
 

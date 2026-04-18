@@ -4,6 +4,22 @@ All notable changes to `vitepress-openapi-docs` and `create-vitepress-openapi-do
 
 Versioning: both packages move in lockstep until v1.0.
 
+## 1.0.1
+
+### Fixed
+
+- Existing-site guide now includes a step for creating the API landing page, preventing 404 on `/<prefix>/`.
+- Generated operation pages include a visible `# heading`, fixing empty `<h1>` and blank browser tab titles when the spec lacks `summary` fields.
+- Sidebar displays humanized operation names (`Get user by id`) instead of raw operationIds (`getUserById`) when no summary is available.
+- HTML attribute values in generated pages are now escaped, preventing template breakage from unusual `operationId` characters.
+- Heading text in generated pages is escaped to prevent Vue component injection from `<CamelCase>` in summaries.
+
+### Changed
+
+- CSS variable reference now documents all 16 method badge variables (`--vod-method-*-bg`, `--vod-method-*-text`) with light and dark mode defaults.
+- Theming guide distinguishes accent variables (borders, tab indicators) from badge variables (pill-shaped method labels) with examples for both.
+- Method swatches table corrected: `--vod-method-get` described as "Borders, tab indicators, sidebar accents" instead of "method badge".
+
 ## 1.0.0
 
 ### Added

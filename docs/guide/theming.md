@@ -27,12 +27,18 @@ Drop these into a stylesheet imported after the plugin styles in your [theme set
 
 ```css
 :root {
-  /* Method swatches */
+  /* Method accents — borders, tab indicators, text highlights */
   --vod-method-get: #2563eb;
   --vod-method-post: #16a34a;
   --vod-method-put: #d97706;
   --vod-method-patch: #8b5cf6;
   --vod-method-delete: #dc2626;
+
+  /* Method badges — the pill-shaped labels (e.g. GET, POST) */
+  --vod-method-get-bg: #dcfce7;
+  --vod-method-get-text: #166534;
+  --vod-method-post-bg: #dbeafe;
+  --vod-method-post-text: #1e40af;
 
   /* Typography */
   --vod-font-ui: 'Inter', sans-serif;
@@ -48,8 +54,14 @@ Drop these into a stylesheet imported after the plugin styles in your [theme set
 .dark {
   --vod-surface: #1c1c1f;
   --vod-surface-border: #2e2e32;
+  --vod-method-get-bg: #052e16;
+  --vod-method-get-text: #86efac;
 }
 ```
+
+::: tip Accent vs badge
+`--vod-method-get` controls borders and tab indicators. `--vod-method-get-bg` / `--vod-method-get-text` control the badge pill. See the [full variable reference](/reference/css-variables#method-badge-colours) for every method.
+:::
 
 ## Dark mode
 
