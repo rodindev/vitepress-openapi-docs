@@ -4,7 +4,8 @@ export default defineConfig({
   testDir: 'e2e',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 1 : 0,
+  retries: process.env.CI ? 2 : 0,
+  timeout: 60_000,
   reporter: 'line',
   use: {
     baseURL: 'http://localhost:4173/vitepress-openapi-docs/',

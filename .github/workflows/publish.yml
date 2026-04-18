@@ -4,7 +4,37 @@ on:
     tags:
       - 'v*'
 jobs:
+  # Gate on CI — wait for the push-triggered CI run on main to finish.
+  # This prevents publishing a broken version if CI catches an issue.
+  wait-for-ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Wait for CI to pass on this commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          SHA=$(git rev-parse HEAD)
+          echo "Waiting for CI workflow to complete on $SHA..."
+          for i in $(seq 1 60); do
+            STATUS=$(gh run list --workflow ci.yml --commit "$SHA" --json conclusion,status -q '.[0]')
+            CONCLUSION=$(echo "$STATUS" | jq -r '.conclusion // empty')
+            STATE=$(echo "$STATUS" | jq -r '.status // empty')
+            if [ "$CONCLUSION" = "success" ]; then
+              echo "CI passed."
+              exit 0
+            elif [ "$CONCLUSION" = "failure" ]; then
+              echo "::error::CI failed on $SHA — aborting publish."
+              exit 1
+            fi
+            echo "CI status: $STATE (attempt $i/60), waiting 10s..."
+            sleep 10
+          done
+          echo "::error::Timed out waiting for CI after 10 minutes."
+          exit 1
+
   validate:
+    needs: wait-for-ci
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -57,8 +87,19 @@ jobs:
         run: npm publish --workspace packages/create --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Extract changelog for this version
+        id: changelog
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          # Extract the section for this version from CHANGELOG.md
+          BODY=$(awk "/^## ${TAG//./\\.}\$/{found=1; next} /^## /{if(found) exit} found{print}" CHANGELOG.md)
+          if [ -z "$BODY" ]; then
+            BODY="See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for details."
+          fi
+          # Write to file to avoid escaping issues
+          echo "$BODY" > /tmp/release-notes.md
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ github.ref_name }}
-        run: gh release create "$TAG" --generate-notes
+        run: gh release create "$TAG" --notes-file /tmp/release-notes.md
