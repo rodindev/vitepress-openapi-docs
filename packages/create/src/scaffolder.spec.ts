@@ -3,14 +3,12 @@ import { existsSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { scaffoldInto, run } from './index.js'
+import { scaffoldInto, deriveSpecName, pickDemoEndpoint, run } from './index.js'
 
 const createdDirs: string[] = []
 
 afterEach(() => {
   vi.restoreAllMocks()
-  // staging dirs (`*.vod-staging-…`) sit next to the targets we scaffold into;
-  // tmpdir() cleanup handles them implicitly on most systems.
   createdDirs.length = 0
 })
 
@@ -50,18 +48,139 @@ describe('scaffoldInto', () => {
     expect(pkg.dependencies['vitepress-openapi-docs']).toBeDefined()
   })
 
-  it('rewrites the spec reference when an explicit spec path is supplied', async () => {
+  it('rewrites config, theme, and pages when custom specs are supplied', async () => {
     const target = await freshTarget()
-    await scaffoldInto(target, { name: 'demo', spec: './specs/my-api.yaml' })
+    await scaffoldInto(target, {
+      name: 'demo',
+      specs: [{ name: 'chat', source: './specs/chat.yaml' }],
+    })
+
     const config = await readFile(join(target, 'docs/.vitepress/config.ts'), 'utf8')
-    expect(config).toContain('spec: "./specs/my-api.yaml"')
+    expect(config).toContain("name: 'chat'")
+    expect(config).toContain('spec: "./specs/chat.yaml"')
+    expect(config).toContain("prefix: '/api/chat'")
+    expect(config).toContain("link: '/api/chat/'")
+    expect(config).not.toContain('mock')
+
+    const theme = await readFile(join(target, 'docs/.vitepress/theme/index.ts'), 'utf8')
+    expect(theme).toContain("'chat': '/api/chat'")
+    expect(theme).toContain('SearchTrigger')
+    expect(theme).toContain("'nav-bar-content-after'")
+    expect(theme).not.toContain('mock')
+
+    const index = await readFile(join(target, 'docs/index.md'), 'utf8')
+    expect(index).toContain('link: /api/chat/')
+    expect(index).not.toContain('listUsers')
+    expect(index).not.toContain('Try it')
+
+    expect(existsSync(join(target, 'docs/openapi/mock.json'))).toBe(false)
+    expect(existsSync(join(target, 'docs/api/mock'))).toBe(false)
+
+    const apiIndex = await readFile(join(target, 'docs/api/chat/index.md'), 'utf8')
+    expect(apiIndex).toContain('<OpenApiSpec name="chat" />')
+  })
+
+  it('picks a demo endpoint from a local JSON spec for the Try it block', async () => {
+    const target = await freshTarget()
+    const specDir = join(target, '..', 'specs')
+    const { mkdir: mk } = await import('node:fs/promises')
+    await mk(specDir, { recursive: true })
+    const specPath = join(specDir, 'chat.json')
+    await writeFile(
+      specPath,
+      JSON.stringify({
+        openapi: '3.0.3',
+        info: { title: 'Chat', version: '1.0.0' },
+        paths: {
+          '/messages': {
+            get: { operationId: 'listMessages', responses: { '200': { description: 'ok' } } },
+            post: { operationId: 'sendMessage', responses: { '201': { description: 'ok' } } },
+          },
+          '/messages/{id}': {
+            get: { operationId: 'getMessage', responses: { '200': { description: 'ok' } } },
+          },
+        },
+      }),
+      'utf8'
+    )
+
+    await scaffoldInto(target, {
+      name: 'demo',
+      specs: [{ name: 'chat', source: specPath }],
+    })
+
+    const index = await readFile(join(target, 'docs/index.md'), 'utf8')
+    expect(index).toContain('## Try it')
+    expect(index).toContain('<OpenApiEndpoint id="listMessages" />')
+  })
+
+  it('supports multiple specs with separate API pages and nav entries', async () => {
+    const target = await freshTarget()
+    await scaffoldInto(target, {
+      name: 'demo',
+      title: 'Acme APIs',
+      specs: [
+        { name: 'public', source: 'https://api.example.com/public.json' },
+        { name: 'admin', source: './admin.yaml' },
+      ],
+    })
+
+    const config = await readFile(join(target, 'docs/.vitepress/config.ts'), 'utf8')
+    expect(config).toContain("title: 'Acme APIs'")
+    expect(config).toContain("name: 'public'")
+    expect(config).toContain("name: 'admin'")
+    expect(config).toContain("link: '/api/public/'")
+    expect(config).toContain("link: '/api/admin/'")
+
+    const theme = await readFile(join(target, 'docs/.vitepress/theme/index.ts'), 'utf8')
+    expect(theme).toContain("'public': '/api/public'")
+    expect(theme).toContain("'admin': '/api/admin'")
+
+    expect(existsSync(join(target, 'docs/api/public/index.md'))).toBe(true)
+    expect(existsSync(join(target, 'docs/api/admin/index.md'))).toBe(true)
+    expect(existsSync(join(target, 'docs/api/mock'))).toBe(false)
+  })
+
+  it('rewrites only the title when no custom specs are supplied', async () => {
+    const target = await freshTarget()
+    await scaffoldInto(target, { name: 'demo', title: 'Chat API' })
+
+    const config = await readFile(join(target, 'docs/.vitepress/config.ts'), 'utf8')
+    expect(config).toContain("title: 'Chat API'")
+    expect(config).toContain('mock')
+
+    const index = await readFile(join(target, 'docs/index.md'), 'utf8')
+    expect(index).toContain('title: Chat API')
+    expect(index).toContain('text: Chat API')
+
+    expect(existsSync(join(target, 'docs/openapi/mock.json'))).toBe(true)
+  })
+
+  it('writes bodyInputs defaults into custom-spec config', async () => {
+    const target = await freshTarget()
+    await scaffoldInto(target, {
+      name: 'demo',
+      specs: [{ name: 'chat', source: './specs/chat.yaml' }],
+      bodyInputs: true,
+    })
+
+    const config = await readFile(join(target, 'docs/.vitepress/config.ts'), 'utf8')
+    expect(config).toContain('defaults: { bodyInputs: true }')
+  })
+
+  it('writes bodyInputs defaults into template config (mock spec)', async () => {
+    const target = await freshTarget()
+    await scaffoldInto(target, { name: 'demo', bodyInputs: true })
+
+    const config = await readFile(join(target, 'docs/.vitepress/config.ts'), 'utf8')
+    expect(config).toContain('bodyInputs: true')
+    expect(config).toContain('mock')
   })
 
   it('writes into an existing directory when one is already there', async () => {
     const target = await freshTarget()
     const parent = join(target, '..')
     await writeFile(join(parent, 'preexisting.txt'), 'keep me', 'utf8')
-    // Pre-create the target with a marker file.
     const { mkdir } = await import('node:fs/promises')
     await mkdir(target, { recursive: true })
     await writeFile(join(target, 'NOTES.md'), 'pre-existing', 'utf8')
@@ -81,23 +200,14 @@ describe('scaffoldInto', () => {
 
   it('cleans up the staging directory when scaffolding fails partway through', async () => {
     const target = await freshTarget()
-    // Create a read-only file at the future package.json location to make
-    // rewritePackageJson throw — the staging dir must still be removed.
     const { chmod, mkdir } = await import('node:fs/promises')
     await mkdir(target, { recursive: true })
     await writeFile(join(target, 'package.json'), '{}', 'utf8')
     await chmod(join(target, 'package.json'), 0o444)
 
-    // Force a failure by passing an invalid name through a deliberately bad
-    // template lookup: easier path is to monkey-patch a write target.
-    // Here we simply assert that staging is gone after a successful run, since
-    // partial-failure simulation requires intercepting node:fs which is
-    // out of scope; the cleanup() call in the catch path is exercised by the
-    // SIGINT handler test below.
     await scaffoldInto(target, { name: 'demo' })
     const siblings = await readdir(join(target, '..'))
     expect(siblings.filter((s) => s.includes('.vod-staging-'))).toEqual([])
-    // cleanup
     await chmod(join(target, 'package.json'), 0o644).catch(() => {})
   })
 
@@ -107,7 +217,6 @@ describe('scaffoldInto', () => {
     await scaffoldInto(target, { name: 'second' })
     const siblings = await readdir(join(target, '..'))
     expect(siblings.filter((s) => s.includes('.vod-staging-'))).toEqual([])
-    // package.json reflects the latest scaffold
     const pkg = JSON.parse(await readFile(join(target, 'package.json'), 'utf8'))
     expect(pkg.name).toBe('second')
   })
@@ -125,14 +234,13 @@ describe('scaffoldInto', () => {
   it('warns when --spec points to a non-existent local file', async () => {
     const target = await freshTarget()
     const spy = vi.spyOn(console, 'warn').mockImplementation(() => {})
-    // Stub process.exit so it throws instead of killing the test runner
     const exitSpy = vi.spyOn(globalThis.process, 'exit').mockImplementation(() => {
       throw new Error('exit')
     })
     try {
       await run([target, '--spec', '/no/such/file.yaml', '-y', '--skip-install'])
     } catch {
-      // process.exit mock throws — expected if it's called, but it shouldn't be
+      // process.exit mock throws
     }
     expect(spy).toHaveBeenCalledWith(expect.stringContaining('spec file not found'))
     spy.mockRestore()
@@ -153,5 +261,110 @@ describe('scaffoldInto', () => {
     expect(spy).not.toHaveBeenCalled()
     spy.mockRestore()
     exitSpy.mockRestore()
+  })
+})
+
+describe('deriveSpecName', () => {
+  it('extracts name from a JSON filename', () => {
+    expect(deriveSpecName('chat-openapi.json')).toBe('chat-openapi')
+  })
+
+  it('extracts name from a YAML filename', () => {
+    expect(deriveSpecName('my-api.yaml')).toBe('my-api')
+  })
+
+  it('extracts name from a full path', () => {
+    expect(deriveSpecName('/Users/me/specs/admin-api.json')).toBe('admin-api')
+  })
+
+  it('extracts name from a URL', () => {
+    expect(deriveSpecName('https://api.example.com/v1/openapi.json')).toBe('openapi')
+  })
+
+  it('handles names with only special characters', () => {
+    expect(deriveSpecName('...json')).toBe('api')
+  })
+
+  it('lowercases the name', () => {
+    expect(deriveSpecName('MyAPI.yaml')).toBe('myapi')
+  })
+})
+
+describe('pickDemoEndpoint', () => {
+  it('returns undefined for a URL', async () => {
+    expect(await pickDemoEndpoint('https://api.example.com/openapi.json')).toBeUndefined()
+  })
+
+  it('returns undefined for a non-existent file', async () => {
+    expect(await pickDemoEndpoint('/no/such/file.json')).toBeUndefined()
+  })
+
+  it('prefers list-style GET operations', async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'vod-pick-'))
+    createdDirs.push(dir)
+    const specPath = join(dir, 'api.json')
+    await writeFile(
+      specPath,
+      JSON.stringify({
+        openapi: '3.0.3',
+        info: { title: 'Test', version: '1.0.0' },
+        paths: {
+          '/users/{id}': {
+            get: { operationId: 'getUser', responses: {} },
+          },
+          '/users': {
+            get: { operationId: 'listUsers', responses: {} },
+            post: { operationId: 'createUser', responses: {} },
+          },
+        },
+      }),
+      'utf8'
+    )
+    expect(await pickDemoEndpoint(specPath)).toBe('listUsers')
+  })
+
+  it('falls back to the first GET when no list operation exists', async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'vod-pick-'))
+    createdDirs.push(dir)
+    const specPath = join(dir, 'api.json')
+    await writeFile(
+      specPath,
+      JSON.stringify({
+        openapi: '3.0.3',
+        info: { title: 'Test', version: '1.0.0' },
+        paths: {
+          '/health': {
+            get: { operationId: 'healthCheck', responses: {} },
+          },
+          '/users/{id}': {
+            get: { operationId: 'getUser', responses: {} },
+          },
+        },
+      }),
+      'utf8'
+    )
+    const result = await pickDemoEndpoint(specPath)
+    expect(result).toBeDefined()
+    expect(['healthCheck', 'getUser']).toContain(result)
+  })
+
+  it('returns undefined when spec has no GET operations', async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'vod-pick-'))
+    createdDirs.push(dir)
+    const specPath = join(dir, 'api.json')
+    await writeFile(
+      specPath,
+      JSON.stringify({
+        openapi: '3.0.3',
+        info: { title: 'Test', version: '1.0.0' },
+        paths: {
+          '/users': {
+            post: { operationId: 'createUser', responses: {} },
+          },
+        },
+      }),
+      'utf8'
+    )
+    expect(await pickDemoEndpoint(specPath)).toBeUndefined()
   })
 })
