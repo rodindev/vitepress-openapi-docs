@@ -48,7 +48,13 @@
               {{ result.item.summary || result.item.id }}
             </span>
             <code class="vod-jumper__path">{{ result.item.path }}</code>
-            <span v-if="result.item.tag" class="vod-jumper__tag">{{ result.item.tag }}</span>
+            <span v-if="result.item.tag || isMultiApi" class="vod-jumper__tag">{{
+              isMultiApi && result.item.tag
+                ? `${result.item.tag} · ${result.item.specName}`
+                : isMultiApi
+                  ? result.item.specName
+                  : result.item.tag
+            }}</span>
           </template>
           <template v-else>
             <span class="vod-jumper__method vod-jumper__method--schema">SCHEMA</span>
@@ -104,6 +110,7 @@ interface JumperEntry {
 }
 
 const registry = useSpecRegistry()
+const isMultiApi = computed(() => Object.keys(registry.specs).length > 1)
 const open = ref(false)
 const query = ref('')
 const activeIndex = ref(0)

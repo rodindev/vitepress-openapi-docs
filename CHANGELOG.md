@@ -4,6 +4,13 @@ All notable changes to `vitepress-openapi-docs` and `create-vitepress-openapi-do
 
 Versioning: both packages move in lockstep until v1.0.
 
+## 1.1.0
+
+### Added
+
+- Operation jumper shows the spec name alongside tags when multiple APIs are registered, making it easier to identify which API an operation belongs to in multi-spec setups.
+- Scaffolder warns at creation time when `--spec` points to a local file that does not exist, instead of silently writing a broken config.
+
 ## 1.0.1
 
 ### Fixed

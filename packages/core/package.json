@@ -1,6 +1,6 @@
 {
   "name": "vitepress-openapi-docs",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "type": "module",
   "description": "Interactive OpenAPI documentation for VitePress. Lightweight, Vue-native, composable in markdown.",
   "license": "MIT",

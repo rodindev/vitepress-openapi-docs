@@ -46,6 +46,16 @@ export async function run(argv: string[]): Promise<void> {
 
   const specSource = opts.spec ?? (opts.interactive ? await promptSpec() : undefined)
 
+  if (specSource && !/^https?:\/\//i.test(specSource)) {
+    const resolved = resolve(globalThis.process.cwd(), specSource)
+    if (!existsSync(resolved)) {
+      console.warn(
+        `[create-vitepress-openapi-docs] Warning: spec file not found at "${resolved}". ` +
+          'The path will be written into config.ts, but VitePress will fail to load it at dev/build time.'
+      )
+    }
+  }
+
   await scaffoldInto(target, {
     name: opts.dir.replace(/[^\w-]+/g, '-') || 'my-api-docs',
     spec: specSource,

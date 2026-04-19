@@ -170,4 +170,53 @@ describe('OperationJumper', () => {
     await wrapper.find('input').setValue('zzzzz')
     expect(wrapper.find('.vod-jumper__empty').exists()).toBe(true)
   })
+
+  it('shows spec name in operation tags when multiple specs are registered', async () => {
+    const secondSpec: ParsedSpec = {
+      name: 'admin',
+      title: 'Admin API',
+      version: '1.0.0',
+      servers: [],
+      componentSchemas: {},
+      securitySchemes: {},
+      operations: [
+        {
+          id: 'listUsers',
+          operationId: 'listUsers',
+          method: 'get',
+          path: '/admin/users',
+          summary: 'List users',
+          tags: ['users'],
+          parameters: [],
+          responses: [],
+          requestSchemaRefs: {},
+          responseSchemaRefs: {},
+          defaultServer: '',
+          security: [],
+          deprecated: false,
+        },
+      ],
+    }
+    const multiProvide = {
+      [SPEC_REGISTRY_KEY as unknown as symbol]: {
+        specs: { petstore: spec, admin: secondSpec },
+      },
+    }
+    wrapper = mount(OperationJumper, { global: { provide: multiProvide } })
+    fireCtrlK()
+    await nextTick()
+    await wrapper.find('input').setValue('addPet')
+    await nextTick()
+    const tags = wrapper.findAll('.vod-jumper__tag').map((el) => el.text())
+    expect(tags.some((t) => t.includes('petstore'))).toBe(true)
+  })
+
+  it('omits spec name from operation tags in single-spec mode', async () => {
+    wrapper = mount(OperationJumper, { global: { provide } })
+    fireCtrlK()
+    await nextTick()
+    const tags = wrapper.findAll('.vod-jumper__tag').map((el) => el.text())
+    const opTags = tags.filter((t) => t !== 'petstore') // schema tags always show specName
+    expect(opTags.every((t) => !t.includes('petstore'))).toBe(true)
+  })
 })

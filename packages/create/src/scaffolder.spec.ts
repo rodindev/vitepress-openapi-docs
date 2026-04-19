@@ -2,12 +2,13 @@ import { mkdtemp, readdir, readFile, stat, writeFile } from 'node:fs/promises'
 import { existsSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { afterEach, describe, expect, it } from 'vitest'
-import { scaffoldInto } from './index.js'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import { scaffoldInto, run } from './index.js'
 
 const createdDirs: string[] = []
 
 afterEach(() => {
+  vi.restoreAllMocks()
   // staging dirs (`*.vod-staging-…`) sit next to the targets we scaffold into;
   // tmpdir() cleanup handles them implicitly on most systems.
   createdDirs.length = 0
@@ -119,5 +120,38 @@ describe('scaffoldInto', () => {
     const siblings = await readdir(join(target, '..'))
     expect(siblings.filter((s) => s.includes('.vod-staging-'))).toEqual([])
     expect(existsSync(join(target, 'package.json'))).toBe(true)
+  })
+
+  it('warns when --spec points to a non-existent local file', async () => {
+    const target = await freshTarget()
+    const spy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    // Stub process.exit so it throws instead of killing the test runner
+    const exitSpy = vi.spyOn(globalThis.process, 'exit').mockImplementation(() => {
+      throw new Error('exit')
+    })
+    try {
+      await run([target, '--spec', '/no/such/file.yaml', '-y', '--skip-install'])
+    } catch {
+      // process.exit mock throws — expected if it's called, but it shouldn't be
+    }
+    expect(spy).toHaveBeenCalledWith(expect.stringContaining('spec file not found'))
+    spy.mockRestore()
+    exitSpy.mockRestore()
+  })
+
+  it('does not warn when --spec is a URL', async () => {
+    const target = await freshTarget()
+    const spy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const exitSpy = vi.spyOn(globalThis.process, 'exit').mockImplementation(() => {
+      throw new Error('exit')
+    })
+    try {
+      await run([target, '--spec', 'https://example.com/spec.json', '-y', '--skip-install'])
+    } catch {
+      // ignore
+    }
+    expect(spy).not.toHaveBeenCalled()
+    spy.mockRestore()
+    exitSpy.mockRestore()
   })
 })
