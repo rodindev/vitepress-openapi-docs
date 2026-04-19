@@ -213,7 +213,7 @@ function buildOperation(
     kind,
     method,
     path,
-    summary: typeof op.summary === 'string' ? op.summary : undefined,
+    summary: typeof op.summary === 'string' ? op.summary.replace(/\.\s*$/, '') : undefined,
     description: typeof op.description === 'string' ? op.description : undefined,
     tags,
     parameters,

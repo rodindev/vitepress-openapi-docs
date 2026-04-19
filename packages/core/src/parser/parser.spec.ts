@@ -89,6 +89,26 @@ describe('parseSpec', () => {
     expect(del?.id).toBe('delete_users_id')
   })
 
+  it('strips trailing period from operation summaries', async () => {
+    const spec = await parseSpec(
+      {
+        openapi: '3.0.3',
+        info: { title: 'T', version: '1' },
+        paths: {
+          '/pets': {
+            get: {
+              operationId: 'listPets',
+              summary: 'List all pets.',
+              responses: { '200': { description: 'ok' } },
+            },
+          },
+        },
+      },
+      { name: 'test' }
+    )
+    expect(spec.operations[0]?.summary).toBe('List all pets')
+  })
+
   it('inherits path-level parameters into each operation', async () => {
     const spec = await parseSpec(minimal, { name: 'test' })
     const getOne = spec.operations.find((o) => o.path === '/users/{id}' && o.method === 'get')
