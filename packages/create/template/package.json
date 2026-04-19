@@ -9,7 +9,7 @@
     "preview": "vitepress preview docs"
   },
   "dependencies": {
-    "vitepress-openapi-docs": "^1.1.0",
+    "vitepress-openapi-docs": "^1.2.0",
     "vue-api-playground": "^2.2.0"
   },
   "devDependencies": {

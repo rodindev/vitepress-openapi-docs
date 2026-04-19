@@ -2,6 +2,20 @@
 
 All notable changes to `vitepress-openapi-docs` and `create-vitepress-openapi-docs`.
 
+## 1.2.0
+
+### Added
+
+- Scaffolder supports multiple API specs in a single project. Interactive prompts let you add as many specs as needed, each with its own name, route prefix, and overview page.
+- `--title` and `--body-inputs` CLI flags for the scaffolder, plus an interactive site-title prompt.
+- Scaffolder auto-detects a suitable GET endpoint from local JSON specs and renders a live "Try it" block on the landing page.
+- `deriveSpecName` and `pickDemoEndpoint` exported from `create-vitepress-openapi-docs` for programmatic use.
+
+### Fixed
+
+- Operation summaries no longer display a trailing period in the sidebar and page headings.
+- Search trigger button in the navbar now has proper spacing from adjacent elements.
+
 ## 1.1.0
 
 ### Added
