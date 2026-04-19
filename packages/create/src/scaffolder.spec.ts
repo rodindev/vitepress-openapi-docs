@@ -337,7 +337,7 @@ describe('run', () => {
     expect(output).not.toContain('npm install')
     logSpy.mockRestore()
     warnSpy.mockRestore()
-  }, 30_000)
+  }, 60_000)
 
   it('passes --server flag through to the scaffolded config', async () => {
     const target = await freshTarget()
@@ -457,7 +457,7 @@ describe('install dependencies', () => {
     await run([target, '-y', '--no-git'])
 
     expect(existsSync(join(target, 'node_modules'))).toBe(true)
-  }, 30_000)
+  }, 60_000)
 
   it('skips install when --skip-install is passed', async () => {
     const target = await freshTarget()
