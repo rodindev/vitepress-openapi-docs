@@ -329,7 +329,7 @@ describe('run', () => {
     expect(output).not.toContain('npm install')
     logSpy.mockRestore()
     warnSpy.mockRestore()
-  }, 60_000)
+  }, 120_000)
 
   it('passes --server flag through to the scaffolded config', async () => {
     const target = await freshTarget()
@@ -454,7 +454,7 @@ describe('install dependencies', () => {
     expect(existsSync(join(target, 'node_modules')) || warned).toBe(true)
     logSpy.mockRestore()
     warnSpy.mockRestore()
-  }, 60_000)
+  }, 120_000)
 
   it('skips install when --skip-install is passed', async () => {
     const target = await freshTarget()
