@@ -2,8 +2,6 @@
 
 All notable changes to `vitepress-openapi-docs` and `create-vitepress-openapi-docs`.
 
-Versioning: both packages move in lockstep until v1.0.
-
 ## 1.1.0
 
 ### Added
