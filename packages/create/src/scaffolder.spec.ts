@@ -1,5 +1,6 @@
 import { mkdtemp, readdir, readFile, stat, writeFile } from 'node:fs/promises'
 import { existsSync } from 'node:fs'
+import { execSync } from 'node:child_process'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -165,7 +166,7 @@ describe('scaffoldInto', () => {
     })
 
     const config = await readFile(join(target, 'docs/.vitepress/config.ts'), 'utf8')
-    expect(config).toContain('defaults: { bodyInputs: true }')
+    expect(config).toContain('bodyInputs: true')
   })
 
   it('writes bodyInputs defaults into template config (mock spec)', async () => {
@@ -175,6 +176,52 @@ describe('scaffoldInto', () => {
     const config = await readFile(join(target, 'docs/.vitepress/config.ts'), 'utf8')
     expect(config).toContain('bodyInputs: true')
     expect(config).toContain('mock')
+  })
+
+  it('writes server URL into custom-spec config defaults', async () => {
+    const target = await freshTarget()
+    await scaffoldInto(target, {
+      name: 'demo',
+      specs: [{ name: 'chat', source: './specs/chat.yaml' }],
+      server: 'https://api.example.com',
+    })
+
+    const config = await readFile(join(target, 'docs/.vitepress/config.ts'), 'utf8')
+    expect(config).toContain('server: "https://api.example.com"')
+  })
+
+  it('writes server URL into template config defaults (mock spec)', async () => {
+    const target = await freshTarget()
+    await scaffoldInto(target, { name: 'demo', server: 'https://api.example.com' })
+
+    const config = await readFile(join(target, 'docs/.vitepress/config.ts'), 'utf8')
+    expect(config).toContain('server: "https://api.example.com"')
+    expect(config).toContain('mock')
+  })
+
+  it('combines server and bodyInputs in defaults', async () => {
+    const target = await freshTarget()
+    await scaffoldInto(target, {
+      name: 'demo',
+      specs: [{ name: 'chat', source: './specs/chat.yaml' }],
+      server: 'https://api.example.com',
+      bodyInputs: true,
+    })
+
+    const config = await readFile(join(target, 'docs/.vitepress/config.ts'), 'utf8')
+    expect(config).toContain('server: "https://api.example.com"')
+    expect(config).toContain('bodyInputs: true')
+  })
+
+  it('omits defaults block when no server or bodyInputs provided', async () => {
+    const target = await freshTarget()
+    await scaffoldInto(target, {
+      name: 'demo',
+      specs: [{ name: 'chat', source: './specs/chat.yaml' }],
+    })
+
+    const config = await readFile(join(target, 'docs/.vitepress/config.ts'), 'utf8')
+    expect(config).not.toContain('defaults:')
   })
 
   it('writes into an existing directory when one is already there', async () => {
@@ -230,7 +277,9 @@ describe('scaffoldInto', () => {
     expect(siblings.filter((s) => s.includes('.vod-staging-'))).toEqual([])
     expect(existsSync(join(target, 'package.json'))).toBe(true)
   })
+})
 
+describe('run', () => {
   it('warns when --spec points to a non-existent local file', async () => {
     const target = await freshTarget()
     const spy = vi.spyOn(console, 'warn').mockImplementation(() => {})
@@ -238,7 +287,7 @@ describe('scaffoldInto', () => {
       throw new Error('exit')
     })
     try {
-      await run([target, '--spec', '/no/such/file.yaml', '-y', '--skip-install'])
+      await run([target, '--spec', '/no/such/file.yaml', '-y', '--skip-install', '--no-git'])
     } catch {
       // process.exit mock throws
     }
@@ -254,13 +303,168 @@ describe('scaffoldInto', () => {
       throw new Error('exit')
     })
     try {
-      await run([target, '--spec', 'https://example.com/spec.json', '-y', '--skip-install'])
+      await run([
+        target,
+        '--spec',
+        'https://example.com/spec.json',
+        '-y',
+        '--skip-install',
+        '--no-git',
+      ])
     } catch {
       // ignore
     }
     expect(spy).not.toHaveBeenCalled()
     spy.mockRestore()
     exitSpy.mockRestore()
+  })
+
+  it('prints "npm install" in next steps when --skip-install is used', async () => {
+    const target = await freshTarget()
+    const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
+    await run([target, '-y', '--skip-install', '--no-git'])
+    const output = logSpy.mock.calls.map((c) => c[0]).join('\n')
+    expect(output).toContain('npm install')
+    logSpy.mockRestore()
+  })
+
+  it('omits "npm install" from next steps when dependencies are auto-installed', async () => {
+    const target = await freshTarget()
+    const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    await run([target, '-y', '--no-git'])
+    const output = logSpy.mock.calls.map((c) => c[0]).join('\n')
+    expect(output).not.toContain('npm install')
+    logSpy.mockRestore()
+    warnSpy.mockRestore()
+  }, 30_000)
+
+  it('passes --server flag through to the scaffolded config', async () => {
+    const target = await freshTarget()
+    vi.spyOn(console, 'log').mockImplementation(() => {})
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
+    await run([
+      target,
+      '--spec',
+      'https://api.example.com/spec.json',
+      '--server',
+      'https://api.example.com',
+      '-y',
+      '--skip-install',
+      '--no-git',
+    ])
+
+    const config = await readFile(join(target, 'docs/.vitepress/config.ts'), 'utf8')
+    expect(config).toContain('server: "https://api.example.com"')
+  })
+
+  it('passes --title flag through to the scaffolded config', async () => {
+    const target = await freshTarget()
+    vi.spyOn(console, 'log').mockImplementation(() => {})
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
+    await run([target, '--title', 'Acme API', '-y', '--skip-install', '--no-git'])
+
+    const config = await readFile(join(target, 'docs/.vitepress/config.ts'), 'utf8')
+    expect(config).toContain("title: 'Acme API'")
+  })
+
+  it('passes --body-inputs flag through to the scaffolded config', async () => {
+    const target = await freshTarget()
+    vi.spyOn(console, 'log').mockImplementation(() => {})
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
+    await run([target, '--body-inputs', '-y', '--skip-install', '--no-git'])
+
+    const config = await readFile(join(target, 'docs/.vitepress/config.ts'), 'utf8')
+    expect(config).toContain('bodyInputs: true')
+  })
+
+  it('combines --server, --title, and --body-inputs flags', async () => {
+    const target = await freshTarget()
+    vi.spyOn(console, 'log').mockImplementation(() => {})
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
+    await run([
+      target,
+      '--spec',
+      'https://example.com/v1/openapi.json',
+      '--title',
+      'Acme API',
+      '--server',
+      'https://api.acme.com',
+      '--body-inputs',
+      '-y',
+      '--skip-install',
+      '--no-git',
+    ])
+
+    const config = await readFile(join(target, 'docs/.vitepress/config.ts'), 'utf8')
+    expect(config).toContain("title: 'Acme API'")
+    expect(config).toContain('server: "https://api.acme.com"')
+    expect(config).toContain('bodyInputs: true')
+  })
+})
+
+describe('git init', () => {
+  it('creates a git repository with an initial commit by default', async () => {
+    const target = await freshTarget()
+    vi.spyOn(console, 'log').mockImplementation(() => {})
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
+    await run([target, '-y', '--skip-install'])
+
+    expect(existsSync(join(target, '.git'))).toBe(true)
+    const log = execSync('git log --oneline', { cwd: target, encoding: 'utf8' })
+    expect(log.trim()).toContain('Initial commit')
+  })
+
+  it('skips git init when --no-git is passed', async () => {
+    const target = await freshTarget()
+    vi.spyOn(console, 'log').mockImplementation(() => {})
+    await run([target, '-y', '--skip-install', '--no-git'])
+
+    expect(existsSync(join(target, '.git'))).toBe(false)
+  })
+
+  it('skips git init when scaffolding inside an existing git repository', async () => {
+    const target = await freshTarget()
+    const parent = join(target, '..')
+    execSync('git init', { cwd: parent })
+
+    vi.spyOn(console, 'log').mockImplementation(() => {})
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
+    await run([target, '-y', '--skip-install'])
+
+    // Should not create a nested .git
+    expect(existsSync(join(target, '.git'))).toBe(false)
+    // Parent still has .git
+    expect(existsSync(join(parent, '.git'))).toBe(true)
+  })
+
+  it('tracks all scaffolded files in the initial commit', async () => {
+    const target = await freshTarget()
+    vi.spyOn(console, 'log').mockImplementation(() => {})
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
+    await run([target, '-y', '--skip-install'])
+
+    const status = execSync('git status --porcelain', { cwd: target, encoding: 'utf8' })
+    expect(status.trim()).toBe('')
+  })
+})
+
+describe('install dependencies', () => {
+  it('runs npm install and creates node_modules', async () => {
+    const target = await freshTarget()
+    vi.spyOn(console, 'log').mockImplementation(() => {})
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
+    await run([target, '-y', '--no-git'])
+
+    expect(existsSync(join(target, 'node_modules'))).toBe(true)
+  }, 30_000)
+
+  it('skips install when --skip-install is passed', async () => {
+    const target = await freshTarget()
+    vi.spyOn(console, 'log').mockImplementation(() => {})
+    await run([target, '-y', '--skip-install', '--no-git'])
+
+    expect(existsSync(join(target, 'node_modules'))).toBe(false)
   })
 })
 
@@ -287,6 +491,14 @@ describe('deriveSpecName', () => {
 
   it('lowercases the name', () => {
     expect(deriveSpecName('MyAPI.yaml')).toBe('myapi')
+  })
+
+  it('strips query strings and fragments from URLs', () => {
+    expect(deriveSpecName('https://example.com/api.json?version=2#section')).toBe('api')
+  })
+
+  it('handles .yml extension', () => {
+    expect(deriveSpecName('openapi.yml')).toBe('openapi')
   })
 })
 
@@ -363,6 +575,26 @@ describe('pickDemoEndpoint', () => {
           },
         },
       }),
+      'utf8'
+    )
+    expect(await pickDemoEndpoint(specPath)).toBeUndefined()
+  })
+
+  it('returns undefined for invalid JSON', async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'vod-pick-'))
+    createdDirs.push(dir)
+    const specPath = join(dir, 'broken.json')
+    await writeFile(specPath, 'not valid json', 'utf8')
+    expect(await pickDemoEndpoint(specPath)).toBeUndefined()
+  })
+
+  it('returns undefined when paths is empty', async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'vod-pick-'))
+    createdDirs.push(dir)
+    const specPath = join(dir, 'empty.json')
+    await writeFile(
+      specPath,
+      JSON.stringify({ openapi: '3.0.3', info: { title: 'T', version: '1' }, paths: {} }),
       'utf8'
     )
     expect(await pickDemoEndpoint(specPath)).toBeUndefined()
