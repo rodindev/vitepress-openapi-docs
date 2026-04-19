@@ -2,6 +2,13 @@
 
 All notable changes to `vitepress-openapi-docs` and `create-vitepress-openapi-docs`.
 
+## 1.4.0
+
+### Added
+
+- Scaffolder prompts whether to initialize a git repository in interactive mode, instead of always creating one. Non-interactive mode and `--no-git` behavior unchanged.
+- Scaffolder validates remote spec URLs at scaffold time with a HEAD request, warning when the URL is unreachable or returns an error status.
+
 ## 1.3.0
 
 ### Added
