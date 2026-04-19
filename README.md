@@ -65,6 +65,12 @@ This gives you a full docs site: auto-generated pages, Cmd+K search, schema cros
 - VitePress >= 1.0
 - vue-api-playground >= 2.2
 
+## Acknowledgements
+
+- [VitePress](https://vitepress.dev) — static site generator that powers the docs experience
+- [vue-api-playground](https://github.com/nicepkg/vue-api-playground) — interactive endpoint components under the hood
+- [Vue](https://vuejs.org) — the reactive framework everything is built on
+
 ## License
 
 MIT
