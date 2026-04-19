@@ -106,7 +106,9 @@ export async function run(argv: string[]): Promise<void> {
   }
 
   for (const entry of specs ?? []) {
-    if (!/^https?:\/\//i.test(entry.source)) {
+    if (/^https?:\/\//i.test(entry.source)) {
+      await validateSpecUrl(entry.source, entry.name, opts.interactive)
+    } else {
       const resolved = resolve(globalThis.process.cwd(), entry.source)
       if (!existsSync(resolved)) {
         console.warn(
@@ -131,7 +133,11 @@ export async function run(argv: string[]): Promise<void> {
     await installDependencies(target, pm, opts.interactive)
   }
 
-  if (opts.git) {
+  let shouldGit = opts.git
+  if (shouldGit && opts.interactive) {
+    shouldGit = await promptGitInit(target)
+  }
+  if (shouldGit) {
     await initGit(target, opts.interactive)
   }
 
@@ -254,6 +260,42 @@ async function promptBodyInputs(): Promise<boolean> {
   })
   handleCancel(value)
   return value as boolean
+}
+
+async function promptGitInit(targetDir: string): Promise<boolean> {
+  if (!(await isGitAvailable())) return false
+  if (await isInsideGitRepo(targetDir)) return false
+
+  const value = await clack.confirm({
+    message: 'Initialize a git repository?',
+    initialValue: true,
+  })
+  handleCancel(value)
+  return value as boolean
+}
+
+async function validateSpecUrl(url: string, name: string, interactive: boolean): Promise<void> {
+  try {
+    const res = await fetch(url, {
+      method: 'HEAD',
+      signal: AbortSignal.timeout(10_000),
+    })
+    if (!res.ok) {
+      const msg = `Spec "${name}" URL returned HTTP ${res.status}: ${url}`
+      if (interactive) {
+        clack.log.warn(msg)
+      } else {
+        console.warn(`[create-vitepress-openapi-docs] Warning: ${msg}`)
+      }
+    }
+  } catch {
+    const msg = `Could not reach spec "${name}" URL: ${url}`
+    if (interactive) {
+      clack.log.warn(msg)
+    } else {
+      console.warn(`[create-vitepress-openapi-docs] Warning: ${msg}`)
+    }
+  }
 }
 
 async function promptSpecs(): Promise<SpecEntry[] | undefined> {

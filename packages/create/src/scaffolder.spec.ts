@@ -296,27 +296,19 @@ describe('run', () => {
     exitSpy.mockRestore()
   })
 
-  it('does not warn when --spec is a URL', async () => {
+  it('warns when --spec URL is unreachable', async () => {
     const target = await freshTarget()
     const spy = vi.spyOn(console, 'warn').mockImplementation(() => {})
-    const exitSpy = vi.spyOn(globalThis.process, 'exit').mockImplementation(() => {
-      throw new Error('exit')
-    })
-    try {
-      await run([
-        target,
-        '--spec',
-        'https://example.com/spec.json',
-        '-y',
-        '--skip-install',
-        '--no-git',
-      ])
-    } catch {
-      // ignore
-    }
-    expect(spy).not.toHaveBeenCalled()
+    await run([
+      target,
+      '--spec',
+      'https://example.com/spec.json',
+      '-y',
+      '--skip-install',
+      '--no-git',
+    ])
+    expect(spy).toHaveBeenCalledWith(expect.stringContaining('https://example.com/spec.json'))
     spy.mockRestore()
-    exitSpy.mockRestore()
   })
 
   it('prints "npm install" in next steps when --skip-install is used', async () => {
