@@ -2,6 +2,19 @@
 
 All notable changes to `vitepress-openapi-docs` and `create-vitepress-openapi-docs`.
 
+## 1.3.0
+
+### Added
+
+- Scaffolder auto-installs dependencies after scaffolding. Use `--skip-install` to opt out.
+- Scaffolder initializes a git repository with an initial commit. Use `--no-git` to skip.
+- `--server` CLI flag sets the API server base URL in the generated config, overriding servers defined in the spec.
+- Node.js 18+ version check at startup with a clear error message for older runtimes.
+
+### Changed
+
+- Interactive prompts migrated from raw readline to `@clack/prompts` — styled spinners, select menus, and confirm dialogs replace plain text input.
+
 ## 1.2.0
 
 ### Added
