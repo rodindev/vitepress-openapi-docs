@@ -2,9 +2,12 @@ import { cp, mkdir, readFile, rename, rm, writeFile } from 'node:fs/promises'
 import { existsSync } from 'node:fs'
 import { basename, dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { exec } from 'node:child_process'
+import { promisify } from 'node:util'
 import { detectPackageManager } from './detect-pm.js'
-import { prompt } from './prompt.js'
+import { clack, handleCancel } from './prompt.js'
 
+const execAsync = promisify(exec)
 const TEMPLATE_DIR = resolve(dirname(fileURLToPath(import.meta.url)), '../template')
 
 interface CliOptions {
@@ -14,14 +17,18 @@ interface CliOptions {
   force: boolean
   /** Package manager override. */
   pm?: 'npm' | 'pnpm' | 'yarn' | 'bun'
-  /** Skip dependency install instructions. */
+  /** Skip dependency installation. */
   skipInstall: boolean
+  /** Skip git init. */
+  git: boolean
   /** When false, do not read from stdin (for CI / scripted use). */
   interactive: boolean
   /** Override spec path/URL written into the scaffold (skips the prompt). */
   spec?: string
   /** Override site title. */
   title?: string
+  /** Override server base URL. */
+  server?: string
   /** Use form inputs for request bodies instead of a JSON textarea. */
   bodyInputs?: boolean
 }
@@ -40,13 +47,18 @@ export interface ScaffoldOptions {
   title?: string
   /** Custom spec entries. When omitted, the bundled mock spec is used. */
   specs?: SpecEntry[]
+  /** API server base URL override. */
+  server?: string
   /** Use form inputs for request bodies instead of a JSON textarea. */
   bodyInputs?: boolean
 }
 
 export async function run(argv: string[]): Promise<void> {
+  checkNodeVersion()
   const opts = parseArgs(argv)
   const target = resolve(globalThis.process.cwd(), opts.dir)
+
+  if (opts.interactive) clack.intro('create-vitepress-openapi-docs')
 
   if (existsSync(target) && !opts.force) {
     if (!opts.interactive) {
@@ -56,18 +68,20 @@ export async function run(argv: string[]): Promise<void> {
       )
       globalThis.process.exit(1)
     }
-    const proceed = await prompt(
-      `Directory "${opts.dir}" already exists. Scaffold into it anyway? (y/N) `,
-      'n'
-    )
-    if (!/^y(es)?$/i.test(proceed)) {
-      console.log('Aborted.')
+    const proceed = await clack.confirm({
+      message: `Directory "${opts.dir}" already exists. Scaffold into it anyway?`,
+      initialValue: false,
+    })
+    handleCancel(proceed)
+    if (!proceed) {
+      clack.outro('Aborted.')
       return
     }
   }
 
   let title = opts.title
   let specs: SpecEntry[] | undefined
+  let server = opts.server
   let bodyInputs = opts.bodyInputs
 
   if (opts.spec) {
@@ -76,6 +90,15 @@ export async function run(argv: string[]): Promise<void> {
   } else if (opts.interactive) {
     title = title ?? (await promptTitle())
     specs = await promptSpecs()
+  }
+
+  if (server === undefined && opts.interactive) {
+    server = await promptServer()
+  }
+
+  if (server && !/^https?:\/\//i.test(server.trim())) {
+    console.error('[create-vitepress-openapi-docs] --server must be an HTTP(S) URL.')
+    globalThis.process.exit(1)
   }
 
   if (bodyInputs === undefined && opts.interactive) {
@@ -98,50 +121,168 @@ export async function run(argv: string[]): Promise<void> {
     name: opts.dir.replace(/[^\w-]+/g, '-') || 'my-api-docs',
     title,
     specs: specs?.length ? specs : undefined,
+    server,
     bodyInputs,
   })
 
   const pm = opts.pm ?? detectPackageManager()
-  console.log(`\n  \u2713 Scaffolded into ${target}`)
+
+  if (!opts.skipInstall) {
+    await installDependencies(target, pm, opts.interactive)
+  }
+
+  if (opts.git) {
+    await initGit(target, opts.interactive)
+  }
+
+  if (opts.interactive) {
+    clack.outro('Done! Your API docs are ready.')
+  } else {
+    console.log(`\n  \u2713 Scaffolded into ${target}`)
+  }
+
   console.log('\nNext steps:')
   console.log(`  cd ${opts.dir}`)
-  if (!opts.skipInstall) console.log(`  ${pm} install`)
+  if (opts.skipInstall) console.log(`  ${pm} install`)
   console.log(`  ${pm} run dev\n`)
 }
 
+function checkNodeVersion(): void {
+  const required = 18
+  const current = parseInt(globalThis.process.versions.node, 10)
+  if (current < required) {
+    console.error(
+      `[create-vitepress-openapi-docs] Node.js v${required}+ is required (current: v${globalThis.process.versions.node}).`
+    )
+    globalThis.process.exit(1)
+  }
+}
+
+async function installDependencies(dir: string, pm: string, interactive: boolean): Promise<void> {
+  const s = interactive ? clack.spinner() : undefined
+  s?.start('Installing dependencies...')
+  try {
+    await execAsync(`${pm} install`, { cwd: dir })
+    s?.stop('Dependencies installed')
+  } catch {
+    s?.stop('Failed to install dependencies')
+    if (interactive) {
+      clack.log.warn(
+        `Could not run "${pm} install". Run it manually after cd-ing into the project.`
+      )
+    } else {
+      console.warn(
+        `[create-vitepress-openapi-docs] Warning: "${pm} install" failed. Run it manually.`
+      )
+    }
+  }
+}
+
+async function initGit(dir: string, interactive: boolean): Promise<void> {
+  if (!(await isGitAvailable())) return
+  if (await isInsideGitRepo(dir)) return
+
+  const s = interactive ? clack.spinner() : undefined
+  s?.start('Initializing git...')
+  try {
+    await execAsync('git init', { cwd: dir })
+    await execAsync('git add -A', { cwd: dir })
+    await execAsync('git commit -m "Initial commit"', { cwd: dir })
+    s?.stop('Git initialized with initial commit')
+  } catch {
+    s?.stop('Failed to initialize git')
+    if (!interactive) {
+      console.warn(
+        '[create-vitepress-openapi-docs] Warning: git initialization failed. Run "git init" manually.'
+      )
+    }
+  }
+}
+
+async function isGitAvailable(): Promise<boolean> {
+  try {
+    await execAsync('git --version')
+    return true
+  } catch {
+    return false
+  }
+}
+
+async function isInsideGitRepo(dir: string): Promise<boolean> {
+  try {
+    await execAsync('git rev-parse --is-inside-work-tree', { cwd: dir })
+    return true
+  } catch {
+    return false
+  }
+}
+
 async function promptTitle(): Promise<string | undefined> {
-  const answer = await prompt('Site title (My API): ', '')
-  return answer.trim() || undefined
+  const value = await clack.text({
+    message: 'Site title',
+    placeholder: 'My API',
+  })
+  handleCancel(value)
+  return (value as string).trim() || undefined
+}
+
+async function promptServer(): Promise<string | undefined> {
+  const value = await clack.text({
+    message: 'API server base URL',
+    placeholder: 'leave blank to use servers from the spec',
+    validate(input = '') {
+      if (!input.trim()) return undefined
+      if (!/^https?:\/\//i.test(input.trim())) return 'Must be an HTTP(S) URL'
+      return undefined
+    },
+  })
+  handleCancel(value)
+  return (value as string).trim() || undefined
 }
 
 async function promptBodyInputs(): Promise<boolean> {
-  const answer = await prompt(
-    'Request body style — form inputs or JSON textarea? (inputs/TEXTAREA) ',
-    ''
-  )
-  return /^i(nputs?)?$/i.test(answer.trim())
+  const value = await clack.select({
+    message: 'Request body style',
+    options: [
+      { value: false, label: 'JSON textarea', hint: 'default' },
+      { value: true, label: 'Form inputs' },
+    ],
+    initialValue: false,
+  })
+  handleCancel(value)
+  return value as boolean
 }
 
 async function promptSpecs(): Promise<SpecEntry[] | undefined> {
   const specs: SpecEntry[] = []
 
-  const first = await prompt(
-    'Path or URL to your OpenAPI spec (leave blank for bundled demo): ',
-    ''
-  )
-  if (!first.trim()) return undefined
+  const first = await clack.text({
+    message: 'Path or URL to your OpenAPI spec',
+    placeholder: 'leave blank for the bundled demo',
+  })
+  handleCancel(first)
+  if (!(first as string).trim()) return undefined
 
-  const firstName = await promptSpecName(first.trim())
-  specs.push({ name: firstName, source: first.trim() })
+  const firstName = await promptSpecName((first as string).trim())
+  specs.push({ name: firstName, source: (first as string).trim() })
 
   while (true) {
-    const more = await prompt('Add another API spec? (y/N) ', 'n')
-    if (!/^y(es)?$/i.test(more)) break
-    const source = await prompt('Path or URL to OpenAPI spec: ', '')
-    if (!source.trim()) break
+    const more = await clack.confirm({
+      message: 'Add another API spec?',
+      initialValue: false,
+    })
+    handleCancel(more)
+    if (!more) break
+
+    const source = await clack.text({
+      message: 'Path or URL to OpenAPI spec',
+    })
+    handleCancel(source)
+    if (!(source as string).trim()) break
+
     const taken = specs.map((s) => s.name)
-    const specName = await promptSpecName(source.trim(), taken)
-    specs.push({ name: specName, source: source.trim() })
+    const specName = await promptSpecName((source as string).trim(), taken)
+    specs.push({ name: specName, source: (source as string).trim() })
   }
 
   return specs
@@ -149,18 +290,28 @@ async function promptSpecs(): Promise<SpecEntry[] | undefined> {
 
 async function promptSpecName(source: string, taken: string[] = []): Promise<string> {
   const suggested = deriveSpecName(source)
-  const answer = await prompt(`Short name for this API (${suggested}): `, '')
-  const raw = answer.trim() || suggested
-  const name =
+  const value = await clack.text({
+    message: 'Short name for this API',
+    placeholder: suggested,
+    validate(input = '') {
+      const raw = input.trim() || suggested
+      const name =
+        raw
+          .toLowerCase()
+          .replace(/[^\w-]+/g, '-')
+          .replace(/^-+|-+$/g, '') || 'api'
+      if (taken.includes(name)) return `Name "${name}" is already used`
+      return undefined
+    },
+  })
+  handleCancel(value)
+  const raw = (value as string).trim() || suggested
+  return (
     raw
       .toLowerCase()
       .replace(/[^\w-]+/g, '-')
       .replace(/^-+|-+$/g, '') || 'api'
-  if (taken.includes(name)) {
-    console.warn(`[create-vitepress-openapi-docs] Name "${name}" is already used, adding suffix.`)
-    return `${name}-2`
-  }
-  return name
+  )
 }
 
 export function deriveSpecName(source: string): string {
@@ -188,16 +339,13 @@ export async function scaffoldInto(targetDir: string, options: ScaffoldOptions):
     await cp(TEMPLATE_DIR, staging, { recursive: true })
     await rewritePackageJson(staging, options.name)
 
+    const defaults = buildDefaults(options)
+
     if (options.specs?.length) {
-      await rewriteForCustomSpecs(
-        staging,
-        options.title ?? 'My API',
-        options.specs,
-        options.bodyInputs
-      )
+      await rewriteForCustomSpecs(staging, options.title ?? 'My API', options.specs, defaults)
     } else {
       if (options.title) await rewriteTitle(staging, options.title)
-      if (options.bodyInputs) await rewriteDefaults(staging, { bodyInputs: true })
+      if (Object.keys(defaults).length) await rewriteDefaults(staging, defaults)
     }
 
     if (existsSync(targetDir)) {
@@ -221,6 +369,13 @@ export async function scaffoldInto(targetDir: string, options: ScaffoldOptions):
     globalThis.process.removeListener('SIGINT', onSignal)
     globalThis.process.removeListener('SIGTERM', onSignal)
   }
+}
+
+function buildDefaults(options: ScaffoldOptions): Record<string, unknown> {
+  const defaults: Record<string, unknown> = {}
+  if (options.server) defaults.server = options.server
+  if (options.bodyInputs) defaults.bodyInputs = true
+  return defaults
 }
 
 async function rewritePackageJson(dir: string, name: string): Promise<void> {
@@ -310,13 +465,13 @@ async function rewriteForCustomSpecs(
   dir: string,
   title: string,
   specs: SpecEntry[],
-  bodyInputs?: boolean
+  defaults: Record<string, unknown>
 ): Promise<void> {
   const demoEndpoint = await pickDemoEndpoint(specs[0]!.source)
 
   await writeFile(
     join(dir, 'docs/.vitepress/config.ts'),
-    generateConfig(title, specs, bodyInputs),
+    generateConfig(title, specs, defaults),
     'utf8'
   )
   await writeFile(join(dir, 'docs/.vitepress/theme/index.ts'), generateTheme(specs), 'utf8')
@@ -337,7 +492,11 @@ async function rewriteForCustomSpecs(
   await writeFile(join(dir, 'docs/guide.md'), generateGuideMd(specs), 'utf8')
 }
 
-function generateConfig(title: string, specs: SpecEntry[], bodyInputs?: boolean): string {
+function generateConfig(
+  title: string,
+  specs: SpecEntry[],
+  defaults: Record<string, unknown>
+): string {
   const navItems =
     specs.length === 1
       ? `{ text: 'API Reference', link: '/api/${specs[0]!.name}/' },`
@@ -351,6 +510,12 @@ function generateConfig(title: string, specs: SpecEntry[], bodyInputs?: boolean)
         `{ name: ${quote(s.name)}, spec: ${JSON.stringify(s.source)}, prefix: '/api/${s.name}' }`
     )
     .join(',\n      ')
+
+  const defaultsLine = Object.keys(defaults).length
+    ? `\n    defaults: { ${Object.entries(defaults)
+        .map(([k, v]) => `${k}: ${JSON.stringify(v)}`)
+        .join(', ')} },`
+    : ''
 
   return `import { defineConfig } from 'vitepress'
 import { openApiDocs } from 'vitepress-openapi-docs/vitepress'
@@ -381,7 +546,7 @@ export default defineConfig({
   },
 
   extends: await openApiDocs({
-    specs: [${specEntries}],${bodyInputs ? '\n    defaults: { bodyInputs: true },' : ''}
+    specs: [${specEntries}],${defaultsLine}
   }),
 })
 `
@@ -515,15 +680,18 @@ function parseArgs(argv: string[]): CliOptions {
     dir: 'my-api-docs',
     force: false,
     skipInstall: false,
+    git: true,
     interactive: Boolean(globalThis.process.stdin.isTTY),
   }
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i]!
     if (arg === '--force' || arg === '-f') opts.force = true
     else if (arg === '--skip-install') opts.skipInstall = true
+    else if (arg === '--no-git') opts.git = false
     else if (arg === '--no-interactive' || arg === '-y') opts.interactive = false
     else if (arg === '--spec' && argv[i + 1]) opts.spec = argv[++i]
     else if (arg === '--title' && argv[i + 1]) opts.title = argv[++i]
+    else if (arg === '--server' && argv[i + 1]) opts.server = argv[++i]
     else if (arg === '--body-inputs') opts.bodyInputs = true
     else if (arg === '--pm' && argv[i + 1]) {
       const pm = argv[++i]!
