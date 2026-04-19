@@ -187,7 +187,10 @@ async function initGit(dir: string, interactive: boolean): Promise<void> {
   try {
     await execAsync('git init', { cwd: dir })
     await execAsync('git add -A', { cwd: dir })
-    await execAsync('git commit -m "Initial commit"', { cwd: dir })
+    await execAsync(
+      'git -c user.name="vitepress-openapi-docs" -c user.email="noreply@users.noreply.github.com" commit -m "Initial commit"',
+      { cwd: dir }
+    )
     s?.stop('Git initialized with initial commit')
   } catch {
     s?.stop('Failed to initialize git')
