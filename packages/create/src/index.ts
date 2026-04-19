@@ -234,7 +234,11 @@ async function rewritePackageJson(dir: string, name: string): Promise<void> {
 async function rewriteTitle(dir: string, title: string): Promise<void> {
   const configPath = join(dir, 'docs/.vitepress/config.ts')
   const config = await readFile(configPath, 'utf8')
-  await writeFile(configPath, config.replace(/title: 'My API'/, () => `title: ${quote(title)}`), 'utf8')
+  await writeFile(
+    configPath,
+    config.replace(/title: 'My API'/, () => `title: ${quote(title)}`),
+    'utf8'
+  )
 
   const indexPath = join(dir, 'docs/index.md')
   const index = await readFile(indexPath, 'utf8')
@@ -501,7 +505,8 @@ function capitalize(s: string): string {
 }
 
 function yamlQuote(s: string): string {
-  if (/[:#[\]{}>&*!|'"%@`\n\r]/.test(s)) return `"${s.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n').replace(/\r/g, '\\r')}"`
+  if (/[:#[\]{}>&*!|'"%@`\n\r]/.test(s))
+    return `"${s.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n').replace(/\r/g, '\\r')}"`
   return s
 }
 
