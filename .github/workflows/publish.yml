@@ -102,4 +102,4 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ github.ref_name }}
-        run: gh release create "$TAG" --notes-file /tmp/release-notes.md
+        run: gh release create "$TAG" --title "$TAG" --notes-file /tmp/release-notes.md
