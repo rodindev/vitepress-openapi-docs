@@ -18,6 +18,10 @@ All notable changes to `vitepress-openapi-docs` and `create-vitepress-openapi-do
 
 - Scaffolder warns on stderr when a spec URL fails to fetch, returns a non-2xx status, or produces unparseable JSON. Previously these failures were silent and the generated landing page quietly omitted the demo block with no explanation.
 
+### Security
+
+- Force Vite 6.4.2 into VitePress's transitive tree via an `overrides` entry in the monorepo `package.json`. Patches two dev-server-only CVEs that affected `vitepress dev` via Vite 5's bundled esbuild (GHSA-4w7w-66w2-5vf9 path traversal in optimized deps `.map` handling; GHSA-67mh-4wv8-2f99 esbuild cross-site dev-server request). Production builds (`vitepress build`) were not affected.
+
 ## 1.5.0
 
 ### Added
