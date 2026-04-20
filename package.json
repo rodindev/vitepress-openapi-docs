@@ -21,7 +21,7 @@
     "test:a11y": "playwright test"
   },
   "devDependencies": {
-    "@axe-core/playwright": "^4.11.1",
+    "@axe-core/playwright": "^4.11.2",
     "@eslint/js": "^9.39.4",
     "@playwright/test": "^1.59.1",
     "@vitejs/plugin-vue": "^5.2.0",
