@@ -2,6 +2,22 @@
 
 All notable changes to `vitepress-openapi-docs` and `create-vitepress-openapi-docs`.
 
+## 1.5.1
+
+### Added
+
+- Scaffolder picks a demo endpoint from remote JSON OpenAPI specs, not just local files. `npm create vitepress-openapi-docs` pointed at a hosted spec URL now produces a working Try-It block on the landing page out of the box.
+
+### Changed
+
+- Scaffolder skips deprecated GET operations when picking the demo endpoint, so the generated landing page never opens to a deprecated API.
+- Scaffolder sends `Accept: application/json` when fetching remote specs, improving compatibility with CDNs and proxies that content-negotiate.
+- Scaffolded landing page replaces the "Quick start" block with a "What's next" block that links directly to the generated API Reference.
+
+### Fixed
+
+- Scaffolder warns on stderr when a spec URL fails to fetch, returns a non-2xx status, or produces unparseable JSON. Previously these failures were silent and the generated landing page quietly omitted the demo block with no explanation.
+
 ## 1.5.0
 
 ### Added

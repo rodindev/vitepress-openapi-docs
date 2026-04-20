@@ -1,6 +1,6 @@
 {
   "name": "create-vitepress-openapi-docs",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "type": "module",
   "description": "Scaffold an interactive OpenAPI documentation site with VitePress.",
   "license": "MIT",
