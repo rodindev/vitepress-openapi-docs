@@ -87,7 +87,7 @@
     "@scalar/openapi-parser": "^0.25.8",
     "dompurify": "^3.4.0",
     "jsdom": "^26.1.0",
-    "marked": "^18.0.0"
+    "marked": "^18.0.2"
   },
   "devDependencies": {
     "@size-limit/preset-small-lib": "^12.1.0",
