@@ -16,17 +16,20 @@ Renders one operation inline with prose.
 
 ### Props
 
-| Prop               | Type                                                    | Default         | Description                                                                       |
-| ------------------ | ------------------------------------------------------- | --------------- | --------------------------------------------------------------------------------- |
-| `id`               | `string`                                                | (required)      | `{specName}.{operationId}` for multi-spec, or bare `{operationId}` with one spec. |
-| `auth`             | `'none' \| 'bearer' \| 'apikey' \| 'basic' \| 'oauth2'` | auto from spec  | Override the auth scheme.                                                         |
-| `server`           | `string`                                                | first from spec | Single-server URL override.                                                       |
-| `show`             | `Section[]`                                             | all sections    | Which sections to render.                                                         |
-| `apiKeyHeaderName` | `string`                                                | auto from spec  | Header name for `apikey` schemes.                                                 |
-| `bodyInputs`       | `boolean`                                               | `false`         | Render request body properties as individual inputs instead of a JSON textarea.   |
-| `collapse`         | `Section[]`                                             | `[]`            | Sections to render collapsed (inside a toggle).                                   |
+| Prop               | Type                                                    | Default         | Description                                                                                                             |
+| ------------------ | ------------------------------------------------------- | --------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `id`               | `string`                                                | (required)      | `{specName}.{operationId}` for multi-spec, or bare `{operationId}` with one spec.                                       |
+| `auth`             | `'none' \| 'bearer' \| 'apikey' \| 'basic' \| 'oauth2'` | auto from spec  | Override the auth scheme.                                                                                               |
+| `server`           | `string`                                                | first from spec | Single-server URL override.                                                                                             |
+| `show`             | `Section[]`                                             | all sections    | Which sections to render.                                                                                               |
+| `apiKeyHeaderName` | `string`                                                | auto from spec  | Header name for `apikey` schemes.                                                                                       |
+| `bodyInputs`       | `boolean`                                               | `false`         | Render request body properties as individual inputs instead of a JSON textarea.                                         |
+| `collapse`         | `Section[]`                                             | `[]`            | Sections to render collapsed (inside a toggle). Applies only in `stacked` layout.                                       |
+| `layout`           | `'columns' \| 'stacked'`                                | `'columns'`     | `columns` renders the Try-It panel as a sticky aside next to the card. `stacked` keeps everything in one vertical card. |
 
 **Section names:** `summary`, `description`, `params`, `request`, `response`, `auth`, `snippets`, `try`.
+
+**Layout note:** In `columns` (default) the aside lives inside the endpoint container. On pages where VitePress renders a right-side TOC (`aside` frontmatter is not `false`), the aside stacks below the card instead — set `aside: false` in the page's frontmatter so the endpoint aside has room. Viewports at 1279px and below automatically fall back to the `stacked` layout regardless of the `layout` setting.
 
 ### Events
 
@@ -44,9 +47,11 @@ Renders every operation in a spec, grouped by tag.
 <OpenApiSpec name="public" />
 ```
 
-| Prop   | Type     | Description                 |
-| ------ | -------- | --------------------------- |
-| `name` | `string` | Spec name from your config. |
+| Prop          | Type                     | Default | Description                                                                                 |
+| ------------- | ------------------------ | ------- | ------------------------------------------------------------------------------------------- |
+| `name`        | `string`                 | —       | Spec name from your config.                                                                 |
+| `show-header` | `boolean`                | `true`  | Render the spec title and description block.                                                |
+| `layout`      | `'columns' \| 'stacked'` | inherit | Card layout forwarded to every rendered endpoint. Defaults to the plugin `defaults.layout`. |
 
 ## `<OpenApiSchema>`
 

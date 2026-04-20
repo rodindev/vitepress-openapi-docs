@@ -1,6 +1,7 @@
 ---
 title: Petstore API
 description: The classic Swagger Petstore rendered by vitepress-openapi-docs — 19 operations, three tags, full interactivity.
+aside: false
 ---
 
 # Petstore API

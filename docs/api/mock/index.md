@@ -1,6 +1,7 @@
 ---
 title: Mock API
 description: A live OpenAPI 3.1 mock REST API used as the end-to-end demo for vitepress-openapi-docs. Fifty-seven operations across fourteen tags, thirty-four webhooks, bearer auth, and the full OpenAPI 3.1 feature set — callbacks, oneOf, examples, deprecations, parameter styles.
+aside: false
 ---
 
 # Mock API
