@@ -81,7 +81,7 @@
   "peerDependencies": {
     "vitepress": "^1.0.0",
     "vue": "^3.3.0",
-    "vue-api-playground": "^2.2.0"
+    "vue-api-playground": "^2.3.1"
   },
   "dependencies": {
     "@scalar/openapi-parser": "^0.25.8",
