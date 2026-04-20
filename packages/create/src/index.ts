@@ -665,7 +665,11 @@ Use \`Cmd+K\` (or \`Ctrl+K\`) to jump to any operation or schema.
 }
 
 function generateApiIndexMd(specName: string): string {
-  return `# API Reference
+  return `---
+aside: false
+---
+
+# API Reference
 
 All operations and schemas from your OpenAPI spec. Per-operation and per-schema pages are auto-generated and reachable from the sidebar.
 

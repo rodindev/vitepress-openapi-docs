@@ -1,3 +1,7 @@
+---
+aside: false
+---
+
 # API Reference
 
 All operations and schemas from your OpenAPI spec. Per-operation and per-schema pages are auto-generated and reachable from the sidebar.

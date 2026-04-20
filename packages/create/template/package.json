@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vitepress dev docs",
     "build": "vitepress build docs",
-    "preview": "vitepress preview docs"
+    "preview": "vitepress preview docs",
+    "clean": "rm -rf node_modules/.vite docs/.vitepress/cache"
   },
   "dependencies": {
     "vitepress-openapi-docs": "^1.4.0",
