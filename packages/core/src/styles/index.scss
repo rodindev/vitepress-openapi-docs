@@ -26,23 +26,39 @@
   --vod-method-options: var(--vap-method-options, var(--vp-c-text-2, #6b7280));
   --vod-method-trace: var(--vap-method-trace, var(--vp-c-text-2, #6b7280));
 
-  /* Method badge colours — dark text on light-tinted backgrounds for WCAG AA contrast */
-  --vod-method-get-bg: #dcfce7;
-  --vod-method-get-text: #166534;
-  --vod-method-post-bg: #dbeafe;
-  --vod-method-post-text: #1e40af;
-  --vod-method-put-bg: #fef3c7;
-  --vod-method-put-text: #92400e;
-  --vod-method-patch-bg: #ede9fe;
-  --vod-method-patch-text: #5b21b6;
-  --vod-method-delete-bg: #fee2e2;
-  --vod-method-delete-text: #991b1b;
-  --vod-method-head-bg: #f3f4f6;
-  --vod-method-head-text: #374151;
-  --vod-method-options-bg: #f3f4f6;
-  --vod-method-options-text: #374151;
-  --vod-method-trace-bg: #f3f4f6;
-  --vod-method-trace-text: #374151;
+  /* Method badge colours: read (GET/HEAD/OPTIONS/TRACE) → indigo,
+   * write (POST/PUT/PATCH) → yellow, destructive (DELETE) → red.
+   * Each pair cascades so host palette overrides reach the pills. */
+  --vod-method-get-bg: var(--vap-method-get-bg, var(--vp-c-indigo-soft, #dbeafe));
+  --vod-method-get-text: var(--vap-method-get-text, var(--vp-c-indigo-1, #1e40af));
+  --vod-method-post-bg: var(--vap-method-post-bg, var(--vp-c-yellow-soft, #fef3c7));
+  --vod-method-post-text: var(--vap-method-post-text, var(--vp-c-yellow-1, #92400e));
+  --vod-method-put-bg: var(--vap-method-put-bg, var(--vp-c-yellow-soft, #fef3c7));
+  --vod-method-put-text: var(--vap-method-put-text, var(--vp-c-yellow-1, #92400e));
+  --vod-method-patch-bg: var(--vap-method-patch-bg, var(--vp-c-yellow-soft, #fef3c7));
+  --vod-method-patch-text: var(--vap-method-patch-text, var(--vp-c-yellow-1, #92400e));
+  --vod-method-delete-bg: var(--vap-method-delete-bg, var(--vp-c-red-soft, #fee2e2));
+  --vod-method-delete-text: var(--vap-method-delete-text, var(--vp-c-red-1, #991b1b));
+  --vod-method-head-bg: var(--vap-method-head-bg, var(--vp-c-indigo-soft, #dbeafe));
+  --vod-method-head-text: var(--vap-method-head-text, var(--vp-c-indigo-1, #1e40af));
+  --vod-method-options-bg: var(--vap-method-options-bg, var(--vp-c-indigo-soft, #dbeafe));
+  --vod-method-options-text: var(--vap-method-options-text, var(--vp-c-indigo-1, #1e40af));
+  --vod-method-trace-bg: var(--vap-method-trace-bg, var(--vp-c-indigo-soft, #dbeafe));
+  --vod-method-trace-text: var(--vap-method-trace-text, var(--vp-c-indigo-1, #1e40af));
+
+  /* Neutral pill for webhooks, kind badges, and schema entries — these aren't
+   * user-initiated verbs so they sit outside the read/write/destructive rule. */
+  --vod-pill-neutral-bg: var(--vap-pill-neutral-bg, var(--vp-c-default-soft, #f3f4f6));
+  --vod-pill-neutral-text: var(--vap-pill-neutral-text, var(--vp-c-text-2, #374151));
+
+  /* Response status semantics, deliberately hue-distinct from method colours
+   * so 2xx-success never reads as a read-method, etc. */
+  --vod-status-2xx: var(--vp-c-green-1, #16a34a);
+  --vod-status-2xx-soft: var(--vp-c-green-soft, rgba(22, 163, 74, 0.14));
+  --vod-status-4xx: var(--vp-c-yellow-1, #d97706);
+  --vod-status-4xx-soft: var(--vp-c-yellow-soft, rgba(217, 119, 6, 0.14));
+  --vod-status-5xx: var(--vp-c-red-1, #dc2626);
+  --vod-status-5xx-soft: var(--vp-c-red-soft, rgba(220, 38, 38, 0.14));
 
   /* Surfaces */
   --vod-surface: var(--vap-surface, var(--vp-c-bg-soft, #f6f6f7));
@@ -100,8 +116,8 @@
   margin-left: 0.5rem;
   padding: 0.05rem 0.5rem;
   border-radius: 999px;
-  background: var(--vod-method-patch-bg);
-  color: var(--vod-method-patch-text);
+  background: var(--vod-pill-neutral-bg);
+  color: var(--vod-pill-neutral-text);
   font-size: 0.7rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -109,8 +125,8 @@
 }
 
 .vod-endpoint__method--webhook {
-  background: var(--vod-method-patch-bg);
-  color: var(--vod-method-patch-text);
+  background: var(--vod-pill-neutral-bg);
+  color: var(--vod-pill-neutral-text);
 }
 
 .vod-endpoint__route {
@@ -441,16 +457,16 @@
   }
 
   &--success.vod-responses__tab--active {
-    border-bottom-color: var(--vod-method-post);
+    border-bottom-color: var(--vod-status-2xx);
   }
   &--redirect.vod-responses__tab--active {
-    border-bottom-color: var(--vod-method-put);
+    border-bottom-color: var(--vod-status-4xx);
   }
   &--client-error.vod-responses__tab--active {
-    border-bottom-color: var(--vod-method-delete);
+    border-bottom-color: var(--vod-status-4xx);
   }
   &--server-error.vod-responses__tab--active {
-    border-bottom-color: var(--vod-method-delete);
+    border-bottom-color: var(--vod-status-5xx);
   }
   &--other.vod-responses__tab--active {
     border-bottom-color: var(--vod-text-2);
@@ -1003,27 +1019,27 @@ a.vod-schema__type-token {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--vod-method-head-text);
-  background: var(--vod-method-head-bg);
+  color: var(--vod-pill-neutral-text);
+  background: var(--vod-pill-neutral-bg);
 }
 
 .vod-changelog__kind--added {
-  background: var(--vod-method-post-bg);
-  color: var(--vod-method-post-text);
+  background: var(--vod-status-2xx-soft);
+  color: var(--vod-status-2xx);
 }
 .vod-changelog__kind--removed {
-  background: var(--vod-method-delete-bg);
-  color: var(--vod-method-delete-text);
+  background: var(--vod-status-5xx-soft);
+  color: var(--vod-status-5xx);
 }
 .vod-changelog__kind--renamed {
-  background: var(--vod-method-put-bg);
-  color: var(--vod-method-put-text);
+  background: var(--vod-status-4xx-soft);
+  color: var(--vod-status-4xx);
 }
 .vod-changelog__kind--summary,
 .vod-changelog__kind--description,
 .vod-changelog__kind--info {
-  background: var(--vod-method-patch-bg);
-  color: var(--vod-method-patch-text);
+  background: var(--vod-pill-neutral-bg);
+  color: var(--vod-pill-neutral-text);
 }
 
 .vod-changelog__delta {
@@ -1182,8 +1198,8 @@ a.vod-schema__type-token {
   text-transform: uppercase;
 
   &--schema {
-    background: var(--vod-method-patch-bg);
-    color: var(--vod-method-patch-text);
+    background: var(--vod-pill-neutral-bg);
+    color: var(--vod-pill-neutral-text);
   }
 
   &[data-method='post'] {
@@ -1306,20 +1322,30 @@ a.vod-schema__type-token {
   --vod-text-1: var(--vap-text-1, var(--vp-c-text-1, #dfdfd6));
   --vod-text-2: var(--vap-text-2, var(--vp-c-text-2, #98989f));
 
-  --vod-method-get-bg: #052e16;
-  --vod-method-get-text: #86efac;
-  --vod-method-post-bg: #172554;
-  --vod-method-post-text: #93c5fd;
-  --vod-method-put-bg: #451a03;
-  --vod-method-put-text: #fcd34d;
-  --vod-method-patch-bg: #2e1065;
-  --vod-method-patch-text: #c4b5fd;
-  --vod-method-delete-bg: #450a0a;
-  --vod-method-delete-text: #fca5a5;
-  --vod-method-head-bg: #1f2937;
-  --vod-method-head-text: #d1d5db;
-  --vod-method-options-bg: #1f2937;
-  --vod-method-options-text: #d1d5db;
-  --vod-method-trace-bg: #1f2937;
-  --vod-method-trace-text: #d1d5db;
+  --vod-method-get-bg: var(--vap-method-get-bg, var(--vp-c-indigo-soft, #172554));
+  --vod-method-get-text: var(--vap-method-get-text, var(--vp-c-indigo-1, #a8b1ff));
+  --vod-method-post-bg: var(--vap-method-post-bg, var(--vp-c-yellow-soft, #451a03));
+  --vod-method-post-text: var(--vap-method-post-text, var(--vp-c-yellow-1, #f9b44e));
+  --vod-method-put-bg: var(--vap-method-put-bg, var(--vp-c-yellow-soft, #451a03));
+  --vod-method-put-text: var(--vap-method-put-text, var(--vp-c-yellow-1, #f9b44e));
+  --vod-method-patch-bg: var(--vap-method-patch-bg, var(--vp-c-yellow-soft, #451a03));
+  --vod-method-patch-text: var(--vap-method-patch-text, var(--vp-c-yellow-1, #f9b44e));
+  --vod-method-delete-bg: var(--vap-method-delete-bg, var(--vp-c-red-soft, #450a0a));
+  --vod-method-delete-text: var(--vap-method-delete-text, var(--vp-c-red-1, #f66f81));
+  --vod-method-head-bg: var(--vap-method-head-bg, var(--vp-c-indigo-soft, #172554));
+  --vod-method-head-text: var(--vap-method-head-text, var(--vp-c-indigo-1, #a8b1ff));
+  --vod-method-options-bg: var(--vap-method-options-bg, var(--vp-c-indigo-soft, #172554));
+  --vod-method-options-text: var(--vap-method-options-text, var(--vp-c-indigo-1, #a8b1ff));
+  --vod-method-trace-bg: var(--vap-method-trace-bg, var(--vp-c-indigo-soft, #172554));
+  --vod-method-trace-text: var(--vap-method-trace-text, var(--vp-c-indigo-1, #a8b1ff));
+
+  --vod-pill-neutral-bg: var(--vap-pill-neutral-bg, var(--vp-c-default-soft, #1f2937));
+  --vod-pill-neutral-text: var(--vap-pill-neutral-text, var(--vp-c-text-2, #d1d5db));
+
+  --vod-status-2xx: var(--vp-c-green-1, #3dd68c);
+  --vod-status-2xx-soft: var(--vp-c-green-soft, rgba(74, 222, 128, 0.18));
+  --vod-status-4xx: var(--vp-c-yellow-1, #f9b44e);
+  --vod-status-4xx-soft: var(--vp-c-yellow-soft, rgba(251, 191, 36, 0.18));
+  --vod-status-5xx: var(--vp-c-red-1, #f66f81);
+  --vod-status-5xx-soft: var(--vp-c-red-soft, rgba(248, 113, 113, 0.18));
 }
