@@ -468,19 +468,18 @@ async function rewriteDefaults(dir: string, defaults: Record<string, unknown>): 
 }
 
 /**
- * Try to pick a suitable GET endpoint from a local spec file to use as a demo
- * on the landing page. Prefers "list" operations on short collection paths.
- * Returns undefined for URLs, YAML files, or unreadable specs.
+ * Try to pick a suitable GET endpoint from a spec to use as a demo on the
+ * landing page. Prefers "list" operations on short collection paths. Reads
+ * local JSON files and fetches JSON URLs; YAML specs and unreachable sources
+ * return undefined (graceful degradation — landing page omits the demo block).
  */
 export async function pickDemoEndpoint(specSource: string): Promise<string | undefined> {
-  if (/^https?:\/\//i.test(specSource)) return undefined
-  const resolved = resolve(globalThis.process.cwd(), specSource)
-  if (!existsSync(resolved)) return undefined
+  const raw = await loadSpecText(specSource)
+  if (raw === undefined) return undefined
 
   try {
-    const raw = await readFile(resolved, 'utf8')
     const spec = JSON.parse(raw) as {
-      paths?: Record<string, Record<string, { operationId?: string }>>
+      paths?: Record<string, Record<string, { operationId?: string; deprecated?: boolean }>>
     }
     const paths = spec.paths ?? {}
 
@@ -488,6 +487,7 @@ export async function pickDemoEndpoint(specSource: string): Promise<string | und
     for (const [path, methods] of Object.entries(paths)) {
       const get = methods.get
       if (!get || typeof get !== 'object' || typeof get.operationId !== 'string') continue
+      if (get.deprecated === true) continue
 
       let score = 0
       if (/list|getAll|search|index/i.test(get.operationId)) score += 10
@@ -500,7 +500,46 @@ export async function pickDemoEndpoint(specSource: string): Promise<string | und
     if (candidates.length === 0) return undefined
     candidates.sort((a, b) => b.score - a.score)
     return candidates[0]!.id
-  } catch {
+  } catch (err) {
+    console.warn(
+      `vitepress-openapi-docs: could not pick a demo endpoint from ${specSource} (${(err as Error).message}). Landing page will omit the Try-It block.`
+    )
+    return undefined
+  }
+}
+
+const SPEC_FETCH_TIMEOUT_MS = 10_000
+
+async function loadSpecText(specSource: string): Promise<string | undefined> {
+  if (/^https?:\/\//i.test(specSource)) {
+    if (/\.ya?ml(\?|#|$)/i.test(specSource)) return undefined
+    try {
+      const res = await fetch(specSource, {
+        signal: AbortSignal.timeout(SPEC_FETCH_TIMEOUT_MS),
+        headers: { Accept: 'application/json, */*;q=0.1' },
+      })
+      if (!res.ok) {
+        console.warn(
+          `vitepress-openapi-docs: fetch ${specSource} returned ${res.status} ${res.statusText}.`
+        )
+        return undefined
+      }
+      return await res.text()
+    } catch (err) {
+      console.warn(
+        `vitepress-openapi-docs: fetch ${specSource} failed (${(err as Error).message}).`
+      )
+      return undefined
+    }
+  }
+
+  if (/\.ya?ml$/i.test(specSource)) return undefined
+  const resolved = resolve(globalThis.process.cwd(), specSource)
+  if (!existsSync(resolved)) return undefined
+  try {
+    return await readFile(resolved, 'utf8')
+  } catch (err) {
+    console.warn(`vitepress-openapi-docs: could not read ${resolved} (${(err as Error).message}).`)
     return undefined
   }
 }
@@ -656,9 +695,9 @@ hero:
       link: /guide
 ---
 ${tryItBlock}
-## Quick start
+## What's next
 
-Update the spec path in \`.vitepress/config.ts\` and run \`npm run dev\` to see your API docs.
+Browse the [API Reference](${firstLink}) for every operation and schema, or edit \`.vitepress/config.ts\` to add more specs and tweak display options.
 
 Use \`Cmd+K\` (or \`Ctrl+K\`) to jump to any operation or schema.
 `

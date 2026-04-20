@@ -500,8 +500,58 @@ describe('deriveSpecName', () => {
 })
 
 describe('pickDemoEndpoint', () => {
-  it('returns undefined for a URL', async () => {
-    expect(await pickDemoEndpoint('https://api.example.com/openapi.json')).toBeUndefined()
+  it('fetches a JSON URL and picks a demo endpoint', async () => {
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          openapi: '3.0.3',
+          info: { title: 'Remote', version: '1.0.0' },
+          paths: {
+            '/pets': { get: { operationId: 'listPets', responses: {} } },
+            '/pets/{id}': { get: { operationId: 'getPet', responses: {} } },
+          },
+        }),
+        { status: 200, headers: { 'content-type': 'application/json' } }
+      )
+    )
+    expect(await pickDemoEndpoint('https://example.com/openapi.json')).toBe('listPets')
+    expect(fetchSpy).toHaveBeenCalledWith(
+      'https://example.com/openapi.json',
+      expect.objectContaining({ signal: expect.any(AbortSignal) })
+    )
+    fetchSpy.mockRestore()
+  })
+
+  it('returns undefined when the URL fetch fails', async () => {
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('network down'))
+    expect(await pickDemoEndpoint('https://example.com/openapi.json')).toBeUndefined()
+    fetchSpy.mockRestore()
+  })
+
+  it('returns undefined when the URL responds with a non-2xx status', async () => {
+    const fetchSpy = vi
+      .spyOn(globalThis, 'fetch')
+      .mockResolvedValue(new Response('not found', { status: 404 }))
+    expect(await pickDemoEndpoint('https://example.com/openapi.json')).toBeUndefined()
+    fetchSpy.mockRestore()
+  })
+
+  it('returns undefined for YAML URLs without fetching', async () => {
+    const fetchSpy = vi.spyOn(globalThis, 'fetch')
+    expect(await pickDemoEndpoint('https://example.com/openapi.yaml')).toBeUndefined()
+    expect(fetchSpy).not.toHaveBeenCalled()
+    fetchSpy.mockRestore()
+  })
+
+  it.each([
+    'https://example.com/spec.yaml?v=1',
+    'https://example.com/spec.yml#section',
+    'https://example.com/spec.YML',
+  ])('skips YAML URL variant %s without fetching', async (url) => {
+    const fetchSpy = vi.spyOn(globalThis, 'fetch')
+    expect(await pickDemoEndpoint(url)).toBeUndefined()
+    expect(fetchSpy).not.toHaveBeenCalled()
+    fetchSpy.mockRestore()
   })
 
   it('returns undefined for a non-existent file', async () => {
