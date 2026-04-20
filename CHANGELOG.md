@@ -2,6 +2,21 @@
 
 All notable changes to `vitepress-openapi-docs` and `create-vitepress-openapi-docs`.
 
+## 1.5.0
+
+### Added
+
+- New `layout` option for `<OpenApiEndpoint>` and plugin `defaults` — `'columns'` (new default) splits the endpoint into a documentation card plus a sticky Try-It aside; `'stacked'` keeps the previous single-column behaviour. Narrow viewports (≤ 1279px) automatically fall back to `stacked` regardless of the setting.
+- `<OpenApiSpec>` accepts and forwards `layout` to every rendered endpoint, plus a `show-header` prop.
+- Generated endpoint pages now emit `aside: false` in frontmatter so the Try-It aside has room next to the card. Hand-written overview pages should do the same.
+- Parameters table on endpoint cards shows type, `in`, required badge, and description column (hidden on mobile), with a "Show all N parameters" toggle after 5 rows.
+
+### Changed
+
+- Scaffolded `docs/api/<spec>/index.md` now includes `aside: false` frontmatter.
+- `vue-api-playground` peer dependency bumped to `^2.3.1`.
+- `client styles` size-limit budget raised from `3.5 kB` to `3.75 kB` (brotli) to fit the new layout primitives.
+
 ## 1.4.0
 
 ### Added
