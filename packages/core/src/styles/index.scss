@@ -176,14 +176,117 @@
   line-height: 1.55;
 }
 
-.vod-endpoint__params {
-  margin: 0.5rem 0 0.75rem;
-  padding-left: 1.25rem;
-  font-size: 0.9rem;
-  color: var(--vod-text-2);
+/* Two-column endpoint layout: card + aside side-by-side inside the content container.
+ *
+ * Default is contained: the aside is a sticky sibling of the card, both inside the
+ * page content area. Works for landing pages (VPHome), generated API pages (which set
+ * `aside: false`), and any layout without a VitePress TOC competing for the same space.
+ *
+ * When a page keeps the VitePress TOC visible (`.VPDoc.has-aside`) the right margin is
+ * already taken, so our aside falls back to stacking below the card. Authors embedding
+ * `<OpenApiEndpoint>` in an article should set `aside: false` in frontmatter to give
+ * the endpoint aside room to breathe. */
+.vod-page-columns {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
 
-  li + li {
-    margin-top: 0.2rem;
+.vod-page-columns > .vod-endpoint {
+  flex: 1 1 0%;
+  min-width: 0;
+}
+
+/* Aside: soft rounded outline, transparent fill — a gentle boundary around the
+ * interactive column without the heavy grey surface. Inner cards still own
+ * their own visual weight. */
+.vod-page-aside {
+  flex: 0 0 360px;
+  position: sticky;
+  top: calc(var(--vp-nav-height, 64px) + 1rem);
+  align-self: flex-start;
+  min-width: 0;
+  margin: 1.5rem 0 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid var(--vod-surface-border);
+  border-radius: calc(var(--vod-radius) + 2px);
+}
+
+/* Compact section headings inside aside — sentence-case bold, not uppercase */
+.vod-page-aside h4,
+.vod-page-aside h5,
+.vod-page-aside h6 {
+  margin: 0.75rem 0 0.25rem;
+  padding: 0;
+  border-top: 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--vod-text-2);
+  line-height: 1.4;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.vod-page-aside .vap-request__import {
+  display: none;
+}
+
+/* Fallback when VitePress TOC is visible — stack aside below the card */
+.VPDoc.has-aside .vod-page-columns {
+  flex-direction: column;
+}
+
+.VPDoc.has-aside .vod-page-aside {
+  position: static;
+  flex: none;
+  margin-top: 0.75rem;
+
+  .vap-request__import {
+    display: block;
+  }
+}
+
+/* Narrow viewports: stack */
+@media (max-width: 1279px) {
+  .vod-page-columns {
+    flex-direction: column;
+  }
+
+  .vod-page-aside {
+    position: static;
+    flex: none;
+    margin-top: 0.75rem;
+
+    .vap-request__import {
+      display: block;
+    }
+  }
+}
+
+/* Compact params table */
+.vod-endpoint__params-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.5rem 0 0.75rem;
+  font-size: 0.9rem;
+
+  th,
+  td {
+    padding: 0.4rem 0.6rem;
+    border-bottom: 1px solid var(--vod-surface-border);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  th {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--vod-text-2);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
   }
 
   code {
@@ -193,13 +296,92 @@
   }
 }
 
-.vp-doc .vod-endpoint__params code {
+.vp-doc .vod-endpoint__params-table code {
   color: var(--vod-text-1);
 }
 
-.vod-endpoint__param-meta {
+.vod-endpoint__param-required {
   margin-left: 0.35rem;
+  padding: 0.05rem 0.35rem;
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--vod-method-delete);
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  vertical-align: middle;
+}
+
+.vod-endpoint__param-type {
+  white-space: nowrap;
   color: var(--vod-text-2);
+  font-size: 0.85rem;
+}
+
+.vod-endpoint__param-in {
+  font-family: var(--vod-font-mono);
+  font-size: 0.8rem;
+}
+
+/* Params toggle */
+.vod-endpoint__params-toggle {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  padding: 0.35rem 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font: inherit;
+  font-size: 0.8rem;
+  color: var(--vod-focus-ring);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+
+  &::after {
+    content: '';
+    width: 0.45em;
+    height: 0.45em;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: translateY(-0.15em) rotate(45deg);
+    transition: transform 0.15s ease;
+  }
+
+  &[data-expanded='true']::after {
+    transform: translateY(0.1em) rotate(-135deg);
+  }
+
+  &:hover {
+    text-decoration: none;
+  }
+}
+
+/* Auth info (read-only label in doc column) — pill-style badge */
+.vod-endpoint__auth-info {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0.5rem 0;
+  padding: 0.2rem 0.55rem;
+  border: 1px solid var(--vod-surface-border);
+  border-radius: 999px;
+  background: var(--vod-surface);
+  font-size: 0.8rem;
+  color: var(--vod-text-2);
+}
+
+.vod-endpoint__auth-icon {
+  flex: none;
+  color: var(--vod-text-2);
+}
+
+/* Hide Description column on mobile */
+@media (max-width: 767px) {
+  .vod-endpoint__params-desc-col {
+    display: none;
+  }
 }
 
 /* Response examples */
@@ -412,6 +594,9 @@
   overflow-x: auto;
   background: var(--vp-c-bg, #fff);
   color: var(--vod-text-1);
+  /* Subtle right-edge fade hints at horizontal overflow on long commands */
+  mask-image: linear-gradient(to right, #000 calc(100% - 1rem), transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 1rem), transparent 100%);
 }
 
 /* Auth controls */
@@ -425,11 +610,9 @@
 
 .vod-auth__legend {
   padding: 0 0.4rem;
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   font-weight: 600;
   color: var(--vod-text-2);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
 }
 
 .vod-auth__field {
@@ -720,8 +903,13 @@ a.vod-schema__type-token {
   color: var(--vod-text-2);
 }
 
+.vod-endpoint__type-label {
+  font-weight: 600;
+  color: var(--vod-text-1);
+  margin-right: 0.4rem;
+}
+
 .vod-endpoint__type-link {
-  margin-left: 0.35rem;
   font-family: var(--vod-font-mono);
   color: var(--vod-focus-ring);
   text-decoration: underline;

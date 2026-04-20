@@ -6,90 +6,188 @@
     </p>
   </section>
 
-  <section v-else class="vod-endpoint" :class="{ 'vod-endpoint--deprecated': op.deprecated }">
-    <header v-if="showSection('summary')" class="vod-endpoint__header">
-      <h3 class="vod-endpoint__title">
-        {{ op.summary || op.id }}
-        <span v-if="op.deprecated" class="vod-endpoint__deprecated-badge">deprecated</span>
-      </h3>
-      <p class="vod-endpoint__route">
-        <span
-          class="vod-endpoint__method"
-          :class="{ 'vod-endpoint__method--webhook': op.kind === 'webhook' }"
-          :data-method="op.method"
-        >
-          {{ op.method.toUpperCase() }}
-        </span>
-        <code class="vod-endpoint__path">{{ op.path }}</code>
-        <span v-if="op.kind === 'webhook'" class="vod-endpoint__kind-badge">webhook</span>
+  <div v-else class="vod-endpoint-layout" :class="{ 'vod-page-columns': useColumns }">
+    <section class="vod-endpoint" :class="{ 'vod-endpoint--deprecated': op.deprecated }">
+      <header v-if="showSection('summary')" class="vod-endpoint__header">
+        <h3 class="vod-endpoint__title">
+          {{ op.summary || op.id }}
+          <span v-if="op.deprecated" class="vod-endpoint__deprecated-badge">deprecated</span>
+        </h3>
+        <p class="vod-endpoint__route">
+          <span
+            class="vod-endpoint__method"
+            :class="{ 'vod-endpoint__method--webhook': op.kind === 'webhook' }"
+            :data-method="op.method"
+          >
+            {{ op.method.toUpperCase() }}
+          </span>
+          <code class="vod-endpoint__path">{{ op.path }}</code>
+          <span v-if="op.kind === 'webhook'" class="vod-endpoint__kind-badge">webhook</span>
+        </p>
+      </header>
+
+      <p v-if="showSection('description') && op.description" class="vod-endpoint__description">
+        {{ op.description }}
       </p>
-    </header>
 
-    <p v-if="showSection('description') && op.description" class="vod-endpoint__description">
-      {{ op.description }}
-    </p>
+      <table
+        v-if="showSection('params') && op.parameters.length > 0"
+        class="vod-endpoint__params-table"
+      >
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th class="vod-endpoint__params-desc-col">Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="p in visibleParams" :key="`${p.in}:${p.name}`">
+            <td>
+              <code>{{ p.name }}</code>
+              <span v-if="p.required" class="vod-endpoint__param-required">required</span>
+            </td>
+            <td class="vod-endpoint__param-type">
+              <span class="vod-endpoint__param-in">{{ p.in }}</span>
+              <template v-if="paramSchemaType(p)"> · {{ paramSchemaType(p) }}</template>
+            </td>
+            <td v-if="p.description" class="vod-endpoint__params-desc-col">
+              {{ p.description }}
+            </td>
+            <td v-else class="vod-endpoint__params-desc-col" />
+          </tr>
+        </tbody>
+      </table>
+      <button
+        v-if="hiddenParamsCount > 0"
+        class="vod-endpoint__params-toggle"
+        :data-expanded="paramsExpanded"
+        @click="paramsExpanded = !paramsExpanded"
+      >
+        {{ paramsExpanded ? 'Show fewer' : `Show all ${op.parameters.length} parameters` }}
+      </button>
 
-    <ul v-if="showSection('params') && op.parameters.length > 0" class="vod-endpoint__params">
-      <li v-for="p in op.parameters" :key="`${p.in}:${p.name}`">
-        <code>{{ p.name }}</code>
-        <span class="vod-endpoint__param-meta"
-          >({{ p.in }}{{ p.required ? ', required' : '' }})</span
+      <p v-if="showSection('response') && responseTypeLink" class="vod-endpoint__returns">
+        <span class="vod-endpoint__type-label">Returns</span>
+        <a class="vod-endpoint__type-link" :href="responseTypeLink.href">{{
+          responseTypeLink.label
+        }}</a>
+      </p>
+
+      <p v-if="showSection('request') && requestTypeLink" class="vod-endpoint__accepts">
+        <span class="vod-endpoint__type-label">Accepts</span>
+        <a class="vod-endpoint__type-link" :href="requestTypeLink.href">{{
+          requestTypeLink.label
+        }}</a>
+      </p>
+
+      <p
+        v-if="useColumns && showSection('auth') && resolvedScheme !== 'none'"
+        class="vod-endpoint__auth-info"
+      >
+        <svg
+          class="vod-endpoint__auth-icon"
+          viewBox="0 0 12 12"
+          width="12"
+          height="12"
+          aria-hidden="true"
         >
-        <span v-if="p.description"> — {{ p.description }}</span>
-      </li>
-    </ul>
+          <path
+            d="M3.5 5V3.5a2.5 2.5 0 0 1 5 0V5h.5a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-6a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h.5zm1 0h3V3.5a1.5 1.5 0 0 0-3 0V5z"
+            fill="currentColor"
+          />
+        </svg>
+        <span>{{ authLabel }} required</span>
+      </p>
 
-    <AuthControls
-      v-if="showSection('auth') && resolvedScheme !== 'none'"
-      :spec-name="specName"
-      :scheme="resolvedScheme"
-      :header-name="resolvedHeaderName"
-      :api-key-in="resolvedApiKeyIn"
-      :oauth2-flow="oauth2Flow"
-    />
+      <AuthControls
+        v-if="!useColumns && showSection('auth') && resolvedScheme !== 'none'"
+        :spec-name="specName"
+        :scheme="resolvedScheme"
+        :header-name="resolvedHeaderName"
+        :api-key-in="resolvedApiKeyIn"
+        :oauth2-flow="oauth2Flow"
+      />
 
-    <p v-if="showSection('response') && responseTypeLink" class="vod-endpoint__returns">
-      Returns
-      <a class="vod-endpoint__type-link" :href="responseTypeLink.href">{{
-        responseTypeLink.label
-      }}</a>
-    </p>
+      <ResponseExamples v-if="useColumns && showSection('response')" :responses="op.responses" />
 
-    <p v-if="showSection('request') && requestTypeLink" class="vod-endpoint__accepts">
-      Accepts
-      <a class="vod-endpoint__type-link" :href="requestTypeLink.href">{{
-        requestTypeLink.label
-      }}</a>
-    </p>
+      <template v-if="!useColumns">
+        <details
+          v-if="showSection('response') && isCollapsed('response')"
+          class="vod-endpoint__collapsible"
+        >
+          <summary>Response examples</summary>
+          <ResponseExamples :responses="op.responses" />
+        </details>
+        <ResponseExamples v-else-if="showSection('response')" :responses="op.responses" />
 
-    <details
-      v-if="showSection('response') && isCollapsed('response')"
-      class="vod-endpoint__collapsible"
-    >
-      <summary>Response examples</summary>
-      <ResponseExamples :responses="op.responses" />
-    </details>
-    <ResponseExamples v-else-if="showSection('response')" :responses="op.responses" />
+        <details
+          v-if="showSection('snippets') && isCollapsed('snippets')"
+          class="vod-endpoint__collapsible"
+        >
+          <summary>Code samples</summary>
+          <SdkSnippets
+            :snippets="snippets"
+            :aria-label="`${op.method.toUpperCase()} ${op.path} code samples`"
+          />
+        </details>
+        <SdkSnippets
+          v-else-if="showSection('snippets')"
+          :snippets="snippets"
+          :aria-label="`${op.method.toUpperCase()} ${op.path} code samples`"
+        />
 
-    <details
-      v-if="showSection('snippets') && isCollapsed('snippets')"
-      class="vod-endpoint__collapsible"
-    >
-      <summary>Code samples</summary>
+        <details v-if="showSection('try') && isCollapsed('try')" class="vod-endpoint__collapsible">
+          <summary>Try it</summary>
+          <Playground
+            :url="op.path"
+            :method="op.method.toUpperCase()"
+            :data="playgroundData"
+            :headers="baseHeaders"
+            :servers="serverList"
+            :content-type="effectiveBodyInputs ? undefined : requestContentType"
+            :body="effectiveBodyInputs ? undefined : exampleBody"
+            @before-send="injectAuth"
+            @request-start="emit('request-start', $event)"
+            @request-success="emit('request-success', $event)"
+            @request-error="emit('request-error', $event)"
+          />
+        </details>
+        <Playground
+          v-else-if="showSection('try')"
+          :url="op.path"
+          :method="op.method.toUpperCase()"
+          :data="playgroundData"
+          :headers="baseHeaders"
+          :servers="serverList"
+          :content-type="effectiveBodyInputs ? undefined : requestContentType"
+          :body="effectiveBodyInputs ? undefined : exampleBody"
+          @before-send="injectAuth"
+          @request-start="emit('request-start', $event)"
+          @request-success="emit('request-success', $event)"
+          @request-error="emit('request-error', $event)"
+        />
+      </template>
+    </section>
+
+    <aside v-if="useColumns" class="vod-page-aside">
       <SdkSnippets
+        v-if="showSection('snippets')"
         :snippets="snippets"
         :aria-label="`${op.method.toUpperCase()} ${op.path} code samples`"
       />
-    </details>
-    <SdkSnippets
-      v-else-if="showSection('snippets')"
-      :snippets="snippets"
-      :aria-label="`${op.method.toUpperCase()} ${op.path} code samples`"
-    />
 
-    <details v-if="showSection('try') && isCollapsed('try')" class="vod-endpoint__collapsible">
-      <summary>Try it</summary>
+      <AuthControls
+        v-if="showSection('auth') && showSection('try') && resolvedScheme !== 'none'"
+        :spec-name="specName"
+        :scheme="resolvedScheme"
+        :header-name="resolvedHeaderName"
+        :api-key-in="resolvedApiKeyIn"
+        :oauth2-flow="oauth2Flow"
+      />
+
       <Playground
+        v-if="showSection('try')"
         :url="op.path"
         :method="op.method.toUpperCase()"
         :data="playgroundData"
@@ -97,31 +195,18 @@
         :servers="serverList"
         :content-type="effectiveBodyInputs ? undefined : requestContentType"
         :body="effectiveBodyInputs ? undefined : exampleBody"
+        dense
         @before-send="injectAuth"
         @request-start="emit('request-start', $event)"
         @request-success="emit('request-success', $event)"
         @request-error="emit('request-error', $event)"
       />
-    </details>
-    <Playground
-      v-else-if="showSection('try')"
-      :url="op.path"
-      :method="op.method.toUpperCase()"
-      :data="playgroundData"
-      :headers="baseHeaders"
-      :servers="serverList"
-      :content-type="effectiveBodyInputs ? undefined : requestContentType"
-      :body="effectiveBodyInputs ? undefined : exampleBody"
-      @before-send="injectAuth"
-      @request-start="emit('request-start', $event)"
-      @request-success="emit('request-success', $event)"
-      @request-error="emit('request-error', $event)"
-    />
-  </section>
+    </aside>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { withBase } from 'vitepress'
 import { Playground } from 'vue-api-playground'
 import type {
@@ -174,6 +259,8 @@ interface Props {
   bodyInputs?: boolean
   /** Sections to render collapsed (inside a toggle). Useful for reducing card height. */
   collapse?: Section[]
+  /** Card layout. `columns` splits docs/code into a two-column grid. `stacked` preserves vertical layout. */
+  layout?: 'columns' | 'stacked'
 }
 
 const ALL_SECTIONS: Section[] = [
@@ -196,6 +283,7 @@ const props = withDefaults(defineProps<Props>(), {
   apiKeyHeaderName: undefined,
   bodyInputs: undefined,
   collapse: undefined,
+  layout: undefined,
 })
 
 const emit = defineEmits<{
@@ -214,6 +302,7 @@ const effectiveApiKeyHeaderName = computed(
 )
 const effectiveBodyInputs = computed(() => props.bodyInputs ?? defaults.bodyInputs ?? false)
 const effectiveCollapse = computed(() => props.collapse ?? defaults.collapse ?? [])
+const effectiveLayout = computed(() => props.layout ?? defaults.layout ?? 'columns')
 
 const resolved = computed(() => {
   if (props.operation) {
@@ -319,9 +408,15 @@ const bodyFieldItems = computed<PlaygroundDataItem[]>(() => {
 })
 
 const playgroundData = computed<PlaygroundDataItem[]>(() => {
+  const includeDesc = !useColumns.value
   const params = op.value.parameters
     .filter((p) => p.in === 'path' || p.in === 'query')
-    .map((p) => ({ name: p.name, value: parameterExample(p), type: p.in }))
+    .map((p) => ({
+      name: p.name,
+      value: parameterExample(p),
+      type: p.in,
+      ...(includeDesc && p.description ? { description: p.description } : {}),
+    }))
   return [...params, ...bodyFieldItems.value]
 })
 
@@ -440,6 +535,56 @@ function toFieldValue(value: unknown): string {
   if (value === undefined || value === null) return ''
   if (typeof value === 'string') return value
   return JSON.stringify(value)
+}
+
+const NARROW_BREAKPOINT = '(max-width: 1279px)'
+const viewportIsNarrow = ref(false)
+let viewportMq: MediaQueryList | null = null
+function handleViewportChange(e: MediaQueryListEvent): void {
+  viewportIsNarrow.value = e.matches
+}
+
+onMounted(() => {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return
+  viewportMq = window.matchMedia(NARROW_BREAKPOINT)
+  viewportIsNarrow.value = viewportMq.matches
+  viewportMq.addEventListener('change', handleViewportChange)
+})
+
+onUnmounted(() => {
+  viewportMq?.removeEventListener('change', handleViewportChange)
+  viewportMq = null
+})
+
+const useColumns = computed(() => effectiveLayout.value === 'columns' && !viewportIsNarrow.value)
+
+const PARAMS_VISIBLE_LIMIT = 5
+const paramsExpanded = ref(false)
+
+const visibleParams = computed(() => {
+  const all = op.value.parameters
+  if (all.length <= PARAMS_VISIBLE_LIMIT || paramsExpanded.value) return all
+  return all.slice(0, PARAMS_VISIBLE_LIMIT)
+})
+
+const hiddenParamsCount = computed(() => {
+  const total = op.value.parameters.length
+  return total > PARAMS_VISIBLE_LIMIT ? total - PARAMS_VISIBLE_LIMIT : 0
+})
+
+const authLabel = computed(() => {
+  const s = resolvedScheme.value
+  if (s === 'bearer' || s === 'oauth2') return 'Bearer token'
+  if (s === 'basic') return 'Basic auth'
+  if (s === 'apikey') return 'API key'
+  return 'Authentication'
+})
+
+function paramSchemaType(p: ParsedParameter): string | undefined {
+  const schema = p.schema as Record<string, unknown> | undefined
+  if (!schema) return undefined
+  if (typeof schema.type === 'string') return schema.type
+  return undefined
 }
 
 function showSection(section: Section): boolean {

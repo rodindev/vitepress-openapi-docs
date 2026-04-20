@@ -23,6 +23,7 @@
         :id="`${spec.name}.${op.id}`"
         :operation="op"
         :servers="spec.servers"
+        :layout="layout"
       />
     </section>
   </div>
@@ -39,11 +40,14 @@ interface Props {
   name?: string
   /** Show the spec title and description block. Set to false when the page already provides its own heading. */
   showHeader?: boolean
+  /** Card layout forwarded to every rendered endpoint. `columns` splits docs/code into a two-column grid; `stacked` keeps everything vertical. */
+  layout?: 'columns' | 'stacked'
 }
 
 const props = withDefaults(defineProps<Props>(), {
   name: undefined,
   showHeader: true,
+  layout: undefined,
 })
 const registry = useSpecRegistry()
 

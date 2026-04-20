@@ -40,6 +40,8 @@ export interface OpenApiDocsDefaults {
     | 'snippets'
     | 'try'
   )[]
+  /** Card layout. `columns` splits docs/code into a two-column grid. `stacked` preserves vertical layout. */
+  layout?: 'columns' | 'stacked'
 }
 
 export interface OpenApiDocsConfig {

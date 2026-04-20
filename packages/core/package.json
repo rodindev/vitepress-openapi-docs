@@ -75,7 +75,7 @@
     {
       "name": "client styles (gzip)",
       "path": "dist/vitepress-openapi-docs.css",
-      "limit": "3.5 kB"
+      "limit": "3.75 kB"
     }
   ],
   "peerDependencies": {
