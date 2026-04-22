@@ -3,6 +3,7 @@ declare module 'virtual:vitepress-openapi-docs/specs' {
   const specs: ParsedSpec[]
   export default specs
   export const defaults: OpenApiDocsDefaults
+  export const prefixes: Record<string, string>
 }
 
 declare module 'virtual:vitepress-openapi-docs/changelogs' {

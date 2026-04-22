@@ -558,7 +558,7 @@ async function rewriteForCustomSpecs(
     generateConfig(title, specs, defaults),
     'utf8'
   )
-  await writeFile(join(dir, 'docs/.vitepress/theme/index.ts'), generateTheme(specs), 'utf8')
+  await writeFile(join(dir, 'docs/.vitepress/theme/index.ts'), generateTheme(), 'utf8')
   await writeFile(join(dir, 'docs/index.md'), generateIndexMd(title, specs, demoEndpoint), 'utf8')
 
   // Remove bundled mock spec and its overview page
@@ -636,31 +636,25 @@ export default defineConfig({
 `
 }
 
-function generateTheme(specs: SpecEntry[]): string {
-  const prefixEntries = specs.map((s) => `  ${quote(s.name)}: '/api/${s.name}'`).join(',\n')
-
+function generateTheme(): string {
   return `import { h } from 'vue'
 import DefaultTheme from 'vitepress/theme'
 import { enhanceAppWithOpenApi, OperationJumper, SearchTrigger } from 'vitepress-openapi-docs'
-import specs, { defaults } from 'virtual:vitepress-openapi-docs/specs'
+import specs, { defaults, prefixes } from 'virtual:vitepress-openapi-docs/specs'
 import changelogs from 'virtual:vitepress-openapi-docs/changelogs'
 import 'vue-api-playground/styles'
 import 'vitepress-openapi-docs/styles'
-
-const prefixes = {
-${prefixEntries},
-}
 
 export default {
   extends: DefaultTheme,
   Layout() {
     return h(DefaultTheme.Layout, null, {
-      'layout-top': () => h(OperationJumper, { prefixes }),
+      'layout-top': () => h(OperationJumper),
       'nav-bar-content-after': () => h(SearchTrigger),
     })
   },
   enhanceApp({ app }) {
-    enhanceAppWithOpenApi({ app, specs, changelogs, defaults })
+    enhanceAppWithOpenApi({ app, specs, changelogs, defaults, prefixes })
   },
 }
 `

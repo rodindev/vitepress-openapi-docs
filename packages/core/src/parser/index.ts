@@ -2,6 +2,7 @@ import { marked } from 'marked'
 import DOMPurify from 'dompurify'
 import { JSDOM } from 'jsdom'
 import { dereference, validate } from '@scalar/openapi-parser'
+import { generateExample } from '../runtime/example'
 
 const purify = DOMPurify(new JSDOM('').window)
 import {
@@ -10,6 +11,7 @@ import {
   type ParsedOAuth2Flow,
   type ParsedOperation,
   type ParsedParameter,
+  type ParsedProperty,
   type ParsedRequestBody,
   type ParsedResponse,
   type ParsedSchema,
@@ -164,11 +166,18 @@ export async function parseSpec(
 
   for (const op of operations) {
     resolveOperationRefs(op, rawSchemas)
+    if (op.requestBody) {
+      op.requestBody.jsonFields = orderedBodyFields(
+        op.requestBody.content['application/json']?.schema
+      )
+    }
   }
 
   const componentSchemas = readComponentSchemas(components.schemas)
   for (const entry of Object.values(componentSchemas)) {
     entry.schema = resolveSchemaRefs(entry.schema, rawSchemas)
+    entry.typeLabel = describeTypeLabel(entry.schema)
+    entry.properties = readPropertyList(entry.schema)
   }
 
   return {
@@ -248,6 +257,8 @@ function readParameters(value: unknown): ParsedParameter[] {
       description: typeof p.description === 'string' ? p.description : undefined,
       schema: p.schema,
       example: p.example,
+      typeLabel: parameterTypeLabel(p.schema),
+      defaultExample: parameterDefaultExample(p.example, p.schema),
     })
   }
   return params
@@ -274,6 +285,8 @@ function readRequestBody(value: unknown): ParsedRequestBody | undefined {
     required: body.required === true,
     description: typeof body.description === 'string' ? body.description : undefined,
     content,
+    // Populated after resolveOperationRefs so nested $refs are inlined.
+    jsonFields: [],
   }
 }
 
@@ -341,6 +354,8 @@ function readComponentSchemas(value: unknown): Record<string, ParsedSchema> {
       name,
       description: typeof description === 'string' ? description : undefined,
       schema: raw,
+      // typeLabel and properties are filled after resolveSchemaRefs in parseSpec.
+      properties: [],
     }
   }
   return schemas
@@ -543,6 +558,125 @@ function resolveOperationRefs(op: ParsedOperation, schemas: Record<string, unkno
 function renderMarkdown(src: string): string {
   const html = marked.parse(src, { async: false }) as string
   return purify.sanitize(html)
+}
+
+function readPropertyList(objectSchema: unknown): ParsedProperty[] {
+  if (!objectSchema || typeof objectSchema !== 'object') return []
+  const s = objectSchema as Record<string, unknown>
+  const props = (s.properties ?? {}) as Record<string, unknown>
+  if (Object.keys(props).length === 0) return []
+  const required = schemaRequiredList(s)
+  const result: ParsedProperty[] = []
+  for (const [name, propSchema] of Object.entries(props)) {
+    result.push(buildProperty(name, propSchema, required.includes(name)))
+  }
+  return result
+}
+
+function orderedBodyFields(objectSchema: unknown): ParsedProperty[] {
+  if (!objectSchema || typeof objectSchema !== 'object') return []
+  const s = objectSchema as Record<string, unknown>
+  const props = (s.properties ?? {}) as Record<string, unknown>
+  if (Object.keys(props).length === 0) return []
+  const required = schemaRequiredList(s)
+  const names = [
+    ...required.filter((k) => k in props),
+    ...Object.keys(props).filter((k) => !required.includes(k)),
+  ]
+  return names.map((name) => buildProperty(name, props[name], required.includes(name)))
+}
+
+function schemaRequiredList(schema: Record<string, unknown>): string[] {
+  return Array.isArray(schema.required)
+    ? (schema.required as unknown[]).filter((v): v is string => typeof v === 'string')
+    : []
+}
+
+function buildProperty(name: string, schema: unknown, required: boolean): ParsedProperty {
+  const obj =
+    schema && typeof schema === 'object'
+      ? (schema as Record<string, unknown>)
+      : ({} as Record<string, unknown>)
+  const refTarget = detectInlineRef(obj)
+  const typeLabel = refTarget ? formatRefTypeLabel(obj, refTarget) : describeTypeLabel(obj)
+  return {
+    name,
+    required,
+    typeLabel,
+    refTarget,
+    description: typeof obj.description === 'string' ? obj.description : undefined,
+    example: serialiseFieldValue(generateExample(obj)),
+  }
+}
+
+function detectInlineRef(value: unknown): string | undefined {
+  if (!value || typeof value !== 'object') return undefined
+  const obj = value as Record<string, unknown>
+  const ref = obj.$ref
+  if (typeof ref === 'string' && ref.startsWith(SCHEMA_REF_PREFIX)) {
+    return ref.slice(SCHEMA_REF_PREFIX.length)
+  }
+  if (obj.type === 'array' && obj.items && typeof obj.items === 'object') {
+    return detectInlineRef(obj.items)
+  }
+  return undefined
+}
+
+function formatRefTypeLabel(schema: Record<string, unknown>, refTarget: string): string {
+  if (schema.type === 'array') return `${refTarget}[]`
+  return refTarget
+}
+
+function describeTypeLabel(value: unknown): string {
+  if (!value || typeof value !== 'object') return 'unknown'
+  const obj = value as Record<string, unknown>
+  const t = obj.type
+  if (typeof t === 'string') {
+    if (t === 'array') {
+      const items = obj.items as Record<string, unknown> | undefined
+      if (items) {
+        const itemRef = detectInlineRef(items)
+        return itemRef ? `${itemRef}[]` : `${describeTypeLabel(items)}[]`
+      }
+      return 'array'
+    }
+    if (t === 'object') return 'object'
+    return typeof obj.format === 'string' ? `${t} (${obj.format})` : t
+  }
+  if (Array.isArray(t)) return (t as unknown[]).filter((v) => typeof v === 'string').join(' | ')
+  if (Array.isArray(obj.enum)) return 'enum'
+  if ('oneOf' in obj) return 'oneOf'
+  if ('anyOf' in obj) return 'anyOf'
+  if ('allOf' in obj) return 'allOf'
+  return 'unknown'
+}
+
+function parameterTypeLabel(schema: unknown): string | undefined {
+  if (!schema || typeof schema !== 'object') return undefined
+  const s = schema as Record<string, unknown>
+  if (typeof s.type === 'string') return s.type
+  if (Array.isArray(s.type)) {
+    const parts = (s.type as unknown[]).filter((v): v is string => typeof v === 'string')
+    return parts.length > 0 ? parts.join(' | ') : undefined
+  }
+  return undefined
+}
+
+function parameterDefaultExample(example: unknown, schema: unknown): string {
+  if (example !== undefined) return serialiseFieldValue(example)
+  if (schema && typeof schema === 'object') {
+    const s = schema as Record<string, unknown>
+    if (s.example !== undefined) return serialiseFieldValue(s.example)
+    if (s.default !== undefined) return serialiseFieldValue(s.default)
+    if (Array.isArray(s.enum) && s.enum.length > 0) return serialiseFieldValue(s.enum[0])
+  }
+  return ''
+}
+
+function serialiseFieldValue(value: unknown): string {
+  if (value === undefined || value === null) return ''
+  if (typeof value === 'string') return value
+  return JSON.stringify(value)
 }
 
 export { ParseError } from './types'

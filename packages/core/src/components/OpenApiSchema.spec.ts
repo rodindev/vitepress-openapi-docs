@@ -7,21 +7,27 @@ import type { ParsedSchema, ParsedSpec } from '../parser/types'
 const userSchema: ParsedSchema = {
   name: 'User',
   description: 'A registered user account.',
-  schema: {
-    type: 'object',
-    required: ['id', 'email'],
-    properties: {
-      id: { type: 'integer', format: 'int64', description: 'Primary key' },
-      email: { type: 'string', format: 'email' },
-      manager: { $ref: '#/components/schemas/User' },
-      pets: { type: 'array', items: { $ref: '#/components/schemas/Pet' } },
+  schema: {},
+  typeLabel: 'object',
+  properties: [
+    {
+      name: 'id',
+      required: true,
+      typeLabel: 'integer (int64)',
+      description: 'Primary key',
+      example: '0',
     },
-  },
+    { name: 'email', required: true, typeLabel: 'string (email)', example: 'user@example.com' },
+    { name: 'manager', required: false, typeLabel: 'User', refTarget: 'User', example: '' },
+    { name: 'pets', required: false, typeLabel: 'Pet[]', refTarget: 'Pet', example: '[{}]' },
+  ],
 }
 
 const petSchema: ParsedSchema = {
   name: 'Pet',
-  schema: { type: 'object', properties: { id: { type: 'integer' } } },
+  schema: {},
+  typeLabel: 'object',
+  properties: [{ name: 'id', required: false, typeLabel: 'integer', example: '0' }],
 }
 
 const spec: ParsedSpec = {

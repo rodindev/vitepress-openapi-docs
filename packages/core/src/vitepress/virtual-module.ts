@@ -11,10 +11,15 @@ const RESOLVED_ID = `\0${VIRTUAL_SPECS_ID}`
  * the spec source file requires a dev-server restart in v0.1 (live reload is
  * deferred to v0.4 hardening).
  */
-export function specsVirtualModule(specs: ParsedSpec[], defaults?: OpenApiDocsDefaults): Plugin {
+export function specsVirtualModule(
+  specs: ParsedSpec[],
+  defaults?: OpenApiDocsDefaults,
+  prefixes?: Record<string, string>
+): Plugin {
   const payload =
     `export default ${JSON.stringify(specs)}\n` +
-    `export const defaults = ${JSON.stringify(defaults ?? {})}\n`
+    `export const defaults = ${JSON.stringify(defaults ?? {})}\n` +
+    `export const prefixes = ${JSON.stringify(prefixes ?? {})}\n`
   return {
     name: 'vitepress-openapi-docs:specs',
     enforce: 'pre',

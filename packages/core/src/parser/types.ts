@@ -7,6 +7,10 @@ export interface ParsedParameter {
   description?: string
   schema?: unknown
   example?: unknown
+  /** Short human label for the parameter type (e.g. `integer`, `string | null`). */
+  typeLabel?: string
+  /** Pre-serialised example from `example`, `schema.example`, `schema.default`, or `schema.enum[0]`. Empty string when none. */
+  defaultExample: string
 }
 
 export interface ParsedRequestBody {
@@ -14,6 +18,20 @@ export interface ParsedRequestBody {
   description?: string
   /** content-type → media type object (schema, example) */
   content: Record<string, { schema?: unknown; example?: unknown }>
+  /** Top-level JSON body fields, ordered required-first then spec order. Empty when no JSON body or non-object. */
+  jsonFields: ParsedProperty[]
+}
+
+export interface ParsedProperty {
+  name: string
+  required: boolean
+  /** Human-readable type label, e.g. `integer (int64)`, `Pet[]`, `string | null`, `oneOf`. */
+  typeLabel: string
+  /** Component-schema name when the property points at one (directly or via `items`). */
+  refTarget?: string
+  description?: string
+  /** Deterministic example, pre-serialised for a string input. Empty when nothing could be derived. */
+  example: string
 }
 
 export interface ParsedResponse {
@@ -72,6 +90,10 @@ export interface ParsedSchema {
   description?: string
   /** Raw (post-dereference) schema object. Components reference resolved siblings inline. */
   schema: unknown
+  /** Short type label for the schema itself, e.g. `object`, `string | null`, `array`. */
+  typeLabel?: string
+  /** Flat list of top-level properties. Empty when the schema isn't an object. */
+  properties: ParsedProperty[]
 }
 
 export interface ParsedOAuth2Flow {

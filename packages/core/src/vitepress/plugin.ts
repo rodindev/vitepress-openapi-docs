@@ -4,6 +4,7 @@ import { parseSpec } from '../parser/index'
 import { extractChangelog } from '../changelog/extractor'
 import type { SpecChangelog } from '../changelog/types'
 import type { OpenApiDocsConfig, OpenApiSpecConfig } from '../config/types'
+import { buildRoutes } from '../config/routes'
 import type { ParsedSpec } from '../parser/types'
 import { buildSidebar, type SidebarGroup } from './sidebar'
 import { generatePages } from './page-generator'
@@ -109,19 +110,22 @@ export async function openApiDocs(
     }
   }
 
+  const routes = buildRoutes(prefixes)
   const sidebar: Record<string, SidebarGroup[]> = {}
   for (const spec of parsed) {
-    const prefix = prefixes[spec.name] ?? `/api/${spec.name}`
     const specSidebar = buildSidebar([spec], { prefixes })
-    sidebar[`${prefix}/`] = specSidebar
-    sidebar[`/schemas/${spec.name}/`] = specSidebar
-    sidebar[`/changelog/${spec.name}`] = specSidebar
+    sidebar[`${routes.apiPrefix(spec.name)}/`] = specSidebar
+    sidebar[`${routes.schemaUrl(spec.name, '')}`] = specSidebar
+    sidebar[routes.changelogUrl(spec.name)] = specSidebar
   }
 
   return {
     rewrites,
     vite: {
-      plugins: [specsVirtualModule(parsed, config.defaults), changelogsVirtualModule(changelogs)],
+      plugins: [
+        specsVirtualModule(parsed, config.defaults, prefixes),
+        changelogsVirtualModule(changelogs),
+      ],
     },
     themeConfig: {
       sidebar,

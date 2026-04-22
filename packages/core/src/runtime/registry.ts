@@ -17,6 +17,7 @@ export const SPEC_REGISTRY_KEY: InjectionKey<SpecRegistry> = Symbol('vod:spec-re
 export const CHANGELOG_REGISTRY_KEY: InjectionKey<ChangelogRegistry> =
   Symbol('vod:changelog-registry')
 export const DEFAULTS_KEY: InjectionKey<OpenApiDocsDefaults> = Symbol('vod:defaults')
+export const PREFIXES_KEY: InjectionKey<Record<string, string>> = Symbol('vod:prefixes')
 
 export function provideSpecRegistry(registry: SpecRegistry): void {
   provide(SPEC_REGISTRY_KEY, registry)

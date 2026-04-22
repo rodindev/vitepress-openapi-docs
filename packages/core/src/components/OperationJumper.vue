@@ -78,21 +78,19 @@
 
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { useRouter, withBase } from 'vitepress'
+import { useRouter } from 'vitepress'
 import { useSpecRegistry } from '../runtime/registry'
+import { useRoutes } from '../runtime/routes'
 import { rankByFuzzy } from '../runtime/fuzzy'
 
 interface Props {
-  /** Public URL prefix per spec, used to build navigation hrefs. */
-  prefixes?: Record<string, string>
   /** Override the input placeholder. */
   placeholder?: string
   /** Override the dialog aria-label. */
   ariaLabel?: string
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  prefixes: () => ({}),
+withDefaults(defineProps<Props>(), {
   placeholder: 'Jump to an operation or schema…',
   ariaLabel: 'Jump to an operation or schema',
 })
@@ -110,6 +108,7 @@ interface JumperEntry {
 }
 
 const registry = useSpecRegistry()
+const routes = useRoutes()
 const isMultiApi = computed(() => Object.keys(registry.specs).length > 1)
 const open = ref(false)
 const query = ref('')
@@ -121,7 +120,6 @@ let triggerElement: HTMLElement | null = null
 const allEntries = computed<JumperEntry[]>(() => {
   const entries: JumperEntry[] = []
   for (const spec of Object.values(registry.specs)) {
-    const prefix = props.prefixes[spec.name] ?? `/api/${spec.name}`
     for (const op of spec.operations) {
       entries.push({
         kind: 'operation',
@@ -131,7 +129,7 @@ const allEntries = computed<JumperEntry[]>(() => {
         path: op.path,
         tag: op.tags[0] ?? '',
         specName: spec.name,
-        href: withBase(`${prefix}/${op.id}`),
+        href: routes.operationUrl(spec.name, op.id),
       })
     }
     for (const schema of Object.values(spec.componentSchemas ?? {})) {
@@ -141,7 +139,7 @@ const allEntries = computed<JumperEntry[]>(() => {
         summary: schema.description ?? '',
         description: schema.description ?? '',
         specName: spec.name,
-        href: withBase(`/schemas/${spec.name}/${schema.name}`),
+        href: routes.schemaUrl(spec.name, schema.name),
       })
     }
   }

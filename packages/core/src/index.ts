@@ -7,8 +7,10 @@ export type {
   ParsedOAuth2Flow,
   ParsedOperation,
   ParsedParameter,
+  ParsedProperty,
   ParsedRequestBody,
   ParsedResponse,
+  ParsedSchema,
   ParsedSecurityScheme,
   ParsedSpec,
 } from './parser/types'

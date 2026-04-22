@@ -49,7 +49,7 @@
             </td>
             <td class="vod-endpoint__param-type">
               <span class="vod-endpoint__param-in">{{ p.in }}</span>
-              <template v-if="paramSchemaType(p)"> · {{ paramSchemaType(p) }}</template>
+              <template v-if="p.typeLabel"> · {{ p.typeLabel }}</template>
             </td>
             <td v-if="p.description" class="vod-endpoint__params-desc-col">
               {{ p.description }}
@@ -207,7 +207,6 @@
 
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
-import { withBase } from 'vitepress'
 import { Playground } from 'vue-api-playground'
 import type {
   PlaygroundContentType,
@@ -217,18 +216,14 @@ import type {
   RequestSuccessPayload,
 } from 'vue-api-playground'
 import { resolveOperation, useDefaults, useSpecRegistry } from '../runtime/registry'
+import { useRoutes } from '../runtime/routes'
 import { buildSnippets } from '../snippets/index'
 import { useAuthState, type AuthScheme } from '../runtime/auth'
-import { generateExample, generateJsonBody } from '../runtime/example'
+import { generateJsonBody } from '../runtime/example'
 import AuthControls from './AuthControls.vue'
 import SdkSnippets from './SdkSnippets.vue'
 import ResponseExamples from './ResponseExamples.vue'
-import type {
-  ParsedOAuth2Flow,
-  ParsedOperation,
-  ParsedParameter,
-  ParsedSpec,
-} from '../parser/types'
+import type { ParsedOAuth2Flow, ParsedOperation, ParsedSpec } from '../parser/types'
 
 type Section =
   | 'summary'
@@ -294,6 +289,7 @@ const emit = defineEmits<{
 
 const registry = useSpecRegistry()
 const defaults = useDefaults()
+const routes = useRoutes()
 const effectiveShow = computed(() => props.show ?? defaults.show ?? ALL_SECTIONS)
 const effectiveAuth = computed(() => props.auth ?? defaults.auth)
 const effectiveServer = computed(() => props.server ?? defaults.server)
@@ -389,22 +385,8 @@ const serverList = computed<string[]>(() => {
 
 const bodyFieldItems = computed<PlaygroundDataItem[]>(() => {
   if (!effectiveBodyInputs.value) return []
-  const schema = op.value.requestBody?.content['application/json']?.schema
-  if (!schema || typeof schema !== 'object') return []
-  const s = schema as Record<string, unknown>
-  const properties = (s.properties ?? {}) as Record<string, unknown>
-  if (Object.keys(properties).length === 0) return []
-  const required = Array.isArray(s.required)
-    ? (s.required as unknown[]).filter((v): v is string => typeof v === 'string')
-    : []
-  const sorted = [
-    ...required.filter((k) => k in properties),
-    ...Object.keys(properties).filter((k) => !required.includes(k)),
-  ]
-  return sorted.map((name) => ({
-    name,
-    value: toFieldValue(generateExample(properties[name])),
-  }))
+  const fields = op.value.requestBody?.jsonFields ?? []
+  return fields.map((f) => ({ name: f.name, value: f.example }))
 })
 
 const playgroundData = computed<PlaygroundDataItem[]>(() => {
@@ -413,7 +395,7 @@ const playgroundData = computed<PlaygroundDataItem[]>(() => {
     .filter((p) => p.in === 'path' || p.in === 'query')
     .map((p) => ({
       name: p.name,
-      value: parameterExample(p),
+      value: p.defaultExample,
       type: p.in,
       ...(includeDesc && p.description ? { description: p.description } : {}),
     }))
@@ -423,7 +405,7 @@ const playgroundData = computed<PlaygroundDataItem[]>(() => {
 const baseHeaders = computed<Record<string, string> | undefined>(() => {
   const headers: Record<string, string> = {}
   for (const p of op.value.parameters) {
-    if (p.in === 'header') headers[p.name] = parameterExample(p)
+    if (p.in === 'header') headers[p.name] = p.defaultExample
   }
   return Object.keys(headers).length > 0 ? headers : undefined
 })
@@ -487,14 +469,14 @@ const responseTypeLink = computed<TypeLink | undefined>(() => {
   const refs = responseRefs[successStatus]!
   const first = refs['application/json'] ?? Object.values(refs)[0]
   if (!first) return undefined
-  return { label: first.name, href: withBase(`/schemas/${specName.value}/${first.name}`) }
+  return { label: first.name, href: routes.schemaUrl(specName.value, first.name) }
 })
 
 const requestTypeLink = computed<TypeLink | undefined>(() => {
   const refs = op.value.requestSchemaRefs ?? {}
   const first = refs['application/json'] ?? Object.values(refs)[0]
   if (!first) return undefined
-  return { label: first.name, href: withBase(`/schemas/${specName.value}/${first.name}`) }
+  return { label: first.name, href: routes.schemaUrl(specName.value, first.name) }
 })
 
 function injectAuth(envelope: { url: string; init: RequestInit }): void {
@@ -518,23 +500,6 @@ function injectAuth(envelope: { url: string; init: RequestInit }): void {
     }
   }
   envelope.init.headers = headers
-}
-
-function parameterExample(p: ParsedParameter): string {
-  if (p.example !== undefined) return toFieldValue(p.example)
-  const schema = p.schema as Record<string, unknown> | undefined
-  if (schema) {
-    if (schema.example !== undefined) return toFieldValue(schema.example)
-    if (schema.default !== undefined) return toFieldValue(schema.default)
-    if (Array.isArray(schema.enum) && schema.enum.length > 0) return toFieldValue(schema.enum[0])
-  }
-  return ''
-}
-
-function toFieldValue(value: unknown): string {
-  if (value === undefined || value === null) return ''
-  if (typeof value === 'string') return value
-  return JSON.stringify(value)
 }
 
 const NARROW_BREAKPOINT = '(max-width: 1279px)'
@@ -579,13 +544,6 @@ const authLabel = computed(() => {
   if (s === 'apikey') return 'API key'
   return 'Authentication'
 })
-
-function paramSchemaType(p: ParsedParameter): string | undefined {
-  const schema = p.schema as Record<string, unknown> | undefined
-  if (!schema) return undefined
-  if (typeof schema.type === 'string') return schema.type
-  return undefined
-}
 
 function showSection(section: Section): boolean {
   return effectiveShow.value.includes(section)

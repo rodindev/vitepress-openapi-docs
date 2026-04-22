@@ -1,5 +1,6 @@
 import { mkdir, rm, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
+import { buildRoutes } from '../config/routes'
 import type { ParsedSpec } from '../parser/types'
 
 export interface GeneratePagesOptions {
@@ -29,12 +30,13 @@ export async function generatePages(
   await rm(options.outDir, { recursive: true, force: true })
   await mkdir(options.outDir, { recursive: true })
 
+  const routes = buildRoutes(options.prefixes)
   const pages: GeneratedPage[] = []
+
   for (const spec of specs) {
-    const prefix = options.prefixes?.[spec.name] ?? `/api/${spec.name}`
     for (const op of spec.operations) {
-      const file = join(prefix.replace(/^\//, ''), `${op.id}.md`)
-      const url = `${prefix}/${op.id}`
+      const url = routes.operationUrl(spec.name, op.id)
+      const file = `${urlToRelativePath(url)}.md`
       const fullPath = join(options.outDir, file)
       await mkdir(dirname(fullPath), { recursive: true })
       const title = op.summary || `${op.method.toUpperCase()} ${op.path}`
@@ -55,10 +57,9 @@ export async function generatePages(
       pages.push({ file, url })
     }
 
-    const schemaPrefix = `schemas/${spec.name}`
     for (const schema of Object.values(spec.componentSchemas ?? {})) {
-      const file = join(schemaPrefix, `${schema.name}.md`)
-      const url = `/${schemaPrefix}/${schema.name}`
+      const url = routes.schemaUrl(spec.name, schema.name)
+      const file = `${urlToRelativePath(url)}.md`
       const fullPath = join(options.outDir, file)
       await mkdir(dirname(fullPath), { recursive: true })
       const title = `${schema.name} schema`
@@ -77,7 +78,8 @@ export async function generatePages(
       pages.push({ file, url })
     }
 
-    const changelogFile = join('changelog', `${spec.name}.md`)
+    const changelogUrl = routes.changelogUrl(spec.name)
+    const changelogFile = `${urlToRelativePath(changelogUrl)}.md`
     const changelogPath = join(options.outDir, changelogFile)
     await mkdir(dirname(changelogPath), { recursive: true })
     await writeFile(
@@ -93,9 +95,13 @@ export async function generatePages(
         `<OpenApiChangelog name="${escapeAttr(spec.name)}" />\n`,
       'utf8'
     )
-    pages.push({ file: changelogFile, url: `/changelog/${spec.name}` })
+    pages.push({ file: changelogFile, url: changelogUrl })
   }
   return pages
+}
+
+function urlToRelativePath(url: string): string {
+  return url.replace(/^\//, '')
 }
 
 function escapeYaml(value: string): string {

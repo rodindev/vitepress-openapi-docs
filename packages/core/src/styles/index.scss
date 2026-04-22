@@ -16,15 +16,17 @@
   --vod-font-ui: var(--vap-font-ui, var(--vp-font-family-base));
   --vod-font-mono: var(--vap-font-mono, var(--vp-font-family-mono));
 
-  /* Method accent colours — used for borders, tab indicators, text accents */
-  --vod-method-get: var(--vap-method-get, var(--vp-c-brand-1, #3eaf7c));
-  --vod-method-post: var(--vap-method-post, var(--vp-c-green-1, #16a34a));
+  /* Solid method accents (borders, underlines, text) follow the same
+   * read/write/destructive rule as the pill -bg/-text pairs below, so a
+   * verb reads the same hue wherever it shows up. */
+  --vod-method-get: var(--vap-method-get, var(--vp-c-indigo-1, #1e40af));
+  --vod-method-post: var(--vap-method-post, var(--vp-c-yellow-1, #d97706));
   --vod-method-put: var(--vap-method-put, var(--vp-c-yellow-1, #d97706));
-  --vod-method-patch: var(--vap-method-patch, var(--vp-c-purple-1, #8b5cf6));
+  --vod-method-patch: var(--vap-method-patch, var(--vp-c-yellow-1, #d97706));
   --vod-method-delete: var(--vap-method-delete, var(--vp-c-red-1, #dc2626));
-  --vod-method-head: var(--vap-method-head, var(--vp-c-text-2, #6b7280));
-  --vod-method-options: var(--vap-method-options, var(--vp-c-text-2, #6b7280));
-  --vod-method-trace: var(--vap-method-trace, var(--vp-c-text-2, #6b7280));
+  --vod-method-head: var(--vap-method-head, var(--vp-c-indigo-1, #1e40af));
+  --vod-method-options: var(--vap-method-options, var(--vp-c-indigo-1, #1e40af));
+  --vod-method-trace: var(--vap-method-trace, var(--vp-c-indigo-1, #1e40af));
 
   /* Method badge colours: read (GET/HEAD/OPTIONS/TRACE) → indigo,
    * write (POST/PUT/PATCH) → yellow, destructive (DELETE) → red.
@@ -1305,12 +1307,12 @@ a.vod-schema__type-token {
 
 /* Playground containment — prevent huge responses and body textareas from
    stretching the page. Users can override via --vod-* CSS variables. */
-.vod-endpoint .vap-response .vap-code {
+.vod-endpoint-layout .vap-response .vap-code {
   max-height: var(--vod-playground-response-max-height, 24rem);
   overflow: auto;
 }
 
-.vod-endpoint .vap-request__body-textarea {
+.vod-endpoint-layout .vap-request__body-textarea {
   max-height: var(--vod-playground-body-max-height, 16rem);
 }
 

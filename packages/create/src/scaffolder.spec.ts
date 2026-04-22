@@ -64,7 +64,7 @@ describe('scaffoldInto', () => {
     expect(config).not.toContain('mock')
 
     const theme = await readFile(join(target, 'docs/.vitepress/theme/index.ts'), 'utf8')
-    expect(theme).toContain("'chat': '/api/chat'")
+    expect(theme).toContain('prefixes')
     expect(theme).toContain('SearchTrigger')
     expect(theme).toContain("'nav-bar-content-after'")
     expect(theme).not.toContain('mock')
@@ -134,8 +134,8 @@ describe('scaffoldInto', () => {
     expect(config).toContain("link: '/api/admin/'")
 
     const theme = await readFile(join(target, 'docs/.vitepress/theme/index.ts'), 'utf8')
-    expect(theme).toContain("'public': '/api/public'")
-    expect(theme).toContain("'admin': '/api/admin'")
+    expect(theme).toContain('prefixes')
+    expect(theme).toContain('enhanceAppWithOpenApi')
 
     expect(existsSync(join(target, 'docs/api/public/index.md'))).toBe(true)
     expect(existsSync(join(target, 'docs/api/admin/index.md'))).toBe(true)
