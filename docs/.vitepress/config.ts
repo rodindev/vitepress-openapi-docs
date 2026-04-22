@@ -195,6 +195,19 @@ export default defineConfig({
     build: {
       chunkSizeWarningLimit: 1000,
     },
+    // Workspace-linked core package: its dist lives under packages/core/dist
+    // via the symlink in node_modules. Vite ignores node_modules by default,
+    // so an `npm run dev:core` rebuild would not trigger HMR in the docs
+    // server. The rules below un-ignore the core dist folder and tell
+    // dep-optimizer to treat it as source, not a pre-bundled dep.
+    optimizeDeps: {
+      exclude: ['vitepress-openapi-docs'],
+    },
+    server: {
+      watch: {
+        ignored: ['!**/packages/core/dist/**'],
+      },
+    },
   },
 
   extends: await openApiDocs(

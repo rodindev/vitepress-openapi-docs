@@ -52,6 +52,7 @@
   },
   "scripts": {
     "build": "vite build",
+    "dev": "vite build --watch",
     "typecheck": "vue-tsc --noEmit -p tsconfig.json",
     "test": "vitest",
     "test:run": "vitest run",

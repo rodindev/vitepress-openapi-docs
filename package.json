@@ -6,8 +6,9 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "npm run docs:dev",
-    "docs:dev": "vitepress dev docs",
+    "dev": "concurrently -k -n core,docs -c cyan,magenta \"npm:dev:core\" \"npm:docs:dev\"",
+    "dev:core": "npm run dev --workspace packages/core",
+    "docs:dev": "vitepress dev docs --port 5180",
     "docs:build": "vitepress build docs",
     "build": "npm run build --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
@@ -26,6 +27,7 @@
     "@playwright/test": "^1.59.1",
     "@vitejs/plugin-vue": "^5.2.0",
     "@vue/test-utils": "^2.4.0",
+    "concurrently": "^9.2.1",
     "eslint": "^9.0.0",
     "eslint-config-prettier": "^10.0.0",
     "eslint-plugin-vue": "^9.32.0",
