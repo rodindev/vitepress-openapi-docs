@@ -10,10 +10,6 @@
     <section class="vod-endpoint" :class="{ 'vod-endpoint--deprecated': op.deprecated }">
       <header v-if="showSection('summary')" class="vod-endpoint__header">
         <h3 class="vod-endpoint__title">
-          {{ op.summary || op.id }}
-          <span v-if="op.deprecated" class="vod-endpoint__deprecated-badge">deprecated</span>
-        </h3>
-        <p class="vod-endpoint__route">
           <span
             class="vod-endpoint__method"
             :class="{ 'vod-endpoint__method--webhook': op.kind === 'webhook' }"
@@ -22,50 +18,58 @@
             {{ op.method.toUpperCase() }}
           </span>
           <code class="vod-endpoint__path">{{ op.path }}</code>
+          <span v-if="op.deprecated" class="vod-endpoint__deprecated-badge">deprecated</span>
           <span v-if="op.kind === 'webhook'" class="vod-endpoint__kind-badge">webhook</span>
-        </p>
+        </h3>
+        <p v-if="op.summary" class="vod-endpoint__summary">{{ op.summary }}</p>
       </header>
 
       <p v-if="showSection('description') && op.description" class="vod-endpoint__description">
         {{ op.description }}
       </p>
 
-      <table
+      <section
         v-if="showSection('params') && op.parameters.length > 0"
-        class="vod-endpoint__params-table"
+        class="vod-endpoint__section vod-endpoint__section--params"
       >
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th class="vod-endpoint__params-desc-col">Description</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="p in visibleParams" :key="`${p.in}:${p.name}`">
-            <td>
-              <code>{{ p.name }}</code>
-              <span v-if="p.required" class="vod-endpoint__param-required">required</span>
-            </td>
-            <td class="vod-endpoint__param-type">
-              <span class="vod-endpoint__param-in">{{ p.in }}</span>
-              <template v-if="p.typeLabel"> · {{ p.typeLabel }}</template>
-            </td>
-            <td v-if="p.description" class="vod-endpoint__params-desc-col">
-              {{ p.description }}
-            </td>
-            <td v-else class="vod-endpoint__params-desc-col" />
-          </tr>
-        </tbody>
-      </table>
-      <button
-        v-if="hiddenParamsCount > 0"
-        class="vod-endpoint__params-toggle"
-        :data-expanded="paramsExpanded"
-        @click="paramsExpanded = !paramsExpanded"
-      >
-        {{ paramsExpanded ? 'Show fewer' : `Show all ${op.parameters.length} parameters` }}
-      </button>
+        <h4 class="vod-endpoint__section-title">
+          Parameters
+          <span class="vod-endpoint__section-count">{{ op.parameters.length }}</span>
+        </h4>
+        <table class="vod-endpoint__params-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th class="vod-endpoint__params-desc-col">Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="p in visibleParams" :key="`${p.in}:${p.name}`">
+              <td>
+                <code>{{ p.name }}</code>
+                <span v-if="p.required" class="vod-endpoint__param-required">required</span>
+              </td>
+              <td class="vod-endpoint__param-type">
+                <span class="vod-endpoint__param-in">{{ p.in }}</span>
+                <template v-if="p.typeLabel"> · {{ p.typeLabel }}</template>
+              </td>
+              <td v-if="p.description" class="vod-endpoint__params-desc-col">
+                {{ p.description }}
+              </td>
+              <td v-else class="vod-endpoint__params-desc-col" />
+            </tr>
+          </tbody>
+        </table>
+        <button
+          v-if="hiddenParamsCount > 0"
+          class="vod-endpoint__params-toggle"
+          :data-expanded="paramsExpanded"
+          @click="paramsExpanded = !paramsExpanded"
+        >
+          {{ paramsExpanded ? 'Show fewer' : `Show all ${op.parameters.length} parameters` }}
+        </button>
+      </section>
 
       <p v-if="showSection('response') && responseTypeLink" class="vod-endpoint__returns">
         <span class="vod-endpoint__type-label">Returns</span>
@@ -493,7 +497,7 @@ function injectAuth(envelope: { url: string; init: RequestInit }): void {
       const sep = envelope.url.includes('?') ? '&' : '?'
       envelope.url = `${envelope.url}${sep}${encodeURIComponent(keyName)}=${encodeURIComponent(cred.value)}`
     } else if (keyIn === 'cookie') {
-      // Cookie is a forbidden request header in the Fetch API — browsers silently drop it.
+      // Cookie is a forbidden request header in the Fetch API - browsers silently drop it.
       // Cookie-based API key auth cannot be tested from the Try-It panel.
     } else {
       headers[keyName] = cred.value

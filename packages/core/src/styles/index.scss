@@ -48,7 +48,7 @@
   --vod-method-trace-bg: var(--vap-method-trace-bg, var(--vp-c-indigo-soft, #dbeafe));
   --vod-method-trace-text: var(--vap-method-trace-text, var(--vp-c-indigo-1, #1e40af));
 
-  /* Neutral pill for webhooks, kind badges, and schema entries — these aren't
+  /* Neutral pill for webhooks, kind badges, and schema entries - these aren't
    * user-initiated verbs so they sit outside the read/write/destructive rule. */
   --vod-pill-neutral-bg: var(--vap-pill-neutral-bg, var(--vp-c-default-soft, #f3f4f6));
   --vod-pill-neutral-text: var(--vap-pill-neutral-text, var(--vp-c-text-2, #374151));
@@ -71,18 +71,26 @@
   --vod-focus-ring: var(--vap-focus-ring, var(--vp-c-brand-1, #3eaf7c));
 }
 
+/* The card is the content itself - no border, no surface fill. Visual
+ * rhythm comes from typography (2rem title, section accent bars) and
+ * spacing. When many endpoints render in sequence (inside <OpenApiSpec>),
+ * a thin divider between them prevents them from running together. */
 .vod-endpoint {
-  margin: 1.5rem 0 2rem;
-  padding: 1rem 1.25rem 1.25rem;
-  border: 1px solid var(--vod-surface-border);
-  border-radius: var(--vod-radius);
-  background: var(--vod-surface);
+  margin: 2.5rem 0;
   font-family: var(--vod-font-ui);
   color: var(--vod-text-1);
 }
 
+.vod-endpoint + .vod-endpoint,
+.vod-spec__group .vod-endpoint + .vod-endpoint {
+  padding-top: 2.5rem;
+  border-top: 1px solid var(--vod-surface-border);
+}
+
 .vod-endpoint--missing {
-  border-color: var(--vod-method-delete);
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--vod-method-delete);
+  border-radius: var(--vod-radius);
   color: var(--vod-text-1);
 }
 
@@ -91,14 +99,27 @@
 }
 
 .vod-endpoint__header {
-  margin-bottom: 0.75rem;
+  margin-bottom: 1rem;
 }
 
 .vod-endpoint__title {
-  margin: 0 0 0.25rem;
-  font-size: 1.125rem;
-  font-weight: 600;
-  line-height: 1.3;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem 0.75rem;
+  margin: 0 0 0.35rem;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--vod-text-1);
+}
+
+.vod-endpoint__summary {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.55;
+  color: var(--vod-text-2);
 }
 
 .vod-endpoint__deprecated-badge {
@@ -131,24 +152,18 @@
   color: var(--vod-pill-neutral-text);
 }
 
-.vod-endpoint__route {
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-family: var(--vod-font-mono);
-  font-size: 0.95rem;
-}
-
 .vod-endpoint__method {
   display: inline-block;
-  padding: 0.1rem 0.55rem;
+  align-self: center;
+  padding: 0.2rem 0.6rem;
   border-radius: 4px;
   background: var(--vod-method-get-bg);
   color: var(--vod-method-get-text);
-  font-size: 0.75rem;
+  font-family: var(--vod-font-mono);
+  font-size: 0.85rem;
   font-weight: 700;
-  letter-spacing: 0.05em;
+  line-height: 1.2;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
 
   &[data-method='post'] {
@@ -185,7 +200,13 @@
 .vp-doc .vod-endpoint__path {
   background: transparent;
   padding: 0;
+  font-family: var(--vod-font-mono);
+  font-size: 1.5rem;
+  font-weight: 500;
+  line-height: 1.2;
   color: var(--vod-text-1);
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .vod-endpoint__description {
@@ -215,7 +236,7 @@
   min-width: 0;
 }
 
-/* Aside: soft rounded outline, transparent fill — a gentle boundary around the
+/* Aside: soft rounded outline, transparent fill - a gentle boundary around the
  * interactive column without the heavy grey surface. Inner cards still own
  * their own visual weight. */
 .vod-page-aside {
@@ -233,7 +254,7 @@
   border-radius: calc(var(--vod-radius) + 2px);
 }
 
-/* Compact section headings inside aside — sentence-case bold, not uppercase */
+/* Compact section headings inside aside - sentence-case bold, not uppercase */
 .vod-page-aside h4,
 .vod-page-aside h5,
 .vod-page-aside h6 {
@@ -252,7 +273,7 @@
   display: none;
 }
 
-/* Fallback when VitePress TOC is visible — stack aside below the card */
+/* Fallback when VitePress TOC is visible - stack aside below the card */
 .VPDoc.has-aside .vod-page-columns {
   flex-direction: column;
 }
@@ -282,6 +303,43 @@
       display: block;
     }
   }
+}
+
+.vod-endpoint__section {
+  margin-top: 1.5rem;
+}
+
+.vod-endpoint__section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.75rem;
+  padding: 0;
+  border-top: 0;
+  font-family: var(--vod-font-ui);
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: var(--vod-text-1);
+  text-transform: none;
+
+  &::before {
+    content: '';
+    flex: none;
+    display: inline-block;
+    inline-size: 3px;
+    block-size: 1.1rem;
+    border-radius: 2px;
+    background: var(--vp-c-brand-1, #3eaf7c);
+  }
+}
+
+.vod-endpoint__section-count {
+  font-family: var(--vod-font-mono);
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--vod-text-2);
 }
 
 /* Compact params table */
@@ -376,7 +434,7 @@
   }
 }
 
-/* Auth info (read-only label in doc column) — pill-style badge */
+/* Auth info (read-only label in doc column) - pill-style badge */
 .vod-endpoint__auth-info {
   display: inline-flex;
   align-items: center;
@@ -1305,7 +1363,7 @@ a.vod-schema__type-token {
   }
 }
 
-/* Playground containment — prevent huge responses and body textareas from
+/* Playground containment - prevent huge responses and body textareas from
    stretching the page. Users can override via --vod-* CSS variables. */
 .vod-endpoint-layout .vap-response .vap-code {
   max-height: var(--vod-playground-response-max-height, 24rem);

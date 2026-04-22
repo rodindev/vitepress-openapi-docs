@@ -24,7 +24,7 @@ test('full interaction chain: navigate → jumper → operation → try-it', asy
 
   // Should land on the operation page
   await expect(page.locator('.vod-endpoint')).toBeVisible({ timeout: 5000 })
-  await expect(page.locator('.vod-endpoint__route')).toBeVisible()
+  await expect(page.locator('.vod-endpoint__path')).toBeVisible()
 
   // Verify SDK snippets are rendered
   await expect(page.locator('.vod-snippets')).toBeVisible()
