@@ -4,7 +4,7 @@
     "title": "Mock API",
     "summary": "Full-featured mock REST API for testing, prototyping, and frontend development",
     "description": "## Overview\n\nZero-dependency, in-memory REST API with **11 interconnected resources**, authentication, webhooks, real-time events, and comprehensive query capabilities.\n\n## Features\n\n- **Full CRUD** on all resources with proper HTTP semantics\n- **Filtering** by any field with operators: `_gte`, `_lte`, `_gt`, `_lt`, `_ne`, `_like`\n- **Full-text search** via `?q=` across all fields\n- **Sorting**: `?_sort=field1,field2&_order=desc,asc`\n- **Pagination** with `Link` headers (page or slice-based)\n- **Relations**: `?_expand=user` (parent) and `?_embed=comments` (children)\n- **Field selection**: `?_fields=id,name,email`\n- **Authentication** with Bearer tokens (any password works)\n- **Webhooks** with event subscriptions and delivery history\n- **SSE streaming** for real-time events\n- **Batch operations** for multiple requests in one call\n- **Testing aids**: `?_error=500`, `?_delay=2000`, `/status/:code`, `/echo`\n- **ETag** conditional requests\n- **Rate limiting**: 120 req/60s per IP",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "license": {
       "name": "MIT",
       "identifier": "MIT"
@@ -489,7 +489,8 @@
               }
             }
           }
-        }
+        },
+        "deprecated": true
       },
       "patch": {
         "operationId": "updateUser",
@@ -957,7 +958,8 @@
               }
             }
           }
-        }
+        },
+        "deprecated": true
       },
       "patch": {
         "operationId": "updatePost",
@@ -6145,6 +6147,36 @@
         ]
       }
     },
+    "/auth/basic-demo": {
+      "get": {
+        "operationId": "basicAuthDemo",
+        "summary": "HTTP Basic demo",
+        "tags": [
+          "auth"
+        ],
+        "description": "Demonstrates HTTP Basic — intentionally present so API docs generators can render the Basic auth block. Any credentials accepted. Echoes the username back so you can confirm the header reached the server.",
+        "responses": {
+          "200": {
+            "description": "Authenticated with Basic",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicDemoResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ]
+      }
+    },
     "/webhooks": {
       "summary": "Webhook subscriptions",
       "get": {
@@ -6977,6 +7009,39 @@
         },
         "security": []
       }
+    },
+    "/admin/report": {
+      "get": {
+        "operationId": "getAdminReport",
+        "summary": "Admin aggregate report",
+        "tags": [
+          "database"
+        ],
+        "description": "Read-only snapshot of record counts, active webhooks, and token count. Accepts either Bearer or Basic — the auth block in docs should show both alternatives.",
+        "responses": {
+          "200": {
+            "description": "Report payload",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminReport"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "basicAuth": []
+          }
+        ]
+      }
     }
   },
   "webhooks": {
@@ -7198,25 +7263,21 @@
                 "data": {
                   "id": 1,
                   "userId": 1,
-                  "title": "Getting Started with TypeScript",
-                  "slug": "introduction-to-docker-containers",
-                  "body": "Praesent dapibus, neque id cursus faucibus, tortor neque egestas augue, eu vulputate magna eros eu erat.\n\nFusce commodo aliquam arcu. Nam commodo suscipit quam. Quisque id odio.\n\nVestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae.\n\nUt enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\n\nVestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae.\n\nUt enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-                  "excerpt": "Phasellus ultrices nulla quis nibh. Quisque a lectus. Donec consectetuer ligula vulputate sem tristique cursus....",
+                  "title": "Performance Optimization Tips",
+                  "slug": "web-security-fundamentals",
+                  "body": "Fusce commodo aliquam arcu. Nam commodo suscipit quam. Quisque id odio.\n\nCurabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra.",
+                  "excerpt": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliq...",
                   "tags": [
-                    "testing",
-                    "nodejs",
-                    "docker",
-                    "devops",
-                    "frontend"
+                    "ux"
                   ],
                   "status": "published",
-                  "views": 22828,
-                  "likes": 238,
+                  "views": 16848,
+                  "likes": 28,
                   "featured": false,
                   "coverImage": "https://picsum.photos/seed/1/800/400",
-                  "readingTime": 13,
-                  "createdAt": "2025-06-06T21:57:48.779Z",
-                  "updatedAt": "2025-06-06T21:57:48.779Z"
+                  "readingTime": 7,
+                  "createdAt": "2026-01-21T19:36:04.116Z",
+                  "updatedAt": "2026-01-21T19:36:04.116Z"
                 }
               }
             }
@@ -7255,25 +7316,21 @@
                 "data": {
                   "id": 1,
                   "userId": 1,
-                  "title": "Getting Started with TypeScript",
-                  "slug": "introduction-to-docker-containers",
-                  "body": "Praesent dapibus, neque id cursus faucibus, tortor neque egestas augue, eu vulputate magna eros eu erat.\n\nFusce commodo aliquam arcu. Nam commodo suscipit quam. Quisque id odio.\n\nVestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae.\n\nUt enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\n\nVestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae.\n\nUt enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-                  "excerpt": "Phasellus ultrices nulla quis nibh. Quisque a lectus. Donec consectetuer ligula vulputate sem tristique cursus....",
+                  "title": "Performance Optimization Tips",
+                  "slug": "web-security-fundamentals",
+                  "body": "Fusce commodo aliquam arcu. Nam commodo suscipit quam. Quisque id odio.\n\nCurabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra.",
+                  "excerpt": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliq...",
                   "tags": [
-                    "testing",
-                    "nodejs",
-                    "docker",
-                    "devops",
-                    "frontend"
+                    "ux"
                   ],
                   "status": "published",
-                  "views": 22828,
-                  "likes": 238,
+                  "views": 16848,
+                  "likes": 28,
                   "featured": false,
                   "coverImage": "https://picsum.photos/seed/1/800/400",
-                  "readingTime": 13,
-                  "createdAt": "2025-06-06T21:57:48.779Z",
-                  "updatedAt": "2025-06-06T21:57:48.779Z"
+                  "readingTime": 7,
+                  "createdAt": "2026-01-21T19:36:04.116Z",
+                  "updatedAt": "2026-01-21T19:36:04.116Z"
                 }
               }
             }
@@ -7312,25 +7369,21 @@
                 "data": {
                   "id": 1,
                   "userId": 1,
-                  "title": "Getting Started with TypeScript",
-                  "slug": "introduction-to-docker-containers",
-                  "body": "Praesent dapibus, neque id cursus faucibus, tortor neque egestas augue, eu vulputate magna eros eu erat.\n\nFusce commodo aliquam arcu. Nam commodo suscipit quam. Quisque id odio.\n\nVestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae.\n\nUt enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\n\nVestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae.\n\nUt enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-                  "excerpt": "Phasellus ultrices nulla quis nibh. Quisque a lectus. Donec consectetuer ligula vulputate sem tristique cursus....",
+                  "title": "Performance Optimization Tips",
+                  "slug": "web-security-fundamentals",
+                  "body": "Fusce commodo aliquam arcu. Nam commodo suscipit quam. Quisque id odio.\n\nCurabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra.",
+                  "excerpt": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliq...",
                   "tags": [
-                    "testing",
-                    "nodejs",
-                    "docker",
-                    "devops",
-                    "frontend"
+                    "ux"
                   ],
                   "status": "published",
-                  "views": 22828,
-                  "likes": 238,
+                  "views": 16848,
+                  "likes": 28,
                   "featured": false,
                   "coverImage": "https://picsum.photos/seed/1/800/400",
-                  "readingTime": 13,
-                  "createdAt": "2025-06-06T21:57:48.779Z",
-                  "updatedAt": "2025-06-06T21:57:48.779Z"
+                  "readingTime": 7,
+                  "createdAt": "2026-01-21T19:36:04.116Z",
+                  "updatedAt": "2026-01-21T19:36:04.116Z"
                 }
               }
             }
@@ -7370,9 +7423,9 @@
                   "id": 1,
                   "postId": 1,
                   "userId": 1,
-                  "body": "This saved me hours of debugging. Thank you!",
-                  "likes": 34,
-                  "createdAt": "2025-01-25T20:09:48.322Z"
+                  "body": "How does this compare to the approach described in the official docs?",
+                  "likes": 16,
+                  "createdAt": "2023-04-28T06:59:47.906Z"
                 }
               }
             }
@@ -7412,9 +7465,9 @@
                   "id": 1,
                   "postId": 1,
                   "userId": 1,
-                  "body": "This saved me hours of debugging. Thank you!",
-                  "likes": 34,
-                  "createdAt": "2025-01-25T20:09:48.322Z"
+                  "body": "How does this compare to the approach described in the official docs?",
+                  "likes": 16,
+                  "createdAt": "2023-04-28T06:59:47.906Z"
                 }
               }
             }
@@ -7454,9 +7507,9 @@
                   "id": 1,
                   "postId": 1,
                   "userId": 1,
-                  "body": "This saved me hours of debugging. Thank you!",
-                  "likes": 34,
-                  "createdAt": "2025-01-25T20:09:48.322Z"
+                  "body": "How does this compare to the approach described in the official docs?",
+                  "likes": 16,
+                  "createdAt": "2023-04-28T06:59:47.906Z"
                 }
               }
             }
@@ -7495,15 +7548,12 @@
                 "data": {
                   "id": 1,
                   "userId": 1,
-                  "title": "Fix timezone handling",
+                  "title": "Configure monitoring",
                   "completed": true,
                   "priority": "low",
-                  "dueDate": "2026-07-14T20:06:24.999Z",
-                  "tags": [
-                    "nodejs",
-                    "devops"
-                  ],
-                  "createdAt": "2025-07-07T21:20:08.693Z"
+                  "dueDate": null,
+                  "tags": [],
+                  "createdAt": "2024-01-25T00:38:32.919Z"
                 }
               }
             }
@@ -7542,15 +7592,12 @@
                 "data": {
                   "id": 1,
                   "userId": 1,
-                  "title": "Fix timezone handling",
+                  "title": "Configure monitoring",
                   "completed": true,
                   "priority": "low",
-                  "dueDate": "2026-07-14T20:06:24.999Z",
-                  "tags": [
-                    "nodejs",
-                    "devops"
-                  ],
-                  "createdAt": "2025-07-07T21:20:08.693Z"
+                  "dueDate": null,
+                  "tags": [],
+                  "createdAt": "2024-01-25T00:38:32.919Z"
                 }
               }
             }
@@ -7589,15 +7636,12 @@
                 "data": {
                   "id": 1,
                   "userId": 1,
-                  "title": "Fix timezone handling",
+                  "title": "Configure monitoring",
                   "completed": true,
                   "priority": "low",
-                  "dueDate": "2026-07-14T20:06:24.999Z",
-                  "tags": [
-                    "nodejs",
-                    "devops"
-                  ],
-                  "createdAt": "2025-07-07T21:20:08.693Z"
+                  "dueDate": null,
+                  "tags": [],
+                  "createdAt": "2024-01-25T00:38:32.919Z"
                 }
               }
             }
@@ -7636,12 +7680,12 @@
                 "data": {
                   "id": 1,
                   "userId": 1,
-                  "title": "Street Art",
-                  "description": "Praesent dapibus, neque id cursus faucibus, tortor neque egestas augue, eu vulputate magna eros eu erat.",
+                  "title": "Abstract",
+                  "description": "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
                   "coverImage": "https://picsum.photos/seed/album1/600/400",
-                  "photoCount": 23,
+                  "photoCount": 39,
                   "isPublic": true,
-                  "createdAt": "2025-12-01T13:37:20.950Z"
+                  "createdAt": "2024-07-02T09:01:49.954Z"
                 }
               }
             }
@@ -7680,12 +7724,12 @@
                 "data": {
                   "id": 1,
                   "userId": 1,
-                  "title": "Street Art",
-                  "description": "Praesent dapibus, neque id cursus faucibus, tortor neque egestas augue, eu vulputate magna eros eu erat.",
+                  "title": "Abstract",
+                  "description": "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
                   "coverImage": "https://picsum.photos/seed/album1/600/400",
-                  "photoCount": 23,
+                  "photoCount": 39,
                   "isPublic": true,
-                  "createdAt": "2025-12-01T13:37:20.950Z"
+                  "createdAt": "2024-07-02T09:01:49.954Z"
                 }
               }
             }
@@ -7724,12 +7768,12 @@
                 "data": {
                   "id": 1,
                   "userId": 1,
-                  "title": "Street Art",
-                  "description": "Praesent dapibus, neque id cursus faucibus, tortor neque egestas augue, eu vulputate magna eros eu erat.",
+                  "title": "Abstract",
+                  "description": "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
                   "coverImage": "https://picsum.photos/seed/album1/600/400",
-                  "photoCount": 23,
+                  "photoCount": 39,
                   "isPublic": true,
-                  "createdAt": "2025-12-01T13:37:20.950Z"
+                  "createdAt": "2024-07-02T09:01:49.954Z"
                 }
               }
             }
@@ -7769,13 +7813,13 @@
                   "id": 1,
                   "albumId": 1,
                   "title": "Photo 1",
-                  "url": "https://picsum.photos/seed/1/1920/1080",
+                  "url": "https://picsum.photos/seed/1/800/960",
                   "thumbnailUrl": "https://picsum.photos/seed/1/150/150",
-                  "width": 1920,
-                  "height": 1080,
-                  "size": 1913935,
+                  "width": 800,
+                  "height": 960,
+                  "size": 4803273,
                   "format": "jpeg",
-                  "createdAt": "2026-05-11T14:13:52.972Z"
+                  "createdAt": "2026-07-24T20:47:13.121Z"
                 }
               }
             }
@@ -7815,13 +7859,13 @@
                   "id": 1,
                   "albumId": 1,
                   "title": "Photo 1",
-                  "url": "https://picsum.photos/seed/1/1920/1080",
+                  "url": "https://picsum.photos/seed/1/800/960",
                   "thumbnailUrl": "https://picsum.photos/seed/1/150/150",
-                  "width": 1920,
-                  "height": 1080,
-                  "size": 1913935,
+                  "width": 800,
+                  "height": 960,
+                  "size": 4803273,
                   "format": "jpeg",
-                  "createdAt": "2026-05-11T14:13:52.972Z"
+                  "createdAt": "2026-07-24T20:47:13.121Z"
                 }
               }
             }
@@ -7861,13 +7905,13 @@
                   "id": 1,
                   "albumId": 1,
                   "title": "Photo 1",
-                  "url": "https://picsum.photos/seed/1/1920/1080",
+                  "url": "https://picsum.photos/seed/1/800/960",
                   "thumbnailUrl": "https://picsum.photos/seed/1/150/150",
-                  "width": 1920,
-                  "height": 1080,
-                  "size": 1913935,
+                  "width": 800,
+                  "height": 960,
+                  "size": 4803273,
                   "format": "jpeg",
-                  "createdAt": "2026-05-11T14:13:52.972Z"
+                  "createdAt": "2026-07-24T20:47:13.121Z"
                 }
               }
             }
@@ -7910,7 +7954,7 @@
                   "description": "Gadgets, devices, and electronic accessories",
                   "image": "https://picsum.photos/seed/cat1/300/200",
                   "productCount": 5,
-                  "createdAt": "2022-01-28T14:08:09.219Z"
+                  "createdAt": "2022-01-06T04:19:58.076Z"
                 }
               }
             }
@@ -7953,7 +7997,7 @@
                   "description": "Gadgets, devices, and electronic accessories",
                   "image": "https://picsum.photos/seed/cat1/300/200",
                   "productCount": 5,
-                  "createdAt": "2022-01-28T14:08:09.219Z"
+                  "createdAt": "2022-01-06T04:19:58.076Z"
                 }
               }
             }
@@ -7996,7 +8040,7 @@
                   "description": "Gadgets, devices, and electronic accessories",
                   "image": "https://picsum.photos/seed/cat1/300/200",
                   "productCount": 5,
-                  "createdAt": "2022-01-28T14:08:09.219Z"
+                  "createdAt": "2022-01-06T04:19:58.076Z"
                 }
               }
             }
@@ -8034,38 +8078,37 @@
                 "resourceId": 1,
                 "data": {
                   "id": 1,
-                  "categoryId": 8,
-                  "name": "Desk Organizer",
-                  "description": "Designed for professionals who demand the best tools.",
-                  "price": 363.73,
-                  "originalPrice": null,
+                  "categoryId": 4,
+                  "name": "Desk Lamp",
+                  "description": "Ultra-fast connectivity with rock-solid reliability.",
+                  "price": 161.28,
+                  "originalPrice": 231.38,
                   "currency": "USD",
-                  "stock": 79,
+                  "stock": 257,
                   "sku": "SKU-00001",
-                  "rating": 3.8,
-                  "reviewCount": 185,
+                  "rating": 4.4,
+                  "reviewCount": 188,
                   "image": "https://picsum.photos/seed/prod1/400/400",
                   "images": [
                     "https://picsum.photos/seed/prod1-0/400/400",
                     "https://picsum.photos/seed/prod1-1/400/400",
                     "https://picsum.photos/seed/prod1-2/400/400",
-                    "https://picsum.photos/seed/prod1-3/400/400"
+                    "https://picsum.photos/seed/prod1-3/400/400",
+                    "https://picsum.photos/seed/prod1-4/400/400"
                   ],
-                  "weight": 6.51,
+                  "weight": 9.19,
                   "dimensions": {
-                    "width": 20.1,
-                    "height": 46,
-                    "depth": 9.3
+                    "width": 33.4,
+                    "height": 40,
+                    "depth": 14.6
                   },
                   "isAvailable": true,
                   "isFeatured": false,
                   "tags": [
-                    "performance",
-                    "nodejs",
-                    "api"
+                    "backend"
                   ],
-                  "createdAt": "2026-09-15T13:43:04.017Z",
-                  "updatedAt": "2025-12-05T10:38:34.470Z"
+                  "createdAt": "2024-05-30T01:37:26.059Z",
+                  "updatedAt": "2026-12-15T02:55:19.943Z"
                 }
               }
             }
@@ -8103,38 +8146,37 @@
                 "resourceId": 1,
                 "data": {
                   "id": 1,
-                  "categoryId": 8,
-                  "name": "Desk Organizer",
-                  "description": "Designed for professionals who demand the best tools.",
-                  "price": 363.73,
-                  "originalPrice": null,
+                  "categoryId": 4,
+                  "name": "Desk Lamp",
+                  "description": "Ultra-fast connectivity with rock-solid reliability.",
+                  "price": 161.28,
+                  "originalPrice": 231.38,
                   "currency": "USD",
-                  "stock": 79,
+                  "stock": 257,
                   "sku": "SKU-00001",
-                  "rating": 3.8,
-                  "reviewCount": 185,
+                  "rating": 4.4,
+                  "reviewCount": 188,
                   "image": "https://picsum.photos/seed/prod1/400/400",
                   "images": [
                     "https://picsum.photos/seed/prod1-0/400/400",
                     "https://picsum.photos/seed/prod1-1/400/400",
                     "https://picsum.photos/seed/prod1-2/400/400",
-                    "https://picsum.photos/seed/prod1-3/400/400"
+                    "https://picsum.photos/seed/prod1-3/400/400",
+                    "https://picsum.photos/seed/prod1-4/400/400"
                   ],
-                  "weight": 6.51,
+                  "weight": 9.19,
                   "dimensions": {
-                    "width": 20.1,
-                    "height": 46,
-                    "depth": 9.3
+                    "width": 33.4,
+                    "height": 40,
+                    "depth": 14.6
                   },
                   "isAvailable": true,
                   "isFeatured": false,
                   "tags": [
-                    "performance",
-                    "nodejs",
-                    "api"
+                    "backend"
                   ],
-                  "createdAt": "2026-09-15T13:43:04.017Z",
-                  "updatedAt": "2025-12-05T10:38:34.470Z"
+                  "createdAt": "2024-05-30T01:37:26.059Z",
+                  "updatedAt": "2026-12-15T02:55:19.943Z"
                 }
               }
             }
@@ -8172,38 +8214,37 @@
                 "resourceId": 1,
                 "data": {
                   "id": 1,
-                  "categoryId": 8,
-                  "name": "Desk Organizer",
-                  "description": "Designed for professionals who demand the best tools.",
-                  "price": 363.73,
-                  "originalPrice": null,
+                  "categoryId": 4,
+                  "name": "Desk Lamp",
+                  "description": "Ultra-fast connectivity with rock-solid reliability.",
+                  "price": 161.28,
+                  "originalPrice": 231.38,
                   "currency": "USD",
-                  "stock": 79,
+                  "stock": 257,
                   "sku": "SKU-00001",
-                  "rating": 3.8,
-                  "reviewCount": 185,
+                  "rating": 4.4,
+                  "reviewCount": 188,
                   "image": "https://picsum.photos/seed/prod1/400/400",
                   "images": [
                     "https://picsum.photos/seed/prod1-0/400/400",
                     "https://picsum.photos/seed/prod1-1/400/400",
                     "https://picsum.photos/seed/prod1-2/400/400",
-                    "https://picsum.photos/seed/prod1-3/400/400"
+                    "https://picsum.photos/seed/prod1-3/400/400",
+                    "https://picsum.photos/seed/prod1-4/400/400"
                   ],
-                  "weight": 6.51,
+                  "weight": 9.19,
                   "dimensions": {
-                    "width": 20.1,
-                    "height": 46,
-                    "depth": 9.3
+                    "width": 33.4,
+                    "height": 40,
+                    "depth": 14.6
                   },
                   "isAvailable": true,
                   "isFeatured": false,
                   "tags": [
-                    "performance",
-                    "nodejs",
-                    "api"
+                    "backend"
                   ],
-                  "createdAt": "2026-09-15T13:43:04.017Z",
-                  "updatedAt": "2025-12-05T10:38:34.470Z"
+                  "createdAt": "2024-05-30T01:37:26.059Z",
+                  "updatedAt": "2026-12-15T02:55:19.943Z"
                 }
               }
             }
@@ -8244,49 +8285,34 @@
                   "userId": 1,
                   "items": [
                     {
-                      "productId": 38,
-                      "quantity": 1,
-                      "price": 346.46
-                    },
-                    {
-                      "productId": 32,
+                      "productId": 37,
                       "quantity": 2,
-                      "price": 134.41
+                      "price": 416.97
                     },
                     {
-                      "productId": 14,
-                      "quantity": 3,
-                      "price": 484.07
-                    },
-                    {
-                      "productId": 30,
-                      "quantity": 1,
-                      "price": 196.2
-                    },
-                    {
-                      "productId": 9,
-                      "quantity": 1,
-                      "price": 69.47
+                      "productId": 16,
+                      "quantity": 2,
+                      "price": 478.87
                     }
                   ],
-                  "subtotal": 2333.16,
-                  "tax": 186.65,
+                  "subtotal": 1791.68,
+                  "tax": 143.33,
                   "shipping": 0,
-                  "total": 2519.81,
+                  "total": 1935.01,
                   "currency": "USD",
                   "status": "pending",
-                  "paymentMethod": "google_pay",
+                  "paymentMethod": "credit_card",
                   "shippingAddress": {
-                    "street": "5626 Park Ave",
-                    "city": "Boston",
-                    "state": "GA",
-                    "zipCode": "34194",
+                    "street": "6620 Maple Dr",
+                    "city": "Fort Worth",
+                    "state": "MI",
+                    "zipCode": "16372",
                     "country": "US"
                   },
-                  "trackingNumber": null,
+                  "trackingNumber": "TRK442765071",
                   "notes": null,
-                  "createdAt": "2024-12-03T15:39:22.164Z",
-                  "updatedAt": "2026-05-13T06:40:33.266Z"
+                  "createdAt": "2026-04-19T12:16:46.226Z",
+                  "updatedAt": "2025-01-30T04:10:54.855Z"
                 }
               }
             }
@@ -8327,49 +8353,34 @@
                   "userId": 1,
                   "items": [
                     {
-                      "productId": 38,
-                      "quantity": 1,
-                      "price": 346.46
-                    },
-                    {
-                      "productId": 32,
+                      "productId": 37,
                       "quantity": 2,
-                      "price": 134.41
+                      "price": 416.97
                     },
                     {
-                      "productId": 14,
-                      "quantity": 3,
-                      "price": 484.07
-                    },
-                    {
-                      "productId": 30,
-                      "quantity": 1,
-                      "price": 196.2
-                    },
-                    {
-                      "productId": 9,
-                      "quantity": 1,
-                      "price": 69.47
+                      "productId": 16,
+                      "quantity": 2,
+                      "price": 478.87
                     }
                   ],
-                  "subtotal": 2333.16,
-                  "tax": 186.65,
+                  "subtotal": 1791.68,
+                  "tax": 143.33,
                   "shipping": 0,
-                  "total": 2519.81,
+                  "total": 1935.01,
                   "currency": "USD",
                   "status": "pending",
-                  "paymentMethod": "google_pay",
+                  "paymentMethod": "credit_card",
                   "shippingAddress": {
-                    "street": "5626 Park Ave",
-                    "city": "Boston",
-                    "state": "GA",
-                    "zipCode": "34194",
+                    "street": "6620 Maple Dr",
+                    "city": "Fort Worth",
+                    "state": "MI",
+                    "zipCode": "16372",
                     "country": "US"
                   },
-                  "trackingNumber": null,
+                  "trackingNumber": "TRK442765071",
                   "notes": null,
-                  "createdAt": "2024-12-03T15:39:22.164Z",
-                  "updatedAt": "2026-05-13T06:40:33.266Z"
+                  "createdAt": "2026-04-19T12:16:46.226Z",
+                  "updatedAt": "2025-01-30T04:10:54.855Z"
                 }
               }
             }
@@ -8410,49 +8421,34 @@
                   "userId": 1,
                   "items": [
                     {
-                      "productId": 38,
-                      "quantity": 1,
-                      "price": 346.46
-                    },
-                    {
-                      "productId": 32,
+                      "productId": 37,
                       "quantity": 2,
-                      "price": 134.41
+                      "price": 416.97
                     },
                     {
-                      "productId": 14,
-                      "quantity": 3,
-                      "price": 484.07
-                    },
-                    {
-                      "productId": 30,
-                      "quantity": 1,
-                      "price": 196.2
-                    },
-                    {
-                      "productId": 9,
-                      "quantity": 1,
-                      "price": 69.47
+                      "productId": 16,
+                      "quantity": 2,
+                      "price": 478.87
                     }
                   ],
-                  "subtotal": 2333.16,
-                  "tax": 186.65,
+                  "subtotal": 1791.68,
+                  "tax": 143.33,
                   "shipping": 0,
-                  "total": 2519.81,
+                  "total": 1935.01,
                   "currency": "USD",
                   "status": "pending",
-                  "paymentMethod": "google_pay",
+                  "paymentMethod": "credit_card",
                   "shippingAddress": {
-                    "street": "5626 Park Ave",
-                    "city": "Boston",
-                    "state": "GA",
-                    "zipCode": "34194",
+                    "street": "6620 Maple Dr",
+                    "city": "Fort Worth",
+                    "state": "MI",
+                    "zipCode": "16372",
                     "country": "US"
                   },
-                  "trackingNumber": null,
+                  "trackingNumber": "TRK442765071",
                   "notes": null,
-                  "createdAt": "2024-12-03T15:39:22.164Z",
-                  "updatedAt": "2026-05-13T06:40:33.266Z"
+                  "createdAt": "2026-04-19T12:16:46.226Z",
+                  "updatedAt": "2025-01-30T04:10:54.855Z"
                 }
               }
             }
@@ -8492,12 +8488,12 @@
                   "id": 1,
                   "productId": 1,
                   "userId": 1,
-                  "rating": 3,
-                  "title": "Amazing quality",
-                  "body": "Well written and easy to follow. Keep up the good work!",
+                  "rating": 4,
+                  "title": "Works as advertised",
+                  "body": "Great article! Really helped me understand the concept better.",
                   "isVerified": true,
-                  "helpful": 47,
-                  "createdAt": "2026-11-12T21:21:15.500Z"
+                  "helpful": 1,
+                  "createdAt": "2025-08-29T18:25:55.906Z"
                 }
               }
             }
@@ -8537,12 +8533,12 @@
                   "id": 1,
                   "productId": 1,
                   "userId": 1,
-                  "rating": 3,
-                  "title": "Amazing quality",
-                  "body": "Well written and easy to follow. Keep up the good work!",
+                  "rating": 4,
+                  "title": "Works as advertised",
+                  "body": "Great article! Really helped me understand the concept better.",
                   "isVerified": true,
-                  "helpful": 47,
-                  "createdAt": "2026-11-12T21:21:15.500Z"
+                  "helpful": 1,
+                  "createdAt": "2025-08-29T18:25:55.906Z"
                 }
               }
             }
@@ -8582,12 +8578,12 @@
                   "id": 1,
                   "productId": 1,
                   "userId": 1,
-                  "rating": 3,
-                  "title": "Amazing quality",
-                  "body": "Well written and easy to follow. Keep up the good work!",
+                  "rating": 4,
+                  "title": "Works as advertised",
+                  "body": "Great article! Really helped me understand the concept better.",
                   "isVerified": true,
-                  "helpful": 47,
-                  "createdAt": "2026-11-12T21:21:15.500Z"
+                  "helpful": 1,
+                  "createdAt": "2025-08-29T18:25:55.906Z"
                 }
               }
             }
@@ -8626,12 +8622,12 @@
                 "data": {
                   "id": 1,
                   "userId": 1,
-                  "type": "success",
-                  "title": "Success notification",
-                  "message": "Your order has been shipped.",
+                  "type": "error",
+                  "title": "Error notification",
+                  "message": "New follower on your profile.",
                   "read": true,
                   "link": null,
-                  "createdAt": "2026-03-25T20:06:25.019Z"
+                  "createdAt": "2026-03-23T15:22:15.402Z"
                 }
               }
             }
@@ -8670,12 +8666,12 @@
                 "data": {
                   "id": 1,
                   "userId": 1,
-                  "type": "success",
-                  "title": "Success notification",
-                  "message": "Your order has been shipped.",
+                  "type": "error",
+                  "title": "Error notification",
+                  "message": "New follower on your profile.",
                   "read": true,
                   "link": null,
-                  "createdAt": "2026-03-25T20:06:25.019Z"
+                  "createdAt": "2026-03-23T15:22:15.402Z"
                 }
               }
             }
@@ -8714,12 +8710,12 @@
                 "data": {
                   "id": 1,
                   "userId": 1,
-                  "type": "success",
-                  "title": "Success notification",
-                  "message": "Your order has been shipped.",
+                  "type": "error",
+                  "title": "Error notification",
+                  "message": "New follower on your profile.",
                   "read": true,
                   "link": null,
-                  "createdAt": "2026-03-25T20:06:25.019Z"
+                  "createdAt": "2026-03-23T15:22:15.402Z"
                 }
               }
             }
@@ -9177,39 +9173,35 @@
             "description": "Post title",
             "minLength": 1,
             "maxLength": 200,
-            "example": "Getting Started with TypeScript"
+            "example": "Performance Optimization Tips"
           },
           "slug": {
             "type": "string",
             "description": "URL-friendly slug",
             "pattern": "^[a-z0-9-]+$",
-            "example": "introduction-to-docker-containers"
+            "example": "web-security-fundamentals"
           },
           "body": {
             "type": "string",
             "description": "Full post content in plain text",
-            "example": "Praesent dapibus, neque id cursus faucibus, tortor neque egestas augue, eu vulputate magna eros eu erat.\n\nFusce commodo aliquam arcu. Nam commodo suscipit quam. Quisque id odio.\n\nVestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae.\n\nUt enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\n\nVestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae.\n\nUt enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+            "example": "Fusce commodo aliquam arcu. Nam commodo suscipit quam. Quisque id odio.\n\nCurabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra."
           },
           "excerpt": {
             "type": "string",
             "description": "Short preview text",
             "maxLength": 300,
-            "example": "Phasellus ultrices nulla quis nibh. Quisque a lectus. Donec consectetuer ligula vulputate sem tristique cursus...."
+            "example": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliq..."
           },
           "tags": {
             "type": "array",
             "items": {
               "type": "string",
-              "example": "testing"
+              "example": "ux"
             },
             "description": "Categorization tags",
             "uniqueItems": true,
             "example": [
-              "testing",
-              "nodejs",
-              "docker",
-              "devops",
-              "frontend"
+              "ux"
             ]
           },
           "status": {
@@ -9228,14 +9220,14 @@
             "format": "int32",
             "description": "Total view count",
             "minimum": 0,
-            "example": 22828
+            "example": 16848
           },
           "likes": {
             "type": "integer",
             "format": "int32",
             "description": "Total like count",
             "minimum": 0,
-            "example": 238
+            "example": 28
           },
           "featured": {
             "type": "boolean",
@@ -9255,43 +9247,39 @@
             "description": "Estimated reading time in minutes",
             "minimum": 1,
             "maximum": 60,
-            "example": 13
+            "example": 7
           },
           "createdAt": {
             "type": "string",
             "format": "date-time",
             "readOnly": true,
-            "example": "2025-06-06T21:57:48.779Z"
+            "example": "2026-01-21T19:36:04.116Z"
           },
           "updatedAt": {
             "type": "string",
             "format": "date-time",
             "readOnly": true,
-            "example": "2025-06-06T21:57:48.779Z"
+            "example": "2026-01-21T19:36:04.116Z"
           }
         },
         "example": {
           "id": 1,
           "userId": 1,
-          "title": "Getting Started with TypeScript",
-          "slug": "introduction-to-docker-containers",
-          "body": "Praesent dapibus, neque id cursus faucibus, tortor neque egestas augue, eu vulputate magna eros eu erat.\n\nFusce commodo aliquam arcu. Nam commodo suscipit quam. Quisque id odio.\n\nVestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae.\n\nUt enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\n\nVestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae.\n\nUt enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-          "excerpt": "Phasellus ultrices nulla quis nibh. Quisque a lectus. Donec consectetuer ligula vulputate sem tristique cursus....",
+          "title": "Performance Optimization Tips",
+          "slug": "web-security-fundamentals",
+          "body": "Fusce commodo aliquam arcu. Nam commodo suscipit quam. Quisque id odio.\n\nCurabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra.",
+          "excerpt": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliq...",
           "tags": [
-            "testing",
-            "nodejs",
-            "docker",
-            "devops",
-            "frontend"
+            "ux"
           ],
           "status": "published",
-          "views": 22828,
-          "likes": 238,
+          "views": 16848,
+          "likes": 28,
           "featured": false,
           "coverImage": "https://picsum.photos/seed/1/800/400",
-          "readingTime": 13,
-          "createdAt": "2025-06-06T21:57:48.779Z",
-          "updatedAt": "2025-06-06T21:57:48.779Z"
+          "readingTime": 7,
+          "createdAt": "2026-01-21T19:36:04.116Z",
+          "updatedAt": "2026-01-21T19:36:04.116Z"
         }
       },
       "PostInput": {
@@ -9314,39 +9302,35 @@
             "description": "Post title",
             "minLength": 1,
             "maxLength": 200,
-            "example": "Getting Started with TypeScript"
+            "example": "Performance Optimization Tips"
           },
           "slug": {
             "type": "string",
             "description": "URL-friendly slug",
             "pattern": "^[a-z0-9-]+$",
-            "example": "introduction-to-docker-containers"
+            "example": "web-security-fundamentals"
           },
           "body": {
             "type": "string",
             "description": "Full post content in plain text",
-            "example": "Praesent dapibus, neque id cursus faucibus, tortor neque egestas augue, eu vulputate magna eros eu erat.\n\nFusce commodo aliquam arcu. Nam commodo suscipit quam. Quisque id odio.\n\nVestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae.\n\nUt enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\n\nVestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae.\n\nUt enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+            "example": "Fusce commodo aliquam arcu. Nam commodo suscipit quam. Quisque id odio.\n\nCurabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra."
           },
           "excerpt": {
             "type": "string",
             "description": "Short preview text",
             "maxLength": 300,
-            "example": "Phasellus ultrices nulla quis nibh. Quisque a lectus. Donec consectetuer ligula vulputate sem tristique cursus...."
+            "example": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliq..."
           },
           "tags": {
             "type": "array",
             "items": {
               "type": "string",
-              "example": "testing"
+              "example": "ux"
             },
             "description": "Categorization tags",
             "uniqueItems": true,
             "example": [
-              "testing",
-              "nodejs",
-              "docker",
-              "devops",
-              "frontend"
+              "ux"
             ]
           },
           "status": {
@@ -9365,14 +9349,14 @@
             "format": "int32",
             "description": "Total view count",
             "minimum": 0,
-            "example": 22828
+            "example": 16848
           },
           "likes": {
             "type": "integer",
             "format": "int32",
             "description": "Total like count",
             "minimum": 0,
-            "example": 238
+            "example": 28
           },
           "featured": {
             "type": "boolean",
@@ -9392,7 +9376,7 @@
             "description": "Estimated reading time in minutes",
             "minimum": 1,
             "maximum": 60,
-            "example": 13
+            "example": 7
           }
         },
         "example": {
@@ -9439,29 +9423,29 @@
           "body": {
             "type": "string",
             "description": "Comment text content",
-            "example": "This saved me hours of debugging. Thank you!"
+            "example": "How does this compare to the approach described in the official docs?"
           },
           "likes": {
             "type": "integer",
             "format": "int32",
             "description": "Number of likes",
             "minimum": 0,
-            "example": 34
+            "example": 16
           },
           "createdAt": {
             "type": "string",
             "format": "date-time",
             "readOnly": true,
-            "example": "2025-01-25T20:09:48.322Z"
+            "example": "2023-04-28T06:59:47.906Z"
           }
         },
         "example": {
           "id": 1,
           "postId": 1,
           "userId": 1,
-          "body": "This saved me hours of debugging. Thank you!",
-          "likes": 34,
-          "createdAt": "2025-01-25T20:09:48.322Z"
+          "body": "How does this compare to the approach described in the official docs?",
+          "likes": 16,
+          "createdAt": "2023-04-28T06:59:47.906Z"
         }
       },
       "CommentInput": {
@@ -9489,14 +9473,14 @@
           "body": {
             "type": "string",
             "description": "Comment text content",
-            "example": "This saved me hours of debugging. Thank you!"
+            "example": "How does this compare to the approach described in the official docs?"
           },
           "likes": {
             "type": "integer",
             "format": "int32",
             "description": "Number of likes",
             "minimum": 0,
-            "example": 34
+            "example": 16
           }
         },
         "example": {
@@ -9531,7 +9515,7 @@
             "description": "Task description",
             "minLength": 1,
             "maxLength": 200,
-            "example": "Fix timezone handling"
+            "example": "Configure monitoring"
           },
           "completed": {
             "type": "boolean",
@@ -9552,43 +9536,37 @@
             "example": "low"
           },
           "dueDate": {
-            "type": "string",
-            "format": "date-time",
+            "type": [
+              "string",
+              "null"
+            ],
             "description": "Due date (null if no deadline)",
-            "example": "2026-07-14T20:06:24.999Z"
+            "format": "date-time",
+            "example": null
           },
           "tags": {
             "type": "array",
-            "items": {
-              "type": "string",
-              "example": "nodejs"
-            },
+            "items": {},
             "description": "Categorization tags",
             "uniqueItems": true,
-            "example": [
-              "nodejs",
-              "devops"
-            ]
+            "example": []
           },
           "createdAt": {
             "type": "string",
             "format": "date-time",
             "readOnly": true,
-            "example": "2025-07-07T21:20:08.693Z"
+            "example": "2024-01-25T00:38:32.919Z"
           }
         },
         "example": {
           "id": 1,
           "userId": 1,
-          "title": "Fix timezone handling",
+          "title": "Configure monitoring",
           "completed": true,
           "priority": "low",
-          "dueDate": "2026-07-14T20:06:24.999Z",
-          "tags": [
-            "nodejs",
-            "devops"
-          ],
-          "createdAt": "2025-07-07T21:20:08.693Z"
+          "dueDate": null,
+          "tags": [],
+          "createdAt": "2024-01-25T00:38:32.919Z"
         }
       },
       "TodoInput": {
@@ -9610,7 +9588,7 @@
             "description": "Task description",
             "minLength": 1,
             "maxLength": 200,
-            "example": "Fix timezone handling"
+            "example": "Configure monitoring"
           },
           "completed": {
             "type": "boolean",
@@ -9631,23 +9609,20 @@
             "example": "low"
           },
           "dueDate": {
-            "type": "string",
-            "format": "date-time",
+            "type": [
+              "string",
+              "null"
+            ],
             "description": "Due date (null if no deadline)",
-            "example": "2026-07-14T20:06:24.999Z"
+            "format": "date-time",
+            "example": null
           },
           "tags": {
             "type": "array",
-            "items": {
-              "type": "string",
-              "example": "nodejs"
-            },
+            "items": {},
             "description": "Categorization tags",
             "uniqueItems": true,
-            "example": [
-              "nodejs",
-              "devops"
-            ]
+            "example": []
           }
         },
         "example": {
@@ -9680,12 +9655,12 @@
             "type": "string",
             "description": "Album title",
             "minLength": 1,
-            "example": "Street Art"
+            "example": "Abstract"
           },
           "description": {
             "type": "string",
             "description": "Album description",
-            "example": "Praesent dapibus, neque id cursus faucibus, tortor neque egestas augue, eu vulputate magna eros eu erat."
+            "example": "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
           },
           "coverImage": {
             "type": "string",
@@ -9698,7 +9673,7 @@
             "format": "int32",
             "description": "Number of photos",
             "minimum": 0,
-            "example": 23
+            "example": 39
           },
           "isPublic": {
             "type": "boolean",
@@ -9710,18 +9685,18 @@
             "type": "string",
             "format": "date-time",
             "readOnly": true,
-            "example": "2025-12-01T13:37:20.950Z"
+            "example": "2024-07-02T09:01:49.954Z"
           }
         },
         "example": {
           "id": 1,
           "userId": 1,
-          "title": "Street Art",
-          "description": "Praesent dapibus, neque id cursus faucibus, tortor neque egestas augue, eu vulputate magna eros eu erat.",
+          "title": "Abstract",
+          "description": "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
           "coverImage": "https://picsum.photos/seed/album1/600/400",
-          "photoCount": 23,
+          "photoCount": 39,
           "isPublic": true,
-          "createdAt": "2025-12-01T13:37:20.950Z"
+          "createdAt": "2024-07-02T09:01:49.954Z"
         }
       },
       "AlbumInput": {
@@ -9742,12 +9717,12 @@
             "type": "string",
             "description": "Album title",
             "minLength": 1,
-            "example": "Street Art"
+            "example": "Abstract"
           },
           "description": {
             "type": "string",
             "description": "Album description",
-            "example": "Praesent dapibus, neque id cursus faucibus, tortor neque egestas augue, eu vulputate magna eros eu erat."
+            "example": "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
           },
           "coverImage": {
             "type": "string",
@@ -9760,7 +9735,7 @@
             "format": "int32",
             "description": "Number of photos",
             "minimum": 0,
-            "example": 23
+            "example": 39
           },
           "isPublic": {
             "type": "boolean",
@@ -9805,7 +9780,7 @@
             "type": "string",
             "format": "uri",
             "description": "Full-size image URL",
-            "example": "https://picsum.photos/seed/1/1920/1080"
+            "example": "https://picsum.photos/seed/1/800/960"
           },
           "thumbnailUrl": {
             "type": "string",
@@ -9818,21 +9793,21 @@
             "format": "int32",
             "description": "Image width in pixels",
             "minimum": 1,
-            "example": 1920
+            "example": 800
           },
           "height": {
             "type": "integer",
             "format": "int32",
             "description": "Image height in pixels",
             "minimum": 1,
-            "example": 1080
+            "example": 960
           },
           "size": {
             "type": "integer",
             "format": "int32",
             "description": "File size in bytes",
             "minimum": 0,
-            "example": 1913935
+            "example": 4803273
           },
           "format": {
             "type": "string",
@@ -9848,20 +9823,20 @@
             "type": "string",
             "format": "date-time",
             "readOnly": true,
-            "example": "2026-05-11T14:13:52.972Z"
+            "example": "2026-07-24T20:47:13.121Z"
           }
         },
         "example": {
           "id": 1,
           "albumId": 1,
           "title": "Photo 1",
-          "url": "https://picsum.photos/seed/1/1920/1080",
+          "url": "https://picsum.photos/seed/1/800/960",
           "thumbnailUrl": "https://picsum.photos/seed/1/150/150",
-          "width": 1920,
-          "height": 1080,
-          "size": 1913935,
+          "width": 800,
+          "height": 960,
+          "size": 4803273,
           "format": "jpeg",
-          "createdAt": "2026-05-11T14:13:52.972Z"
+          "createdAt": "2026-07-24T20:47:13.121Z"
         }
       },
       "PhotoInput": {
@@ -9888,7 +9863,7 @@
             "type": "string",
             "format": "uri",
             "description": "Full-size image URL",
-            "example": "https://picsum.photos/seed/1/1920/1080"
+            "example": "https://picsum.photos/seed/1/800/960"
           },
           "thumbnailUrl": {
             "type": "string",
@@ -9901,21 +9876,21 @@
             "format": "int32",
             "description": "Image width in pixels",
             "minimum": 1,
-            "example": 1920
+            "example": 800
           },
           "height": {
             "type": "integer",
             "format": "int32",
             "description": "Image height in pixels",
             "minimum": 1,
-            "example": 1080
+            "example": 960
           },
           "size": {
             "type": "integer",
             "format": "int32",
             "description": "File size in bytes",
             "minimum": 0,
-            "example": 1913935
+            "example": 4803273
           },
           "format": {
             "type": "string",
@@ -9988,7 +9963,7 @@
             "type": "string",
             "format": "date-time",
             "readOnly": true,
-            "example": "2022-01-28T14:08:09.219Z"
+            "example": "2022-01-06T04:19:58.076Z"
           }
         },
         "example": {
@@ -9998,7 +9973,7 @@
           "description": "Gadgets, devices, and electronic accessories",
           "image": "https://picsum.photos/seed/cat1/300/200",
           "productCount": 5,
-          "createdAt": "2022-01-28T14:08:09.219Z"
+          "createdAt": "2022-01-06T04:19:58.076Z"
         }
       },
       "CategoryInput": {
@@ -10065,34 +10040,32 @@
             "format": "int32",
             "description": "Parent category ID",
             "minimum": 1,
-            "example": 8
+            "example": 4
           },
           "name": {
             "type": "string",
             "description": "Product name",
             "minLength": 1,
             "maxLength": 200,
-            "example": "Desk Organizer"
+            "example": "Desk Lamp"
           },
           "description": {
             "type": "string",
             "description": "Product description",
-            "example": "Designed for professionals who demand the best tools."
+            "example": "Ultra-fast connectivity with rock-solid reliability."
           },
           "price": {
             "type": "number",
             "format": "double",
             "description": "Current price in USD",
             "minimum": 0,
-            "example": 363.73
+            "example": 161.28
           },
           "originalPrice": {
-            "type": [
-              "string",
-              "null"
-            ],
+            "type": "number",
+            "format": "double",
             "description": "Original price before discount (null if none)",
-            "example": null
+            "example": 231.38
           },
           "currency": {
             "type": "string",
@@ -10108,7 +10081,7 @@
             "format": "int32",
             "description": "Available inventory count",
             "minimum": 0,
-            "example": 79
+            "example": 257
           },
           "sku": {
             "type": "string",
@@ -10122,14 +10095,14 @@
             "description": "Average customer rating",
             "minimum": 1,
             "maximum": 5,
-            "example": 3.8
+            "example": 4.4
           },
           "reviewCount": {
             "type": "integer",
             "format": "int32",
             "description": "Total reviews",
             "minimum": 0,
-            "example": 185
+            "example": 188
           },
           "image": {
             "type": "string",
@@ -10149,7 +10122,8 @@
               "https://picsum.photos/seed/prod1-0/400/400",
               "https://picsum.photos/seed/prod1-1/400/400",
               "https://picsum.photos/seed/prod1-2/400/400",
-              "https://picsum.photos/seed/prod1-3/400/400"
+              "https://picsum.photos/seed/prod1-3/400/400",
+              "https://picsum.photos/seed/prod1-4/400/400"
             ]
           },
           "weight": {
@@ -10157,7 +10131,7 @@
             "format": "double",
             "description": "Weight in kg",
             "minimum": 0,
-            "example": 6.51
+            "example": 9.19
           },
           "dimensions": {
             "type": "object",
@@ -10165,24 +10139,24 @@
               "width": {
                 "type": "number",
                 "format": "double",
-                "example": 20.1
+                "example": 33.4
               },
               "height": {
                 "type": "integer",
                 "format": "int32",
-                "example": 46
+                "example": 40
               },
               "depth": {
                 "type": "number",
                 "format": "double",
-                "example": 9.3
+                "example": 14.6
               }
             },
             "description": "Dimensions in cm",
             "example": {
-              "width": 20.1,
-              "height": 46,
-              "depth": 9.3
+              "width": 33.4,
+              "height": 40,
+              "depth": 14.6
             }
           },
           "isAvailable": {
@@ -10201,63 +10175,60 @@
             "type": "array",
             "items": {
               "type": "string",
-              "example": "performance"
+              "example": "backend"
             },
             "description": "Search and filter tags",
             "uniqueItems": true,
             "example": [
-              "performance",
-              "nodejs",
-              "api"
+              "backend"
             ]
           },
           "createdAt": {
             "type": "string",
             "format": "date-time",
             "readOnly": true,
-            "example": "2026-09-15T13:43:04.017Z"
+            "example": "2024-05-30T01:37:26.059Z"
           },
           "updatedAt": {
             "type": "string",
             "format": "date-time",
             "readOnly": true,
-            "example": "2025-12-05T10:38:34.470Z"
+            "example": "2026-12-15T02:55:19.943Z"
           }
         },
         "example": {
           "id": 1,
-          "categoryId": 8,
-          "name": "Desk Organizer",
-          "description": "Designed for professionals who demand the best tools.",
-          "price": 363.73,
-          "originalPrice": null,
+          "categoryId": 4,
+          "name": "Desk Lamp",
+          "description": "Ultra-fast connectivity with rock-solid reliability.",
+          "price": 161.28,
+          "originalPrice": 231.38,
           "currency": "USD",
-          "stock": 79,
+          "stock": 257,
           "sku": "SKU-00001",
-          "rating": 3.8,
-          "reviewCount": 185,
+          "rating": 4.4,
+          "reviewCount": 188,
           "image": "https://picsum.photos/seed/prod1/400/400",
           "images": [
             "https://picsum.photos/seed/prod1-0/400/400",
             "https://picsum.photos/seed/prod1-1/400/400",
             "https://picsum.photos/seed/prod1-2/400/400",
-            "https://picsum.photos/seed/prod1-3/400/400"
+            "https://picsum.photos/seed/prod1-3/400/400",
+            "https://picsum.photos/seed/prod1-4/400/400"
           ],
-          "weight": 6.51,
+          "weight": 9.19,
           "dimensions": {
-            "width": 20.1,
-            "height": 46,
-            "depth": 9.3
+            "width": 33.4,
+            "height": 40,
+            "depth": 14.6
           },
           "isAvailable": true,
           "isFeatured": false,
           "tags": [
-            "performance",
-            "nodejs",
-            "api"
+            "backend"
           ],
-          "createdAt": "2026-09-15T13:43:04.017Z",
-          "updatedAt": "2025-12-05T10:38:34.470Z"
+          "createdAt": "2024-05-30T01:37:26.059Z",
+          "updatedAt": "2026-12-15T02:55:19.943Z"
         }
       },
       "ProductInput": {
@@ -10273,34 +10244,32 @@
             "format": "int32",
             "description": "Parent category ID",
             "minimum": 1,
-            "example": 8
+            "example": 4
           },
           "name": {
             "type": "string",
             "description": "Product name",
             "minLength": 1,
             "maxLength": 200,
-            "example": "Desk Organizer"
+            "example": "Desk Lamp"
           },
           "description": {
             "type": "string",
             "description": "Product description",
-            "example": "Designed for professionals who demand the best tools."
+            "example": "Ultra-fast connectivity with rock-solid reliability."
           },
           "price": {
             "type": "number",
             "format": "double",
             "description": "Current price in USD",
             "minimum": 0,
-            "example": 363.73
+            "example": 161.28
           },
           "originalPrice": {
-            "type": [
-              "string",
-              "null"
-            ],
+            "type": "number",
+            "format": "double",
             "description": "Original price before discount (null if none)",
-            "example": null
+            "example": 231.38
           },
           "currency": {
             "type": "string",
@@ -10316,7 +10285,7 @@
             "format": "int32",
             "description": "Available inventory count",
             "minimum": 0,
-            "example": 79
+            "example": 257
           },
           "sku": {
             "type": "string",
@@ -10330,14 +10299,14 @@
             "description": "Average customer rating",
             "minimum": 1,
             "maximum": 5,
-            "example": 3.8
+            "example": 4.4
           },
           "reviewCount": {
             "type": "integer",
             "format": "int32",
             "description": "Total reviews",
             "minimum": 0,
-            "example": 185
+            "example": 188
           },
           "image": {
             "type": "string",
@@ -10357,7 +10326,8 @@
               "https://picsum.photos/seed/prod1-0/400/400",
               "https://picsum.photos/seed/prod1-1/400/400",
               "https://picsum.photos/seed/prod1-2/400/400",
-              "https://picsum.photos/seed/prod1-3/400/400"
+              "https://picsum.photos/seed/prod1-3/400/400",
+              "https://picsum.photos/seed/prod1-4/400/400"
             ]
           },
           "weight": {
@@ -10365,7 +10335,7 @@
             "format": "double",
             "description": "Weight in kg",
             "minimum": 0,
-            "example": 6.51
+            "example": 9.19
           },
           "dimensions": {
             "type": "object",
@@ -10373,24 +10343,24 @@
               "width": {
                 "type": "number",
                 "format": "double",
-                "example": 20.1
+                "example": 33.4
               },
               "height": {
                 "type": "integer",
                 "format": "int32",
-                "example": 46
+                "example": 40
               },
               "depth": {
                 "type": "number",
                 "format": "double",
-                "example": 9.3
+                "example": 14.6
               }
             },
             "description": "Dimensions in cm",
             "example": {
-              "width": 20.1,
-              "height": 46,
-              "depth": 9.3
+              "width": 33.4,
+              "height": 40,
+              "depth": 14.6
             }
           },
           "isAvailable": {
@@ -10409,14 +10379,12 @@
             "type": "array",
             "items": {
               "type": "string",
-              "example": "performance"
+              "example": "backend"
             },
             "description": "Search and filter tags",
             "uniqueItems": true,
             "example": [
-              "performance",
-              "nodejs",
-              "api"
+              "backend"
             ]
           }
         },
@@ -10458,17 +10426,17 @@
                 "productId": {
                   "type": "integer",
                   "format": "int32",
-                  "example": 38
+                  "example": 37
                 },
                 "quantity": {
                   "type": "integer",
                   "format": "int32",
-                  "example": 1
+                  "example": 2
                 },
                 "price": {
                   "type": "number",
                   "format": "double",
-                  "example": 346.46
+                  "example": 416.97
                 }
               }
             },
@@ -10476,29 +10444,14 @@
             "minItems": 1,
             "example": [
               {
-                "productId": 38,
-                "quantity": 1,
-                "price": 346.46
-              },
-              {
-                "productId": 32,
+                "productId": 37,
                 "quantity": 2,
-                "price": 134.41
+                "price": 416.97
               },
               {
-                "productId": 14,
-                "quantity": 3,
-                "price": 484.07
-              },
-              {
-                "productId": 30,
-                "quantity": 1,
-                "price": 196.2
-              },
-              {
-                "productId": 9,
-                "quantity": 1,
-                "price": 69.47
+                "productId": 16,
+                "quantity": 2,
+                "price": 478.87
               }
             ]
           },
@@ -10507,14 +10460,14 @@
             "format": "double",
             "description": "Items total before tax/shipping",
             "minimum": 0,
-            "example": 2333.16
+            "example": 1791.68
           },
           "tax": {
             "type": "number",
             "format": "double",
             "description": "Tax amount",
             "minimum": 0,
-            "example": 186.65
+            "example": 143.33
           },
           "shipping": {
             "type": "integer",
@@ -10528,7 +10481,7 @@
             "format": "double",
             "description": "Grand total",
             "minimum": 0,
-            "example": 2519.81
+            "example": 1935.01
           },
           "currency": {
             "type": "string",
@@ -10562,26 +10515,26 @@
               "apple_pay",
               "google_pay"
             ],
-            "example": "google_pay"
+            "example": "credit_card"
           },
           "shippingAddress": {
             "type": "object",
             "properties": {
               "street": {
                 "type": "string",
-                "example": "5626 Park Ave"
+                "example": "6620 Maple Dr"
               },
               "city": {
                 "type": "string",
-                "example": "Boston"
+                "example": "Fort Worth"
               },
               "state": {
                 "type": "string",
-                "example": "GA"
+                "example": "MI"
               },
               "zipCode": {
                 "type": "string",
-                "example": "34194"
+                "example": "16372"
               },
               "country": {
                 "type": "string",
@@ -10590,20 +10543,17 @@
             },
             "description": "Delivery address",
             "example": {
-              "street": "5626 Park Ave",
-              "city": "Boston",
-              "state": "GA",
-              "zipCode": "34194",
+              "street": "6620 Maple Dr",
+              "city": "Fort Worth",
+              "state": "MI",
+              "zipCode": "16372",
               "country": "US"
             }
           },
           "trackingNumber": {
-            "type": [
-              "string",
-              "null"
-            ],
+            "type": "string",
             "description": "Tracking number (null if not shipped)",
-            "example": null
+            "example": "TRK442765071"
           },
           "notes": {
             "type": [
@@ -10617,13 +10567,13 @@
             "type": "string",
             "format": "date-time",
             "readOnly": true,
-            "example": "2024-12-03T15:39:22.164Z"
+            "example": "2026-04-19T12:16:46.226Z"
           },
           "updatedAt": {
             "type": "string",
             "format": "date-time",
             "readOnly": true,
-            "example": "2026-05-13T06:40:33.266Z"
+            "example": "2025-01-30T04:10:54.855Z"
           }
         },
         "example": {
@@ -10631,49 +10581,34 @@
           "userId": 1,
           "items": [
             {
-              "productId": 38,
-              "quantity": 1,
-              "price": 346.46
-            },
-            {
-              "productId": 32,
+              "productId": 37,
               "quantity": 2,
-              "price": 134.41
+              "price": 416.97
             },
             {
-              "productId": 14,
-              "quantity": 3,
-              "price": 484.07
-            },
-            {
-              "productId": 30,
-              "quantity": 1,
-              "price": 196.2
-            },
-            {
-              "productId": 9,
-              "quantity": 1,
-              "price": 69.47
+              "productId": 16,
+              "quantity": 2,
+              "price": 478.87
             }
           ],
-          "subtotal": 2333.16,
-          "tax": 186.65,
+          "subtotal": 1791.68,
+          "tax": 143.33,
           "shipping": 0,
-          "total": 2519.81,
+          "total": 1935.01,
           "currency": "USD",
           "status": "pending",
-          "paymentMethod": "google_pay",
+          "paymentMethod": "credit_card",
           "shippingAddress": {
-            "street": "5626 Park Ave",
-            "city": "Boston",
-            "state": "GA",
-            "zipCode": "34194",
+            "street": "6620 Maple Dr",
+            "city": "Fort Worth",
+            "state": "MI",
+            "zipCode": "16372",
             "country": "US"
           },
-          "trackingNumber": null,
+          "trackingNumber": "TRK442765071",
           "notes": null,
-          "createdAt": "2024-12-03T15:39:22.164Z",
-          "updatedAt": "2026-05-13T06:40:33.266Z"
+          "createdAt": "2026-04-19T12:16:46.226Z",
+          "updatedAt": "2025-01-30T04:10:54.855Z"
         }
       },
       "OrderInput": {
@@ -10699,17 +10634,17 @@
                 "productId": {
                   "type": "integer",
                   "format": "int32",
-                  "example": 38
+                  "example": 37
                 },
                 "quantity": {
                   "type": "integer",
                   "format": "int32",
-                  "example": 1
+                  "example": 2
                 },
                 "price": {
                   "type": "number",
                   "format": "double",
-                  "example": 346.46
+                  "example": 416.97
                 }
               }
             },
@@ -10717,29 +10652,14 @@
             "minItems": 1,
             "example": [
               {
-                "productId": 38,
-                "quantity": 1,
-                "price": 346.46
-              },
-              {
-                "productId": 32,
+                "productId": 37,
                 "quantity": 2,
-                "price": 134.41
+                "price": 416.97
               },
               {
-                "productId": 14,
-                "quantity": 3,
-                "price": 484.07
-              },
-              {
-                "productId": 30,
-                "quantity": 1,
-                "price": 196.2
-              },
-              {
-                "productId": 9,
-                "quantity": 1,
-                "price": 69.47
+                "productId": 16,
+                "quantity": 2,
+                "price": 478.87
               }
             ]
           },
@@ -10748,14 +10668,14 @@
             "format": "double",
             "description": "Items total before tax/shipping",
             "minimum": 0,
-            "example": 2333.16
+            "example": 1791.68
           },
           "tax": {
             "type": "number",
             "format": "double",
             "description": "Tax amount",
             "minimum": 0,
-            "example": 186.65
+            "example": 143.33
           },
           "shipping": {
             "type": "integer",
@@ -10769,7 +10689,7 @@
             "format": "double",
             "description": "Grand total",
             "minimum": 0,
-            "example": 2519.81
+            "example": 1935.01
           },
           "currency": {
             "type": "string",
@@ -10803,26 +10723,26 @@
               "apple_pay",
               "google_pay"
             ],
-            "example": "google_pay"
+            "example": "credit_card"
           },
           "shippingAddress": {
             "type": "object",
             "properties": {
               "street": {
                 "type": "string",
-                "example": "5626 Park Ave"
+                "example": "6620 Maple Dr"
               },
               "city": {
                 "type": "string",
-                "example": "Boston"
+                "example": "Fort Worth"
               },
               "state": {
                 "type": "string",
-                "example": "GA"
+                "example": "MI"
               },
               "zipCode": {
                 "type": "string",
-                "example": "34194"
+                "example": "16372"
               },
               "country": {
                 "type": "string",
@@ -10831,20 +10751,17 @@
             },
             "description": "Delivery address",
             "example": {
-              "street": "5626 Park Ave",
-              "city": "Boston",
-              "state": "GA",
-              "zipCode": "34194",
+              "street": "6620 Maple Dr",
+              "city": "Fort Worth",
+              "state": "MI",
+              "zipCode": "16372",
               "country": "US"
             }
           },
           "trackingNumber": {
-            "type": [
-              "string",
-              "null"
-            ],
+            "type": "string",
             "description": "Tracking number (null if not shipped)",
-            "example": null
+            "example": "TRK442765071"
           },
           "notes": {
             "type": [
@@ -10919,17 +10836,17 @@
             "description": "Star rating",
             "minimum": 1,
             "maximum": 5,
-            "example": 3
+            "example": 4
           },
           "title": {
             "type": "string",
             "description": "Review headline",
-            "example": "Amazing quality"
+            "example": "Works as advertised"
           },
           "body": {
             "type": "string",
             "description": "Full review text",
-            "example": "Well written and easy to follow. Keep up the good work!"
+            "example": "Great article! Really helped me understand the concept better."
           },
           "isVerified": {
             "type": "boolean",
@@ -10941,25 +10858,25 @@
             "format": "int32",
             "description": "\"Helpful\" votes",
             "minimum": 0,
-            "example": 47
+            "example": 1
           },
           "createdAt": {
             "type": "string",
             "format": "date-time",
             "readOnly": true,
-            "example": "2026-11-12T21:21:15.500Z"
+            "example": "2025-08-29T18:25:55.906Z"
           }
         },
         "example": {
           "id": 1,
           "productId": 1,
           "userId": 1,
-          "rating": 3,
-          "title": "Amazing quality",
-          "body": "Well written and easy to follow. Keep up the good work!",
+          "rating": 4,
+          "title": "Works as advertised",
+          "body": "Great article! Really helped me understand the concept better.",
           "isVerified": true,
-          "helpful": 47,
-          "createdAt": "2026-11-12T21:21:15.500Z"
+          "helpful": 1,
+          "createdAt": "2025-08-29T18:25:55.906Z"
         }
       },
       "ReviewInput": {
@@ -10990,17 +10907,17 @@
             "description": "Star rating",
             "minimum": 1,
             "maximum": 5,
-            "example": 3
+            "example": 4
           },
           "title": {
             "type": "string",
             "description": "Review headline",
-            "example": "Amazing quality"
+            "example": "Works as advertised"
           },
           "body": {
             "type": "string",
             "description": "Full review text",
-            "example": "Well written and easy to follow. Keep up the good work!"
+            "example": "Great article! Really helped me understand the concept better."
           },
           "isVerified": {
             "type": "boolean",
@@ -11012,7 +10929,7 @@
             "format": "int32",
             "description": "\"Helpful\" votes",
             "minimum": 0,
-            "example": 47
+            "example": 1
           }
         },
         "example": {
@@ -11058,17 +10975,17 @@
               "error",
               "system"
             ],
-            "example": "success"
+            "example": "error"
           },
           "title": {
             "type": "string",
             "description": "Notification title",
-            "example": "Success notification"
+            "example": "Error notification"
           },
           "message": {
             "type": "string",
             "description": "Notification body text",
-            "example": "Your order has been shipped."
+            "example": "New follower on your profile."
           },
           "read": {
             "type": "boolean",
@@ -11089,18 +11006,18 @@
             "type": "string",
             "format": "date-time",
             "readOnly": true,
-            "example": "2026-03-25T20:06:25.019Z"
+            "example": "2026-03-23T15:22:15.402Z"
           }
         },
         "example": {
           "id": 1,
           "userId": 1,
-          "type": "success",
-          "title": "Success notification",
-          "message": "Your order has been shipped.",
+          "type": "error",
+          "title": "Error notification",
+          "message": "New follower on your profile.",
           "read": true,
           "link": null,
-          "createdAt": "2026-03-25T20:06:25.019Z"
+          "createdAt": "2026-03-23T15:22:15.402Z"
         }
       },
       "NotificationInput": {
@@ -11129,17 +11046,17 @@
               "error",
               "system"
             ],
-            "example": "success"
+            "example": "error"
           },
           "title": {
             "type": "string",
             "description": "Notification title",
-            "example": "Success notification"
+            "example": "Error notification"
           },
           "message": {
             "type": "string",
             "description": "Notification body text",
-            "example": "Your order has been shipped."
+            "example": "New follower on your profile."
           },
           "read": {
             "type": "boolean",
@@ -11750,6 +11667,73 @@
             "description": "Number of notifications"
           }
         }
+      },
+      "BasicDemoResponse": {
+        "type": "object",
+        "description": "Response from the HTTP Basic auth demo endpoint",
+        "required": [
+          "authenticated",
+          "scheme"
+        ],
+        "properties": {
+          "authenticated": {
+            "type": "boolean",
+            "example": true
+          },
+          "scheme": {
+            "type": "string",
+            "enum": [
+              "basic"
+            ],
+            "example": "basic"
+          },
+          "user": {
+            "type": "string",
+            "description": "Username supplied in the Basic header",
+            "example": "demo"
+          }
+        }
+      },
+      "AdminReport": {
+        "type": "object",
+        "description": "Read-only aggregate report for administrators",
+        "required": [
+          "generatedAt",
+          "scheme",
+          "totals"
+        ],
+        "properties": {
+          "generatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "scheme": {
+            "type": "string",
+            "enum": [
+              "bearer",
+              "basic"
+            ],
+            "description": "Which auth scheme the caller used"
+          },
+          "totals": {
+            "type": "object",
+            "description": "Record counts per resource",
+            "additionalProperties": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "webhooks": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Active webhook subscriptions"
+          },
+          "activeTokens": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Bearer tokens currently valid"
+          }
+        }
       }
     },
     "parameters": {
@@ -12147,6 +12131,11 @@
         "scheme": "bearer",
         "bearerFormat": "hex-token",
         "description": "Obtain via `POST /auth/login`. Include as `Authorization: Bearer <token>`. Expires in 1 hour. Most endpoints work without auth."
+      },
+      "basicAuth": {
+        "type": "http",
+        "scheme": "basic",
+        "description": "HTTP Basic. Mock — any username and password are accepted. Present so docs generators can render the Basic auth block."
       }
     },
     "links": {
@@ -12282,25 +12271,21 @@
         "value": {
           "id": 1,
           "userId": 1,
-          "title": "Getting Started with TypeScript",
-          "slug": "introduction-to-docker-containers",
-          "body": "Praesent dapibus, neque id cursus faucibus, tortor neque egestas augue, eu vulputate magna eros eu erat.\n\nFusce commodo aliquam arcu. Nam commodo suscipit quam. Quisque id odio.\n\nVestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae.\n\nUt enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\n\nVestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae.\n\nUt enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-          "excerpt": "Phasellus ultrices nulla quis nibh. Quisque a lectus. Donec consectetuer ligula vulputate sem tristique cursus....",
+          "title": "Performance Optimization Tips",
+          "slug": "web-security-fundamentals",
+          "body": "Fusce commodo aliquam arcu. Nam commodo suscipit quam. Quisque id odio.\n\nCurabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra.",
+          "excerpt": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliq...",
           "tags": [
-            "testing",
-            "nodejs",
-            "docker",
-            "devops",
-            "frontend"
+            "ux"
           ],
           "status": "published",
-          "views": 22828,
-          "likes": 238,
+          "views": 16848,
+          "likes": 28,
           "featured": false,
           "coverImage": "https://picsum.photos/seed/1/800/400",
-          "readingTime": 13,
-          "createdAt": "2025-06-06T21:57:48.779Z",
-          "updatedAt": "2025-06-06T21:57:48.779Z"
+          "readingTime": 7,
+          "createdAt": "2026-01-21T19:36:04.116Z",
+          "updatedAt": "2026-01-21T19:36:04.116Z"
         }
       },
       "CommentExample": {
@@ -12309,9 +12294,9 @@
           "id": 1,
           "postId": 1,
           "userId": 1,
-          "body": "This saved me hours of debugging. Thank you!",
-          "likes": 34,
-          "createdAt": "2025-01-25T20:09:48.322Z"
+          "body": "How does this compare to the approach described in the official docs?",
+          "likes": 16,
+          "createdAt": "2023-04-28T06:59:47.906Z"
         }
       },
       "TodoExample": {
@@ -12319,15 +12304,12 @@
         "value": {
           "id": 1,
           "userId": 1,
-          "title": "Fix timezone handling",
+          "title": "Configure monitoring",
           "completed": true,
           "priority": "low",
-          "dueDate": "2026-07-14T20:06:24.999Z",
-          "tags": [
-            "nodejs",
-            "devops"
-          ],
-          "createdAt": "2025-07-07T21:20:08.693Z"
+          "dueDate": null,
+          "tags": [],
+          "createdAt": "2024-01-25T00:38:32.919Z"
         }
       },
       "AlbumExample": {
@@ -12335,12 +12317,12 @@
         "value": {
           "id": 1,
           "userId": 1,
-          "title": "Street Art",
-          "description": "Praesent dapibus, neque id cursus faucibus, tortor neque egestas augue, eu vulputate magna eros eu erat.",
+          "title": "Abstract",
+          "description": "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
           "coverImage": "https://picsum.photos/seed/album1/600/400",
-          "photoCount": 23,
+          "photoCount": 39,
           "isPublic": true,
-          "createdAt": "2025-12-01T13:37:20.950Z"
+          "createdAt": "2024-07-02T09:01:49.954Z"
         }
       },
       "PhotoExample": {
@@ -12349,13 +12331,13 @@
           "id": 1,
           "albumId": 1,
           "title": "Photo 1",
-          "url": "https://picsum.photos/seed/1/1920/1080",
+          "url": "https://picsum.photos/seed/1/800/960",
           "thumbnailUrl": "https://picsum.photos/seed/1/150/150",
-          "width": 1920,
-          "height": 1080,
-          "size": 1913935,
+          "width": 800,
+          "height": 960,
+          "size": 4803273,
           "format": "jpeg",
-          "createdAt": "2026-05-11T14:13:52.972Z"
+          "createdAt": "2026-07-24T20:47:13.121Z"
         }
       },
       "CategoryExample": {
@@ -12367,45 +12349,44 @@
           "description": "Gadgets, devices, and electronic accessories",
           "image": "https://picsum.photos/seed/cat1/300/200",
           "productCount": 5,
-          "createdAt": "2022-01-28T14:08:09.219Z"
+          "createdAt": "2022-01-06T04:19:58.076Z"
         }
       },
       "ProductExample": {
         "summary": "Example product",
         "value": {
           "id": 1,
-          "categoryId": 8,
-          "name": "Desk Organizer",
-          "description": "Designed for professionals who demand the best tools.",
-          "price": 363.73,
-          "originalPrice": null,
+          "categoryId": 4,
+          "name": "Desk Lamp",
+          "description": "Ultra-fast connectivity with rock-solid reliability.",
+          "price": 161.28,
+          "originalPrice": 231.38,
           "currency": "USD",
-          "stock": 79,
+          "stock": 257,
           "sku": "SKU-00001",
-          "rating": 3.8,
-          "reviewCount": 185,
+          "rating": 4.4,
+          "reviewCount": 188,
           "image": "https://picsum.photos/seed/prod1/400/400",
           "images": [
             "https://picsum.photos/seed/prod1-0/400/400",
             "https://picsum.photos/seed/prod1-1/400/400",
             "https://picsum.photos/seed/prod1-2/400/400",
-            "https://picsum.photos/seed/prod1-3/400/400"
+            "https://picsum.photos/seed/prod1-3/400/400",
+            "https://picsum.photos/seed/prod1-4/400/400"
           ],
-          "weight": 6.51,
+          "weight": 9.19,
           "dimensions": {
-            "width": 20.1,
-            "height": 46,
-            "depth": 9.3
+            "width": 33.4,
+            "height": 40,
+            "depth": 14.6
           },
           "isAvailable": true,
           "isFeatured": false,
           "tags": [
-            "performance",
-            "nodejs",
-            "api"
+            "backend"
           ],
-          "createdAt": "2026-09-15T13:43:04.017Z",
-          "updatedAt": "2025-12-05T10:38:34.470Z"
+          "createdAt": "2024-05-30T01:37:26.059Z",
+          "updatedAt": "2026-12-15T02:55:19.943Z"
         }
       },
       "OrderExample": {
@@ -12415,49 +12396,34 @@
           "userId": 1,
           "items": [
             {
-              "productId": 38,
-              "quantity": 1,
-              "price": 346.46
-            },
-            {
-              "productId": 32,
+              "productId": 37,
               "quantity": 2,
-              "price": 134.41
+              "price": 416.97
             },
             {
-              "productId": 14,
-              "quantity": 3,
-              "price": 484.07
-            },
-            {
-              "productId": 30,
-              "quantity": 1,
-              "price": 196.2
-            },
-            {
-              "productId": 9,
-              "quantity": 1,
-              "price": 69.47
+              "productId": 16,
+              "quantity": 2,
+              "price": 478.87
             }
           ],
-          "subtotal": 2333.16,
-          "tax": 186.65,
+          "subtotal": 1791.68,
+          "tax": 143.33,
           "shipping": 0,
-          "total": 2519.81,
+          "total": 1935.01,
           "currency": "USD",
           "status": "pending",
-          "paymentMethod": "google_pay",
+          "paymentMethod": "credit_card",
           "shippingAddress": {
-            "street": "5626 Park Ave",
-            "city": "Boston",
-            "state": "GA",
-            "zipCode": "34194",
+            "street": "6620 Maple Dr",
+            "city": "Fort Worth",
+            "state": "MI",
+            "zipCode": "16372",
             "country": "US"
           },
-          "trackingNumber": null,
+          "trackingNumber": "TRK442765071",
           "notes": null,
-          "createdAt": "2024-12-03T15:39:22.164Z",
-          "updatedAt": "2026-05-13T06:40:33.266Z"
+          "createdAt": "2026-04-19T12:16:46.226Z",
+          "updatedAt": "2025-01-30T04:10:54.855Z"
         }
       },
       "ReviewExample": {
@@ -12466,12 +12432,12 @@
           "id": 1,
           "productId": 1,
           "userId": 1,
-          "rating": 3,
-          "title": "Amazing quality",
-          "body": "Well written and easy to follow. Keep up the good work!",
+          "rating": 4,
+          "title": "Works as advertised",
+          "body": "Great article! Really helped me understand the concept better.",
           "isVerified": true,
-          "helpful": 47,
-          "createdAt": "2026-11-12T21:21:15.500Z"
+          "helpful": 1,
+          "createdAt": "2025-08-29T18:25:55.906Z"
         }
       },
       "NotificationExample": {
@@ -12479,12 +12445,12 @@
         "value": {
           "id": 1,
           "userId": 1,
-          "type": "success",
-          "title": "Success notification",
-          "message": "Your order has been shipped.",
+          "type": "error",
+          "title": "Error notification",
+          "message": "New follower on your profile.",
           "read": true,
           "link": null,
-          "createdAt": "2026-03-25T20:06:25.019Z"
+          "createdAt": "2026-03-23T15:22:15.402Z"
         }
       }
     }

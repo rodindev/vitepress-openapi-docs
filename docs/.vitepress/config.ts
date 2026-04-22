@@ -56,6 +56,7 @@ const docsSidebar = [
       { text: 'Components', link: '/reference/components' },
       { text: 'CSS Variables', link: '/reference/css-variables' },
       { text: 'CLI', link: '/reference/cli' },
+      { text: 'Playground', link: '/reference/playground' },
     ],
   },
   {
