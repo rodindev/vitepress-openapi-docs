@@ -220,16 +220,43 @@
           @request-start="emit('request-start', $event)"
           @request-success="emit('request-success', $event)"
           @request-error="emit('request-error', $event)"
-        />
-        <button
-          v-if="playgroundData.length > ASIDE_PARAMS_LIMIT"
-          type="button"
-          class="vod-param-cap__toggle"
-          :data-expanded="asideParamsExpanded"
-          @click="asideParamsExpanded = !asideParamsExpanded"
         >
-          {{ asideParamsExpanded ? 'Show fewer' : `Show all ${playgroundData.length} fields` }}
-        </button>
+          <template #send-button="{ loading, execute, abort, streaming }">
+            <div class="vod-param-cap__send">
+              <button
+                v-if="playgroundData.length > ASIDE_PARAMS_LIMIT"
+                type="button"
+                class="vod-param-cap__toggle"
+                :data-expanded="asideParamsExpanded"
+                @click="asideParamsExpanded = !asideParamsExpanded"
+              >
+                {{
+                  asideParamsExpanded ? 'Show fewer' : `Show all ${playgroundData.length} fields`
+                }}
+              </button>
+              <button
+                v-if="streaming"
+                type="button"
+                class="vap-btn vap-btn--primary"
+                aria-label="Stop request"
+                @click="abort && abort()"
+              >
+                Stop
+              </button>
+              <button
+                v-else
+                type="button"
+                class="vap-btn vap-btn--primary"
+                :disabled="loading"
+                aria-label="Send request"
+                @click="execute()"
+              >
+                <span v-if="loading" class="vap-spinner" />
+                {{ loading ? 'Sending' : 'Send request' }}
+              </button>
+            </div>
+          </template>
+        </Playground>
       </div>
     </aside>
   </div>

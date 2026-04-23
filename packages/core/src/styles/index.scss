@@ -1572,11 +1572,18 @@ a.vod-schema__type-token {
   display: none;
 }
 
+.vod-param-cap__send {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
 .vod-param-cap__toggle {
   appearance: none;
   border: 0;
   background: transparent;
-  margin: 0 1rem;
+  margin: 0;
   padding: 0.35rem 0;
   display: inline-flex;
   align-items: center;
@@ -1587,7 +1594,6 @@ a.vod-schema__type-token {
   cursor: pointer;
   text-decoration: underline;
   text-underline-offset: 2px;
-  align-self: flex-start;
 }
 
 .vod-param-cap__toggle::after {
