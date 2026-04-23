@@ -554,34 +554,34 @@
   border: 1px solid var(--vod-surface-border);
   border-bottom: 0;
   border-radius: var(--vod-radius) var(--vod-radius) 0 0;
-  background: var(--vod-surface);
+  padding: 0.4rem 0.5rem 0;
   overflow-x: auto;
 }
 
 .vod-responses__tabs {
   display: flex;
-  align-items: stretch;
-  gap: 0;
+  gap: 2px;
 }
 
 .vod-responses__tab {
   appearance: none;
   border: 0;
   background: transparent;
-  padding: 0.6rem 0.9rem;
-  min-height: 44px;
-  font: inherit;
-  font-size: 0.85rem;
+  padding: 0.35rem 0.7rem;
+  font-family: var(--vod-font-mono);
+  font-size: 0.75rem;
   color: var(--vod-text-2);
   cursor: pointer;
-  border-bottom: 2px solid transparent;
+  border-radius: 6px;
   display: inline-flex;
   align-items: baseline;
   gap: 0.35rem;
   white-space: nowrap;
+  transition: background-color 0.12s ease;
 
   &:hover {
     color: var(--vod-text-1);
+    background: var(--vod-surface);
   }
 
   &:focus-visible {
@@ -591,23 +591,25 @@
 
   &--active {
     color: var(--vod-text-1);
-    font-weight: 600;
+    background: var(--vod-surface);
+    font-weight: 500;
   }
 
-  &--success.vod-responses__tab--active {
-    border-bottom-color: var(--vod-status-2xx);
+  &--success .vod-responses__status {
+    color: var(--vod-status-2xx);
   }
-  &--redirect.vod-responses__tab--active {
-    border-bottom-color: var(--vod-status-4xx);
+  &--client-error .vod-responses__status,
+  &--redirect .vod-responses__status {
+    color: var(--vod-status-4xx);
   }
-  &--client-error.vod-responses__tab--active {
-    border-bottom-color: var(--vod-status-4xx);
+  &--server-error .vod-responses__status {
+    color: var(--vod-status-5xx);
   }
-  &--server-error.vod-responses__tab--active {
-    border-bottom-color: var(--vod-status-5xx);
-  }
-  &--other.vod-responses__tab--active {
-    border-bottom-color: var(--vod-text-2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vod-responses__tab {
+    transition: none;
   }
 }
 
@@ -667,17 +669,14 @@
 
 .vod-snippets__bar {
   display: flex;
-  align-items: stretch;
+  align-items: center;
+  padding: 0.4rem 0.5rem;
   border-bottom: 1px solid var(--vod-surface-border);
-  background: var(--vod-surface);
 }
 
 .vod-snippets__tabs {
   display: flex;
-  align-items: stretch;
-  gap: 0;
-  border-bottom: 1px solid var(--vod-surface-border);
-  background: var(--vod-surface);
+  gap: 2px;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
@@ -715,16 +714,18 @@
   appearance: none;
   border: 0;
   background: transparent;
-  padding: 0.6rem 0.9rem;
-  min-height: 44px;
-  font: inherit;
-  font-size: 0.85rem;
+  padding: 0.35rem 0.7rem;
+  font-family: var(--vod-font-mono);
+  font-size: 0.75rem;
   color: var(--vod-text-2);
   cursor: pointer;
-  border-bottom: 2px solid transparent;
+  border-radius: 6px;
+  white-space: nowrap;
+  transition: background-color 0.12s ease;
 
   &:hover {
     color: var(--vod-text-1);
+    background: var(--vod-surface);
   }
 
   &:focus-visible {
@@ -734,8 +735,14 @@
 
   &--active {
     color: var(--vod-text-1);
-    border-bottom-color: var(--vod-method-get);
-    font-weight: 600;
+    background: var(--vod-surface);
+    font-weight: 500;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vod-snippets__tab {
+    transition: none;
   }
 }
 
@@ -1508,8 +1515,10 @@ a.vod-schema__type-token {
   width: 14px;
   height: 14px;
   background: currentColor;
-  mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z'/></svg>") center / contain no-repeat;
-  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z'/></svg>") center / contain no-repeat;
+  mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z'/></svg>")
+    center / contain no-repeat;
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z'/></svg>")
+    center / contain no-repeat;
 }
 
 /* Dark-mode surfaces follow vap (which already redefines --vap-surface et al
