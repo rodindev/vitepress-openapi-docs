@@ -289,11 +289,6 @@
   margin-inline-start: 0.4rem;
 }
 
-.vod-endpoint__method--webhook {
-  background: var(--vod-pill-neutral-bg);
-  color: var(--vod-pill-neutral-text);
-}
-
 .vod-endpoint__method {
   display: inline-block;
   align-self: center;
@@ -335,6 +330,11 @@
   &[data-method='trace'] {
     background: var(--vod-method-trace-bg);
     color: var(--vod-method-trace-text);
+  }
+
+  &.vod-endpoint__method--webhook {
+    background: var(--vod-pill-neutral-bg);
+    color: var(--vod-pill-neutral-text);
   }
 }
 
