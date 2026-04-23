@@ -1,7 +1,6 @@
 import {
   toCurlSnippet,
   toFetch,
-  toNode,
   toPython,
   type Snippet,
   type SnippetRequest,
@@ -9,10 +8,10 @@ import {
 import type { ParsedOperation } from '../parser/types'
 
 export type { Snippet, SnippetRequest, SnippetLanguage } from 'vue-api-playground'
-export { toCurlSnippet, toFetch, toNode, toPython }
+export { toCurlSnippet, toFetch, toPython }
 
 /**
- * Produce curl + fetch + python + node snippets for an operation. Auth
+ * Produce curl + fetch + python snippets for an operation. Auth
  * credentials supplied via `auth` are injected as Authorization headers so
  * the rendered example is immediately copy-pasteable.
  *
@@ -60,5 +59,5 @@ export function buildSnippets(
     body: options.exampleBody,
   }
 
-  return [toCurlSnippet(req), toFetch(req), toPython(req), toNode(req)]
+  return [toCurlSnippet(req), toFetch(req), toPython(req)]
 }

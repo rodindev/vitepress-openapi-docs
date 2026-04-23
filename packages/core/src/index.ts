@@ -25,7 +25,7 @@ export { default as SearchTrigger } from './components/SearchTrigger.vue'
 export { default as ResponseExamples } from './components/ResponseExamples.vue'
 export { fuzzyScore, rankByFuzzy } from './runtime/fuzzy'
 export { generateExample, generateJsonBody } from './runtime/example'
-export { buildSnippets, toCurlSnippet, toFetch, toPython, toNode } from './snippets/index'
+export { buildSnippets, toCurlSnippet, toFetch, toPython } from './snippets/index'
 export type { Snippet, SnippetLanguage, SnippetRequest } from './snippets/index'
 export type {
   ChangeKind,

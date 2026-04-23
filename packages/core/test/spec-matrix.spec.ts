@@ -60,7 +60,7 @@ describe('spec matrix', () => {
         )
       })
 
-      it('renders curl + 3 language snippets for every operation with auth injected', async () => {
+      it('renders curl + fetch + python snippets for every operation with auth injected', async () => {
         const yaml = await readFile(resolve(__dirname, fixture.file), 'utf8')
         const spec = await parseSpec(yaml, { name: fixture.name })
         for (const op of spec.operations) {
@@ -68,7 +68,7 @@ describe('spec matrix', () => {
             baseUrl: spec.servers[0],
             auth: { scheme: 'bearer', value: 'TOKEN' },
           })
-          expect(snippets.map((s) => s.language)).toEqual(['curl', 'fetch', 'python', 'node'])
+          expect(snippets.map((s) => s.language)).toEqual(['curl', 'fetch', 'python'])
           for (const s of snippets) {
             expect(s.code.length).toBeGreaterThan(0)
           }

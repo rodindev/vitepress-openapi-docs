@@ -16,9 +16,9 @@ const op: ParsedOperation = {
 }
 
 describe('buildSnippets', () => {
-  it('produces exactly 4 snippets: curl + fetch + python + node', () => {
+  it('produces exactly 3 snippets: curl + fetch + python', () => {
     const snippets = buildSnippets(op, { baseUrl: 'https://api.example.com' })
-    expect(snippets.map((s) => s.language)).toEqual(['curl', 'fetch', 'python', 'node'])
+    expect(snippets.map((s) => s.language)).toEqual(['curl', 'fetch', 'python'])
     for (const s of snippets) {
       expect(s.code.length).toBeGreaterThan(0)
     }
