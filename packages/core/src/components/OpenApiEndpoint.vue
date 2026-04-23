@@ -175,6 +175,11 @@
     </section>
 
     <aside v-if="useColumns" class="vod-page-aside">
+      <header class="vod-page-aside__header">
+        <span class="vod-page-aside__label">Try It</span>
+        <span v-if="specVersionLabel" class="vod-page-aside__spec">{{ specVersionLabel }}</span>
+      </header>
+
       <SdkSnippets
         v-if="showSection('snippets')"
         :snippets="snippets"
@@ -326,6 +331,12 @@ const resolved = computed(() => {
 
 const op = computed(() => resolved.value!.operation)
 const specName = computed(() => resolved.value?.specName ?? 'inline')
+const specVersionLabel = computed(() => {
+  const spec = resolved.value?.spec
+  if (!spec) return ''
+  const title = spec.title || spec.name
+  return spec.version ? `${title} v${spec.version}` : title
+})
 
 const resolvedScheme = computed<AuthScheme | 'none'>(() => {
   if (effectiveAuth.value === 'none') return 'none'

@@ -253,4 +253,23 @@ describe('OpenApiEndpoint', () => {
     expect(bodyItems[1].name).toBe('email')
     expect(bodyItems[2].name).toBe('age')
   })
+
+  it('renders a Try It header with the spec title and version in columns layout', () => {
+    const wrapper = mount(OpenApiEndpoint, {
+      props: { id: 'public.users.list' },
+      global: { provide: registryProvide },
+    })
+    const header = wrapper.find('.vod-page-aside__header')
+    expect(header.exists()).toBe(true)
+    expect(header.find('.vod-page-aside__label').text()).toBe('Try It')
+    expect(header.find('.vod-page-aside__spec').text()).toBe('Public v1.0.0')
+  })
+
+  it('omits the aside header in stacked layout', () => {
+    const wrapper = mount(OpenApiEndpoint, {
+      props: { id: 'public.users.list', layout: 'stacked' },
+      global: { provide: registryProvide },
+    })
+    expect(wrapper.find('.vod-page-aside__header').exists()).toBe(false)
+  })
 })

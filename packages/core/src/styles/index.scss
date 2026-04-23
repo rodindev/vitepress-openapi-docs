@@ -71,20 +71,20 @@
   --vod-focus-ring: var(--vap-focus-ring, var(--vp-c-brand-1, #3eaf7c));
 }
 
-/* The card is the content itself - no border, no surface fill. Visual
- * rhythm comes from typography (2rem title, section accent bars) and
- * spacing. When many endpoints render in sequence (inside <OpenApiSpec>),
- * a thin divider between them prevents them from running together. */
 .vod-endpoint {
-  margin: 2.5rem 0;
+  margin: 2rem 0;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--vod-surface-border);
+  border-radius: var(--vod-radius);
+  background: var(--vp-c-bg, #fff);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
   font-family: var(--vod-font-ui);
   color: var(--vod-text-1);
 }
 
-.vod-endpoint + .vod-endpoint,
-.vod-spec__group .vod-endpoint + .vod-endpoint {
-  padding-top: 2.5rem;
-  border-top: 1px solid var(--vod-surface-border);
+.dark .vod-endpoint {
+  background: var(--vp-c-bg-alt, #1b1b1f);
+  box-shadow: none;
 }
 
 .vod-endpoint--missing {
@@ -267,13 +267,56 @@
   top: calc(var(--vp-nav-height, 64px) + 1rem);
   align-self: flex-start;
   min-width: 0;
-  margin: 1.5rem 0 2rem;
+  margin: 2rem 0;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  padding: 0.75rem;
+  padding: 0 0 0.75rem;
   border: 1px solid var(--vod-surface-border);
-  border-radius: calc(var(--vod-radius) + 2px);
+  border-radius: var(--vod-radius);
+  background: var(--vp-c-bg, #fff);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.vod-page-aside > :first-child {
+  border-radius: var(--vod-radius) var(--vod-radius) 0 0;
+}
+
+.vod-page-aside > * {
+  min-width: 0;
+}
+
+.dark .vod-page-aside {
+  background: var(--vp-c-bg-alt, #1b1b1f);
+  box-shadow: none;
+}
+
+.vod-page-aside__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0.45rem 1rem;
+  border-bottom: 1px solid var(--vod-surface-border);
+  background: var(--vod-surface);
+}
+
+.vod-page-aside__label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--vod-text-2);
+}
+
+.vod-page-aside__spec {
+  font-size: 0.75rem;
+  color: var(--vod-text-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 
 /* Compact section headings inside aside - sentence-case bold, not uppercase */
@@ -501,7 +544,7 @@
 }
 
 .vod-responses__heading {
-  margin: 0 0 0.5rem;
+  margin: 0 0 0.75rem;
   font-size: 0.95rem;
   font-weight: 600;
   color: var(--vod-text-1);
@@ -1364,6 +1407,53 @@ a.vod-schema__type-token {
 
 .vod-endpoint-layout .vap-request__body-textarea {
   max-height: var(--vod-playground-body-max-height, 16rem);
+}
+
+.vod-page-aside .vod-snippets {
+  margin-top: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  overflow: visible;
+}
+
+.vod-page-aside .vod-snippets__bar,
+.vod-page-aside .vod-snippets__code {
+  background: transparent;
+}
+
+.vod-page-aside .vap-request,
+.vod-page-aside .vap-response {
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.vod-page-aside .vod-auth {
+  margin: 0 1rem;
+}
+
+.vod-page-aside .vod-snippets::before,
+.vod-page-aside .vap-request::before,
+.vod-page-aside .vap-response::before {
+  display: block;
+  margin: 0.25rem 1rem 0.35rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--vod-text-2);
+}
+
+.vod-page-aside .vod-snippets::before {
+  content: 'Code';
+}
+.vod-page-aside .vap-request::before {
+  content: 'Request';
+}
+.vod-page-aside .vap-response::before {
+  content: 'Response';
 }
 
 .vod-endpoint-layout .vap-response__bar {
