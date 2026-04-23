@@ -30,7 +30,7 @@
 
       <section
         v-if="showSection('params') && op.parameters.length > 0"
-        class="vod-endpoint__section vod-endpoint__section--params"
+        class="vod-endpoint__section"
       >
         <h4 class="vod-endpoint__section-title">
           Parameters
@@ -266,7 +266,7 @@
       </header>
 
       <details v-if="showSection('snippets')" class="vod-page-aside__collapsible">
-        <summary class="vod-page-aside__summary">Code</summary>
+        <summary>Code</summary>
         <SdkSnippets
           :snippets="snippets"
           :aria-label="`${op.method.toUpperCase()} ${op.path} code samples`"
@@ -277,7 +277,7 @@
         v-if="showSection('auth') && showSection('try') && resolvedScheme !== 'none'"
         class="vod-page-aside__collapsible"
       >
-        <summary class="vod-page-aside__summary">Authentication</summary>
+        <summary>Authentication</summary>
         <AuthControls
           :spec-name="specName"
           :scheme="resolvedScheme"

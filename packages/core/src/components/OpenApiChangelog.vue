@@ -35,10 +35,8 @@
       <ul v-if="entry.info.length > 0" class="vod-changelog__list">
         <li v-for="(change, i) in entry.info" :key="`info-${i}`" class="vod-changelog__item">
           <strong class="vod-chip vod-chip--neutral">info.{{ change.kind }}</strong>
-          <span v-if="change.before">
-            <span class="vod-changelog__md" v-html="md(change.before)" /> →
-          </span>
-          <span v-if="change.after" class="vod-changelog__md" v-html="md(change.after)" />
+          <span v-if="change.before"> <span v-html="md(change.before)" /> → </span>
+          <span v-if="change.after" v-html="md(change.after)" />
           <em v-else>(cleared)</em>
         </li>
       </ul>
@@ -60,14 +58,10 @@
           <template v-else>
             <code>{{ change.operationId }}</code>
             <span v-if="change.before || change.after" class="vod-changelog__delta">
-              <em v-if="change.before"
-                >"<span class="vod-changelog__md" v-html="md(change.before)" />"</em
-              >
+              <em v-if="change.before">"<span v-html="md(change.before)" />"</em>
               <em v-else>(none)</em>
               →
-              <em v-if="change.after"
-                >"<span class="vod-changelog__md" v-html="md(change.after)" />"</em
-              >
+              <em v-if="change.after">"<span v-html="md(change.after)" />"</em>
               <em v-else>(cleared)</em>
             </span>
           </template>
