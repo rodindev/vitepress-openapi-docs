@@ -201,7 +201,7 @@
 .vod-endpoint__title {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
+  align-items: center;
   gap: 0.4rem 0.75rem;
   font-size: 2rem;
   font-weight: 700;
@@ -1593,6 +1593,98 @@ a.vod-schema__type-token {
   gap: 0.5rem 0;
 }
 
+.vod-page-aside .vap-data-grid__field {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  column-gap: 0.5rem;
+  row-gap: 0.25rem;
+  padding: 0;
+}
+
+.vod-page-aside .vap-data-grid__label {
+  grid-column: 1;
+  font-family: var(--vod-font-ui);
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--vod-text-2);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.vod-page-aside .vap-data-grid__desc {
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: end;
+  font-family: var(--vod-font-mono);
+  font-size: 0.7rem;
+  line-height: 1;
+  color: var(--vod-text-2);
+}
+
+.vod-page-aside .vap-data-grid__field > .vap-input {
+  grid-column: 1 / -1;
+}
+
+.vod-page-aside .vap-input {
+  height: auto;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--vod-surface-border);
+  border-radius: 6px;
+  background: var(--vp-c-bg, #fff);
+  color: var(--vod-text-1);
+  font-family: var(--vod-font-mono);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  transition: border-color 0.12s ease;
+}
+
+.vod-page-aside .vap-input:hover:not(:focus) {
+  border-color: var(--vod-text-2);
+}
+
+.vod-page-aside .vap-input:focus {
+  outline: 2px solid var(--vod-focus-ring);
+  outline-offset: 1px;
+  border-color: transparent;
+}
+
+.vod-page-aside select.vap-input {
+  padding-right: 1.5rem;
+  cursor: pointer;
+}
+
+.vod-page-aside .vap-request > :is(h3, h4, h5, h6),
+.vod-page-aside .vap-request__server > :is(h3, h4, h5, h6),
+.vod-page-aside .vap-request__body > :is(h3, h4, h5, h6) {
+  margin: 0;
+  font-family: var(--vod-font-ui);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--vod-text-1);
+}
+
+.vod-page-aside .vap-request__server > :is(h3, h4, h5, h6),
+.vod-page-aside .vap-request__body > :is(h3, h4, h5, h6) {
+  margin-bottom: 0.25rem;
+}
+
+.vod-page-aside .vap-request > * + * {
+  margin-top: 0.75rem;
+}
+
+.vod-page-aside .vap-request > :is(h3, h4, h5, h6) + * {
+  margin-top: 0.25rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vod-page-aside .vap-input {
+    transition: none;
+  }
+}
+
 .vod-param-cap {
   display: contents;
 }
@@ -1691,7 +1783,7 @@ a.vod-schema__type-token {
 .vod-page-aside .vap-request::before {
   margin-left: 0;
   margin-right: 0;
-  content: 'Request body';
+  content: 'Request';
 }
 .vod-page-aside .vap-response::before {
   content: 'Response';

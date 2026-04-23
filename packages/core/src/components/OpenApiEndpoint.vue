@@ -449,19 +449,26 @@ const serverList = computed<string[]>(() => {
 const bodyFieldItems = computed<PlaygroundDataItem[]>(() => {
   if (!effectiveBodyInputs.value) return []
   const fields = op.value.requestBody?.jsonFields ?? []
-  return fields.map((f) => ({ name: f.name, value: f.example }))
+  return fields.map((f) => ({
+    name: f.name,
+    value: f.example,
+    ...(useColumns.value && f.typeLabel ? { description: f.typeLabel } : {}),
+  }))
 })
 
 const playgroundData = computed<PlaygroundDataItem[]>(() => {
   const includeDesc = !useColumns.value
   const params = op.value.parameters
     .filter((p) => p.in === 'path' || p.in === 'query')
-    .map((p) => ({
-      name: p.name,
-      value: p.defaultExample,
-      type: p.in,
-      ...(includeDesc && p.description ? { description: p.description } : {}),
-    }))
+    .map((p) => {
+      const hint = includeDesc ? p.description : p.typeLabel
+      return {
+        name: p.name,
+        value: p.defaultExample,
+        type: p.in,
+        ...(hint ? { description: hint } : {}),
+      }
+    })
   return [...params, ...bodyFieldItems.value]
 })
 
