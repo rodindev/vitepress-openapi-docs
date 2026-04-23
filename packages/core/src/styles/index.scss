@@ -69,6 +69,27 @@
   --vod-text-2: var(--vap-text-2, var(--vp-c-text-2, #475569));
   --vod-radius: var(--vap-radius, 8px);
   --vod-focus-ring: var(--vap-focus-ring, var(--vp-c-brand-1, #3eaf7c));
+
+  /* Syntax tokens for highlighted code blocks (curl, fetch, python, etc.).
+   * Shared palette across languages; JSON reuses vap's --vap-json-* set. */
+  --vod-syntax-string: var(--vap-syntax-string, #a31515);
+  --vod-syntax-number: var(--vap-syntax-number, #098658);
+  --vod-syntax-keyword: var(--vap-syntax-keyword, #af00db);
+  --vod-syntax-comment: var(--vap-syntax-comment, #6a737d);
+}
+
+.vod-syntax-string {
+  color: var(--vod-syntax-string);
+}
+.vod-syntax-number {
+  color: var(--vod-syntax-number);
+}
+.vod-syntax-keyword {
+  color: var(--vod-syntax-keyword);
+}
+.vod-syntax-comment {
+  color: var(--vod-syntax-comment);
+  font-style: italic;
 }
 
 @mixin vod-icon-copy-btn {
@@ -1719,4 +1740,9 @@ a.vod-schema__type-token {
   --vod-status-4xx-soft: var(--vp-c-yellow-soft, rgba(251, 191, 36, 0.18));
   --vod-status-5xx: var(--vp-c-red-1, #f66f81);
   --vod-status-5xx-soft: var(--vp-c-red-soft, rgba(248, 113, 113, 0.18));
+
+  --vod-syntax-string: var(--vap-syntax-string, #ce9178);
+  --vod-syntax-number: var(--vap-syntax-number, #b5cea8);
+  --vod-syntax-keyword: var(--vap-syntax-keyword, #c586c0);
+  --vod-syntax-comment: var(--vap-syntax-comment, #6a9955);
 }

@@ -37,6 +37,15 @@ describe('SdkSnippets', () => {
     expect(wrapper.find('.vod-snippets').exists()).toBe(false)
   })
 
+  it('highlights curl snippets with shell tokens', () => {
+    const wrapper = mount(SdkSnippets, { props: { snippets } })
+    const curl = wrapper.find(
+      '#vod-snippet-' + (wrapper.vm as unknown as { uid: string }).uid + '-curl'
+    )
+    expect(curl.find('.vod-syntax-keyword').exists()).toBe(true)
+    expect(curl.find('.vod-syntax-string').exists()).toBe(true)
+  })
+
   it('shows a copy button and reflects success / failure state', async () => {
     const writeText = vi.fn().mockResolvedValue(undefined)
     Object.defineProperty(navigator, 'clipboard', {

@@ -35,13 +35,14 @@
       role="tabpanel"
       tabindex="0"
       :aria-label="`${s.label} code sample`"
-    ><code>{{ s.code }}</code></pre>
+    ><code v-html="highlight(s.code, s.language)" /></pre>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import type { Snippet, SnippetLanguage } from 'vue-api-playground'
+import { highlight } from '../highlight'
 
 interface Props {
   snippets: Snippet[]
