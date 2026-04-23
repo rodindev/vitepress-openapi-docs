@@ -1,24 +1,8 @@
-/**
- * vitepress-openapi-docs
- *
- * CSS-variable cascade:
- *   --vod-*   → user override surface (themable from the root)
- *   --vap-*   → vue-api-playground vars (inherited, themes that override vap reach vod transparently)
- *   --vp-*    → VitePress theme vars
- *   hex       → ultimate fallback for non-VitePress hosts
- *
- * Dark mode is driven by VitePress's `.dark` class on `html`. vap ships its
- * own `.dark` overrides, so vod just inherits them.
- */
-
 :root {
   /* Font surface */
   --vod-font-ui: var(--vap-font-ui, var(--vp-font-family-base));
   --vod-font-mono: var(--vap-font-mono, var(--vp-font-family-mono));
 
-  /* Solid method accents (borders, underlines, text) follow the same
-   * read/write/destructive rule as the pill -bg/-text pairs below, so a
-   * verb reads the same hue wherever it shows up. */
   --vod-method-get: var(--vap-method-get, var(--vp-c-indigo-1, #1e40af));
   --vod-method-post: var(--vap-method-post, var(--vp-c-yellow-1, #d97706));
   --vod-method-put: var(--vap-method-put, var(--vp-c-yellow-1, #d97706));
@@ -28,9 +12,6 @@
   --vod-method-options: var(--vap-method-options, var(--vp-c-indigo-1, #1e40af));
   --vod-method-trace: var(--vap-method-trace, var(--vp-c-indigo-1, #1e40af));
 
-  /* Method badge colours: read (GET/HEAD/OPTIONS/TRACE) → indigo,
-   * write (POST/PUT/PATCH) → yellow, destructive (DELETE) → red.
-   * Each pair cascades so host palette overrides reach the pills. */
   --vod-method-get-bg: var(--vap-method-get-bg, var(--vp-c-indigo-soft, #dbeafe));
   --vod-method-get-text: var(--vap-method-get-text, var(--vp-c-indigo-1, #1e40af));
   --vod-method-post-bg: var(--vap-method-post-bg, var(--vp-c-yellow-soft, #fef3c7));
@@ -48,13 +29,9 @@
   --vod-method-trace-bg: var(--vap-method-trace-bg, var(--vp-c-indigo-soft, #dbeafe));
   --vod-method-trace-text: var(--vap-method-trace-text, var(--vp-c-indigo-1, #1e40af));
 
-  /* Neutral pill for webhooks, kind badges, and schema entries - these aren't
-   * user-initiated verbs so they sit outside the read/write/destructive rule. */
   --vod-pill-neutral-bg: var(--vap-pill-neutral-bg, var(--vp-c-default-soft, #f3f4f6));
   --vod-pill-neutral-text: var(--vap-pill-neutral-text, var(--vp-c-text-2, #374151));
 
-  /* Response status semantics, deliberately hue-distinct from method colours
-   * so 2xx-success never reads as a read-method, etc. */
   --vod-status-2xx: var(--vp-c-green-1, #16a34a);
   --vod-status-2xx-soft: var(--vp-c-green-soft, rgba(22, 163, 74, 0.14));
   --vod-status-4xx: var(--vp-c-yellow-1, #d97706);
@@ -70,8 +47,6 @@
   --vod-radius: var(--vap-radius, 8px);
   --vod-focus-ring: var(--vap-focus-ring, var(--vp-c-brand-1, #3eaf7c));
 
-  /* Syntax tokens for highlighted code blocks (curl, fetch, python, etc.).
-   * Shared palette across languages; JSON reuses vap's --vap-json-* set. */
   --vod-syntax-string: var(--vap-syntax-string, #a31515);
   --vod-syntax-number: var(--vap-syntax-number, #098658);
   --vod-syntax-keyword: var(--vap-syntax-keyword, #af00db);
@@ -158,6 +133,61 @@
   }
 }
 
+@mixin vod-collapsible-summary($padding) {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: $padding;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--vod-text-2);
+  cursor: pointer;
+  user-select: none;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  &::before {
+    content: '';
+    flex: none;
+    width: 0;
+    height: 0;
+    border-left: 4px solid currentColor;
+    border-top: 3px solid transparent;
+    border-bottom: 3px solid transparent;
+    transition: transform 0.15s ease;
+  }
+
+  &:hover {
+    color: var(--vod-text-1);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--vod-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+@mixin vod-page-stacked {
+  .vod-page-columns {
+    flex-direction: column;
+  }
+
+  .vod-page-aside {
+    position: static;
+    flex: none;
+    margin-top: 0.75rem;
+
+    .vap-request__import {
+      display: block;
+    }
+  }
+}
+
 .vod-endpoint {
   display: flex;
   flex-direction: column;
@@ -229,11 +259,6 @@
   text-transform: uppercase;
   vertical-align: middle;
   white-space: nowrap;
-}
-
-.vod-chip--neutral {
-  background: var(--vod-pill-neutral-bg);
-  color: var(--vod-pill-neutral-text);
 }
 
 .vod-chip--success {
@@ -331,16 +356,6 @@
   line-height: 1.55;
 }
 
-/* Two-column endpoint layout: card + aside side-by-side inside the content container.
- *
- * Default is contained: the aside is a sticky sibling of the card, both inside the
- * page content area. Works for landing pages (VPHome), generated API pages (which set
- * `aside: false`), and any layout without a VitePress TOC competing for the same space.
- *
- * When a page keeps the VitePress TOC visible (`.VPDoc.has-aside`) the right margin is
- * already taken, so our aside falls back to stacking below the card. Authors embedding
- * `<OpenApiEndpoint>` in an article should set `aside: false` in frontmatter to give
- * the endpoint aside room to breathe. */
 .vod-page-columns {
   display: flex;
   align-items: flex-start;
@@ -352,9 +367,6 @@
   min-width: 0;
 }
 
-/* Aside: soft rounded outline, transparent fill - a gentle boundary around the
- * interactive column without the heavy grey surface. Inner cards still own
- * their own visual weight. */
 .vod-page-aside {
   flex: 0 0 360px;
   position: sticky;
@@ -437,36 +449,12 @@
   display: none;
 }
 
-/* Fallback when VitePress TOC is visible - stack aside below the card */
-.VPDoc.has-aside .vod-page-columns {
-  flex-direction: column;
+.VPDoc.has-aside {
+  @include vod-page-stacked;
 }
 
-.VPDoc.has-aside .vod-page-aside {
-  position: static;
-  flex: none;
-  margin-top: 0.75rem;
-
-  .vap-request__import {
-    display: block;
-  }
-}
-
-/* Narrow viewports: stack */
 @media (max-width: 1279px) {
-  .vod-page-columns {
-    flex-direction: column;
-  }
-
-  .vod-page-aside {
-    position: static;
-    flex: none;
-    margin-top: 0.75rem;
-
-    .vap-request__import {
-      display: block;
-    }
-  }
+  @include vod-page-stacked;
 }
 
 .vod-endpoint__section {
@@ -554,12 +542,6 @@
     font-family: var(--vod-font-mono);
     font-weight: 600;
     color: var(--vod-text-1);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .vod-endpoint__params-table tbody tr {
-    transition: none;
   }
 }
 
@@ -703,13 +685,6 @@
   transform: rotate(-135deg);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .vod-responses__row,
-  .vod-responses__row::after {
-    transition: none;
-  }
-}
-
 .vod-responses__item--success .vod-responses__status {
   color: var(--vod-status-2xx);
 }
@@ -784,7 +759,6 @@
   display: flex;
   gap: 2px;
   overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
 }
 
 .vod-snippets__copy {
@@ -822,12 +796,6 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .vod-snippets__tab {
-    transition: none;
-  }
-}
-
 .vod-snippets__code {
   margin: 0;
   padding: 0.85rem 1rem;
@@ -837,7 +805,6 @@
   overflow-x: auto;
   background: var(--vp-c-bg, #fff);
   color: var(--vod-text-1);
-  /* Subtle right-edge fade hints at horizontal overflow on long commands */
   mask-image: linear-gradient(to right, #000 calc(100% - 1rem), transparent 100%);
   -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 1rem), transparent 100%);
 }
@@ -1464,42 +1431,7 @@ a.vod-schema__type-token {
   margin-top: 0;
 
   > summary {
-    list-style: none;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.5rem 0;
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--vod-text-2);
-    cursor: pointer;
-    user-select: none;
-
-    &::-webkit-details-marker {
-      display: none;
-    }
-
-    &::before {
-      content: '';
-      flex: none;
-      width: 0;
-      height: 0;
-      border-left: 4px solid currentColor;
-      border-top: 3px solid transparent;
-      border-bottom: 3px solid transparent;
-      transition: transform 0.15s ease;
-    }
-
-    &:hover {
-      color: var(--vod-text-1);
-    }
-
-    &:focus-visible {
-      outline: 2px solid var(--vod-focus-ring);
-      outline-offset: 2px;
-    }
+    @include vod-collapsible-summary(0.5rem 0);
   }
 
   &[open] > summary::before {
@@ -1507,14 +1439,6 @@ a.vod-schema__type-token {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .vod-endpoint__collapsible > summary::before {
-    transition: none;
-  }
-}
-
-/* Playground containment - prevent huge responses and body textareas from
-   stretching the page. Users can override via --vod-* CSS variables. */
 .vod-endpoint-layout .vap-response .vap-code {
   max-height: var(--vod-playground-response-max-height, 24rem);
   overflow: auto;
@@ -1567,54 +1491,13 @@ a.vod-schema__type-token {
 
 .vod-page-aside__collapsible {
   margin: 0;
-}
 
-.vod-page-aside__collapsible > summary {
-  list-style: none;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.35rem 1rem;
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--vod-text-2);
-  cursor: pointer;
-  user-select: none;
-}
+  > summary {
+    @include vod-collapsible-summary(0.35rem 1rem);
+  }
 
-.vod-page-aside__collapsible > summary::-webkit-details-marker {
-  display: none;
-}
-
-.vod-page-aside__collapsible > summary::before {
-  content: '';
-  flex: none;
-  width: 0;
-  height: 0;
-  border-left: 4px solid currentColor;
-  border-top: 3px solid transparent;
-  border-bottom: 3px solid transparent;
-  transition: transform 0.15s ease;
-}
-
-.vod-page-aside__collapsible[open] > summary::before {
-  transform: rotate(90deg);
-}
-
-.vod-page-aside__collapsible > summary:hover {
-  color: var(--vod-text-1);
-}
-
-.vod-page-aside__collapsible > summary:focus-visible {
-  outline: 2px solid var(--vod-focus-ring);
-  outline-offset: 2px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .vod-page-aside__collapsible > summary::before {
-    transition: none;
+  &[open] > summary::before {
+    transform: rotate(90deg);
   }
 }
 
@@ -1712,12 +1595,6 @@ a.vod-schema__type-token {
   margin-top: 0.25rem;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .vod-endpoint-layout .vap-input {
-    transition: none;
-  }
-}
-
 .vod-param-cap {
   display: contents;
 }
@@ -1766,12 +1643,6 @@ a.vod-schema__type-token {
 
 .vod-param-cap__toggle:hover {
   text-decoration: none;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .vod-param-cap__toggle::after {
-    transition: none;
-  }
 }
 
 .vod-page-aside .vap-request {
@@ -1878,12 +1749,6 @@ a.vod-schema__type-token {
   outline-offset: 2px;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .vod-endpoint-layout .vap-response__headers > summary::before {
-    transition: none;
-  }
-}
-
 .vod-endpoint-layout .vap-response__headers .vap-code {
   background: var(--vod-surface);
   color: var(--vod-text-1);
@@ -1891,8 +1756,20 @@ a.vod-schema__type-token {
   padding: 0.6rem 1rem;
 }
 
-/* Dark-mode surfaces follow vap (which already redefines --vap-surface et al
-   under .dark). We only restate the bindings so vod's vars cascade cleanly. */
+@media (prefers-reduced-motion: reduce) {
+  .vod-endpoint__params-table tbody tr,
+  .vod-responses__row,
+  .vod-responses__row::after,
+  .vod-snippets__tab,
+  .vod-endpoint__collapsible > summary::before,
+  .vod-page-aside__collapsible > summary::before,
+  .vod-endpoint-layout .vap-input,
+  .vod-param-cap__toggle::after,
+  .vod-endpoint-layout .vap-response__headers > summary::before {
+    transition: none;
+  }
+}
+
 .dark {
   --vod-surface: var(--vap-surface, var(--vp-c-bg-alt, #1b1b1f));
   --vod-surface-border: var(--vap-surface-border, var(--vp-c-divider, #2e2e32));
