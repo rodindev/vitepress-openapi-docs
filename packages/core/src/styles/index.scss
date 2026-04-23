@@ -1808,6 +1808,62 @@ a.vod-schema__type-token {
   @include vod-icon-copy-btn;
 }
 
+.vod-endpoint-layout .vap-response__headers > summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 1rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--vod-text-2);
+  cursor: pointer;
+  user-select: none;
+}
+
+.vod-endpoint-layout .vap-response__headers > summary::-webkit-details-marker {
+  display: none;
+}
+
+.vod-endpoint-layout .vap-response__headers > summary::before {
+  content: '';
+  flex: none;
+  width: 0;
+  height: 0;
+  border-left: 4px solid currentColor;
+  border-top: 3px solid transparent;
+  border-bottom: 3px solid transparent;
+  transition: transform 0.15s ease;
+}
+
+.vod-endpoint-layout .vap-response__headers[open] > summary::before {
+  transform: rotate(90deg);
+}
+
+.vod-endpoint-layout .vap-response__headers > summary:hover {
+  color: var(--vod-text-1);
+}
+
+.vod-endpoint-layout .vap-response__headers > summary:focus-visible {
+  outline: 2px solid var(--vod-focus-ring);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vod-endpoint-layout .vap-response__headers > summary::before {
+    transition: none;
+  }
+}
+
+.vod-endpoint-layout .vap-response__headers .vap-code {
+  background: var(--vod-surface);
+  color: var(--vod-text-1);
+  font-size: 0.8rem;
+  padding: 0.6rem 1rem;
+}
+
 /* Dark-mode surfaces follow vap (which already redefines --vap-surface et al
    under .dark). We only restate the bindings so vod's vars cascade cleanly. */
 .dark {
