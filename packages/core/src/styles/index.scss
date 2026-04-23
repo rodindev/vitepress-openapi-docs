@@ -1533,7 +1533,7 @@ a.vod-schema__type-token {
   margin: 0;
 
   > summary {
-    @include vod-collapsible-summary(0.35rem 1rem);
+    @include vod-collapsible-summary(0 1rem);
   }
 
   &[open] > summary::before {
@@ -1632,7 +1632,11 @@ a.vod-schema__type-token {
 }
 
 .vod-endpoint-layout .vap-request > .vod-param-cap__send {
-  margin-top: 0.25rem;
+  margin-top: 0.75rem;
+}
+
+.vod-endpoint-layout .vap-request > .vap-request__body + .vod-param-cap__send {
+  margin-top: 0.5rem;
 }
 
 .vod-param-cap {
@@ -1646,8 +1650,40 @@ a.vod-schema__type-token {
 .vod-param-cap__send {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: stretch;
   gap: 0.5rem;
+}
+
+.vod-param-cap__send .vap-btn--primary {
+  justify-content: center;
+  width: 100%;
+  margin-top: 0;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--vp-c-bg, #fff);
+  background: var(--vod-text-1);
+  border: 1px solid var(--vod-text-1);
+  transition:
+    opacity 0.15s ease,
+    background-color 0.15s ease;
+
+  &:hover:not(:disabled) {
+    opacity: 0.88;
+  }
+
+  &:active:not(:disabled) {
+    opacity: 0.72;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--vod-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+.vod-param-cap__send .vod-param-cap__toggle {
+  align-self: flex-start;
 }
 
 .vod-param-cap__toggle {
