@@ -508,7 +508,9 @@
 }
 
 /* Compact params table */
-.vod-endpoint__params-table {
+.vod-endpoint__params-table,
+.vp-doc .vod-endpoint__params-table {
+  margin: 0;
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
@@ -581,6 +583,7 @@
   appearance: none;
   border: 0;
   background: transparent;
+  margin-top: -0.5rem;
   padding: 0.35rem 0;
   display: inline-flex;
   align-items: center;
@@ -1590,7 +1593,7 @@ a.vod-schema__type-token {
 
 .vod-page-aside .vap-data-grid {
   grid-template-columns: 1fr;
-  gap: 0.5rem 0;
+  margin: 0;
 }
 
 .vod-page-aside .vap-data-grid__field {
@@ -1598,7 +1601,6 @@ a.vod-schema__type-token {
   grid-template-columns: 1fr auto;
   align-items: baseline;
   column-gap: 0.5rem;
-  row-gap: 0.25rem;
   padding: 0;
 }
 
@@ -1676,6 +1678,10 @@ a.vod-schema__type-token {
 }
 
 .vod-page-aside .vap-request > :is(h3, h4, h5, h6) + * {
+  margin-top: 0.25rem;
+}
+
+.vod-page-aside .vap-request > .vod-param-cap__send {
   margin-top: 0.25rem;
 }
 
