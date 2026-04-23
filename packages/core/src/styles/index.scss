@@ -54,6 +54,46 @@
   --vod-syntax-function: var(--vap-syntax-function, #795e26);
 }
 
+.dark {
+  --vod-surface: var(--vap-surface, var(--vp-c-bg-alt, #1b1b1f));
+  --vod-surface-border: var(--vap-surface-border, var(--vp-c-divider, #2e2e32));
+  --vod-text-1: var(--vap-text-1, var(--vp-c-text-1, #dfdfd6));
+  --vod-text-2: var(--vap-text-2, var(--vp-c-text-2, #98989f));
+
+  --vod-method-get-bg: var(--vap-method-get-bg, var(--vp-c-indigo-soft, #172554));
+  --vod-method-get-text: var(--vap-method-get-text, var(--vp-c-indigo-1, #a8b1ff));
+  --vod-method-post-bg: var(--vap-method-post-bg, var(--vp-c-yellow-soft, #451a03));
+  --vod-method-post-text: var(--vap-method-post-text, var(--vp-c-yellow-1, #f9b44e));
+  --vod-method-put-bg: var(--vap-method-put-bg, var(--vp-c-yellow-soft, #451a03));
+  --vod-method-put-text: var(--vap-method-put-text, var(--vp-c-yellow-1, #f9b44e));
+  --vod-method-patch-bg: var(--vap-method-patch-bg, var(--vp-c-yellow-soft, #451a03));
+  --vod-method-patch-text: var(--vap-method-patch-text, var(--vp-c-yellow-1, #f9b44e));
+  --vod-method-delete-bg: var(--vap-method-delete-bg, var(--vp-c-red-soft, #450a0a));
+  --vod-method-delete-text: var(--vap-method-delete-text, var(--vp-c-red-1, #f66f81));
+  --vod-method-head-bg: var(--vap-method-head-bg, var(--vp-c-indigo-soft, #172554));
+  --vod-method-head-text: var(--vap-method-head-text, var(--vp-c-indigo-1, #a8b1ff));
+  --vod-method-options-bg: var(--vap-method-options-bg, var(--vp-c-indigo-soft, #172554));
+  --vod-method-options-text: var(--vap-method-options-text, var(--vp-c-indigo-1, #a8b1ff));
+  --vod-method-trace-bg: var(--vap-method-trace-bg, var(--vp-c-indigo-soft, #172554));
+  --vod-method-trace-text: var(--vap-method-trace-text, var(--vp-c-indigo-1, #a8b1ff));
+
+  --vod-pill-neutral-bg: var(--vap-pill-neutral-bg, var(--vp-c-default-soft, #1f2937));
+  --vod-pill-neutral-text: var(--vap-pill-neutral-text, var(--vp-c-text-2, #d1d5db));
+
+  --vod-status-2xx: var(--vp-c-green-1, #3dd68c);
+  --vod-status-2xx-soft: var(--vp-c-green-soft, rgba(74, 222, 128, 0.18));
+  --vod-status-4xx: var(--vp-c-yellow-1, #f9b44e);
+  --vod-status-4xx-soft: var(--vp-c-yellow-soft, rgba(251, 191, 36, 0.18));
+  --vod-status-5xx: var(--vp-c-red-1, #f66f81);
+  --vod-status-5xx-soft: var(--vp-c-red-soft, rgba(248, 113, 113, 0.18));
+
+  --vod-syntax-string: var(--vap-syntax-string, #ce9178);
+  --vod-syntax-number: var(--vap-syntax-number, #b5cea8);
+  --vod-syntax-keyword: var(--vap-syntax-keyword, #c586c0);
+  --vod-syntax-comment: var(--vap-syntax-comment, #6a9955);
+  --vod-syntax-function: var(--vap-syntax-function, #dcdcaa);
+}
+
 .vod-syntax-string {
   color: var(--vod-syntax-string);
 }
@@ -1768,44 +1808,4 @@ a.vod-schema__type-token {
   .vod-endpoint-layout .vap-response__headers > summary::before {
     transition: none;
   }
-}
-
-.dark {
-  --vod-surface: var(--vap-surface, var(--vp-c-bg-alt, #1b1b1f));
-  --vod-surface-border: var(--vap-surface-border, var(--vp-c-divider, #2e2e32));
-  --vod-text-1: var(--vap-text-1, var(--vp-c-text-1, #dfdfd6));
-  --vod-text-2: var(--vap-text-2, var(--vp-c-text-2, #98989f));
-
-  --vod-method-get-bg: var(--vap-method-get-bg, var(--vp-c-indigo-soft, #172554));
-  --vod-method-get-text: var(--vap-method-get-text, var(--vp-c-indigo-1, #a8b1ff));
-  --vod-method-post-bg: var(--vap-method-post-bg, var(--vp-c-yellow-soft, #451a03));
-  --vod-method-post-text: var(--vap-method-post-text, var(--vp-c-yellow-1, #f9b44e));
-  --vod-method-put-bg: var(--vap-method-put-bg, var(--vp-c-yellow-soft, #451a03));
-  --vod-method-put-text: var(--vap-method-put-text, var(--vp-c-yellow-1, #f9b44e));
-  --vod-method-patch-bg: var(--vap-method-patch-bg, var(--vp-c-yellow-soft, #451a03));
-  --vod-method-patch-text: var(--vap-method-patch-text, var(--vp-c-yellow-1, #f9b44e));
-  --vod-method-delete-bg: var(--vap-method-delete-bg, var(--vp-c-red-soft, #450a0a));
-  --vod-method-delete-text: var(--vap-method-delete-text, var(--vp-c-red-1, #f66f81));
-  --vod-method-head-bg: var(--vap-method-head-bg, var(--vp-c-indigo-soft, #172554));
-  --vod-method-head-text: var(--vap-method-head-text, var(--vp-c-indigo-1, #a8b1ff));
-  --vod-method-options-bg: var(--vap-method-options-bg, var(--vp-c-indigo-soft, #172554));
-  --vod-method-options-text: var(--vap-method-options-text, var(--vp-c-indigo-1, #a8b1ff));
-  --vod-method-trace-bg: var(--vap-method-trace-bg, var(--vp-c-indigo-soft, #172554));
-  --vod-method-trace-text: var(--vap-method-trace-text, var(--vp-c-indigo-1, #a8b1ff));
-
-  --vod-pill-neutral-bg: var(--vap-pill-neutral-bg, var(--vp-c-default-soft, #1f2937));
-  --vod-pill-neutral-text: var(--vap-pill-neutral-text, var(--vp-c-text-2, #d1d5db));
-
-  --vod-status-2xx: var(--vp-c-green-1, #3dd68c);
-  --vod-status-2xx-soft: var(--vp-c-green-soft, rgba(74, 222, 128, 0.18));
-  --vod-status-4xx: var(--vp-c-yellow-1, #f9b44e);
-  --vod-status-4xx-soft: var(--vp-c-yellow-soft, rgba(251, 191, 36, 0.18));
-  --vod-status-5xx: var(--vp-c-red-1, #f66f81);
-  --vod-status-5xx-soft: var(--vp-c-red-soft, rgba(248, 113, 113, 0.18));
-
-  --vod-syntax-string: var(--vap-syntax-string, #ce9178);
-  --vod-syntax-number: var(--vap-syntax-number, #b5cea8);
-  --vod-syntax-keyword: var(--vap-syntax-keyword, #c586c0);
-  --vod-syntax-comment: var(--vap-syntax-comment, #6a9955);
-  --vod-syntax-function: var(--vap-syntax-function, #dcdcaa);
 }
