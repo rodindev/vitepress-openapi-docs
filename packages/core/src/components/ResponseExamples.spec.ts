@@ -83,6 +83,31 @@ describe('ResponseExamples', () => {
     expect(items.filter((i) => (i.element as HTMLDetailsElement).open)).toHaveLength(0)
   })
 
+  it('wraps JSON tokens in the rendered code block', () => {
+    const wrapper = mount(ResponseExamples, { props: { responses: withExample } })
+    const code = wrapper.find('.vod-responses__code')
+    expect(code.find('.vap-json-key').exists()).toBe(true)
+    expect(code.find('.vap-json-string').exists()).toBe(true)
+    expect(code.find('.vap-json-number').exists()).toBe(true)
+  })
+
+  it('falls back to plain-escaped output for non-JSON content types', () => {
+    const wrapper = mount(ResponseExamples, {
+      props: {
+        responses: [
+          {
+            status: '200',
+            description: 'OK',
+            content: { 'text/plain': { example: '<b>not html</b>' } },
+          },
+        ],
+      },
+    })
+    const code = wrapper.find('.vod-responses__code')
+    expect(code.find('.vap-json-string').exists()).toBe(false)
+    expect(code.html()).toContain('&lt;b&gt;not html&lt;/b&gt;')
+  })
+
   it('strips markdown syntax from tab descriptions', () => {
     const responses: ParsedResponse[] = [
       {

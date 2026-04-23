@@ -20,7 +20,7 @@
             example derived from schema
           </span>
         </p>
-        <pre class="vod-responses__code" tabindex="0"><code>{{ entry.body }}</code></pre>
+        <pre class="vod-responses__code" tabindex="0"><code v-html="renderBody(entry)" /></pre>
       </div>
     </details>
   </section>
@@ -29,6 +29,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { generateJsonBody } from '../runtime/example'
+import { escapeHtml } from '../highlight/escape'
+import { highlightJson } from '../highlight/json'
 import type { ParsedResponse } from '../parser/types'
 
 interface Props {
@@ -97,6 +99,15 @@ function stripMarkdown(text: string): string {
     .replace(/_(.+?)_/g, '$1')
     .replace(/`(.+?)`/g, '$1')
     .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+}
+
+function isJsonContentType(ct: string): boolean {
+  return ct === 'application/json' || ct === 'text/json' || ct.endsWith('+json')
+}
+
+function renderBody(entry: Entry): string {
+  if (isJsonContentType(entry.contentType)) return highlightJson(entry.body)
+  return escapeHtml(entry.body)
 }
 
 function statusBucket(
