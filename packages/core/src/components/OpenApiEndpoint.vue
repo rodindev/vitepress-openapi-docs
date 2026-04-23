@@ -143,6 +143,66 @@
 
         <details v-if="showSection('try') && isCollapsed('try')" class="vod-endpoint__collapsible">
           <summary>Try it</summary>
+          <div class="vod-param-cap" :class="{ 'vod-param-cap--expanded': stackedParamsExpanded }">
+            <Playground
+              :url="op.path"
+              :method="op.method.toUpperCase()"
+              :data="playgroundData"
+              :headers="baseHeaders"
+              :servers="serverList"
+              :content-type="effectiveBodyInputs ? undefined : requestContentType"
+              :body="effectiveBodyInputs ? undefined : exampleBody"
+              dense
+              @before-send="injectAuth"
+              @request-start="emit('request-start', $event)"
+              @request-success="emit('request-success', $event)"
+              @request-error="emit('request-error', $event)"
+            >
+              <template #send-button="{ loading, execute, abort, streaming }">
+                <div class="vod-param-cap__send">
+                  <button
+                    v-if="playgroundData.length > ASIDE_PARAMS_LIMIT"
+                    type="button"
+                    class="vod-param-cap__toggle"
+                    :data-expanded="stackedParamsExpanded"
+                    @click="stackedParamsExpanded = !stackedParamsExpanded"
+                  >
+                    {{
+                      stackedParamsExpanded
+                        ? 'Show fewer'
+                        : `Show all ${playgroundData.length} fields`
+                    }}
+                  </button>
+                  <button
+                    v-if="streaming"
+                    type="button"
+                    class="vap-btn vap-btn--primary"
+                    aria-label="Stop request"
+                    @click="abort && abort()"
+                  >
+                    Stop
+                  </button>
+                  <button
+                    v-else
+                    type="button"
+                    class="vap-btn vap-btn--primary"
+                    :disabled="loading"
+                    aria-label="Send request"
+                    @click="execute()"
+                  >
+                    <span v-if="loading" class="vap-spinner" />
+                    {{ loading ? 'Sending' : 'Send request' }}
+                  </button>
+                </div>
+              </template>
+            </Playground>
+          </div>
+        </details>
+        <div
+          v-else-if="showSection('try')"
+          class="vod-param-cap"
+          :class="{ 'vod-param-cap--expanded': stackedParamsExpanded }"
+        >
           <Playground
             :url="op.path"
             :method="op.method.toUpperCase()"
@@ -151,26 +211,51 @@
             :servers="serverList"
             :content-type="effectiveBodyInputs ? undefined : requestContentType"
             :body="effectiveBodyInputs ? undefined : exampleBody"
+            dense
             @before-send="injectAuth"
             @request-start="emit('request-start', $event)"
             @request-success="emit('request-success', $event)"
             @request-error="emit('request-error', $event)"
-          />
-        </details>
-        <Playground
-          v-else-if="showSection('try')"
-          :url="op.path"
-          :method="op.method.toUpperCase()"
-          :data="playgroundData"
-          :headers="baseHeaders"
-          :servers="serverList"
-          :content-type="effectiveBodyInputs ? undefined : requestContentType"
-          :body="effectiveBodyInputs ? undefined : exampleBody"
-          @before-send="injectAuth"
-          @request-start="emit('request-start', $event)"
-          @request-success="emit('request-success', $event)"
-          @request-error="emit('request-error', $event)"
-        />
+          >
+            <template #send-button="{ loading, execute, abort, streaming }">
+              <div class="vod-param-cap__send">
+                <button
+                  v-if="playgroundData.length > ASIDE_PARAMS_LIMIT"
+                  type="button"
+                  class="vod-param-cap__toggle"
+                  :data-expanded="stackedParamsExpanded"
+                  @click="stackedParamsExpanded = !stackedParamsExpanded"
+                >
+                  {{
+                    stackedParamsExpanded
+                      ? 'Show fewer'
+                      : `Show all ${playgroundData.length} fields`
+                  }}
+                </button>
+                <button
+                  v-if="streaming"
+                  type="button"
+                  class="vap-btn vap-btn--primary"
+                  aria-label="Stop request"
+                  @click="abort && abort()"
+                >
+                  Stop
+                </button>
+                <button
+                  v-else
+                  type="button"
+                  class="vap-btn vap-btn--primary"
+                  :disabled="loading"
+                  aria-label="Send request"
+                  @click="execute()"
+                >
+                  <span v-if="loading" class="vap-spinner" />
+                  {{ loading ? 'Sending' : 'Send request' }}
+                </button>
+              </div>
+            </template>
+          </Playground>
+        </div>
       </template>
     </section>
 
@@ -597,6 +682,7 @@ const PARAMS_VISIBLE_LIMIT = 5
 const ASIDE_PARAMS_LIMIT = 4
 const paramsExpanded = ref(false)
 const asideParamsExpanded = ref(false)
+const stackedParamsExpanded = ref(false)
 
 const visibleParams = computed(() => {
   const all = op.value.parameters
