@@ -1,52 +1,33 @@
 <template>
   <section v-if="entries.length > 0" class="vod-responses">
     <h4 class="vod-responses__heading">Response examples</h4>
-    <div class="vod-responses__bar">
-      <div class="vod-responses__tabs" role="tablist" aria-label="Response status codes">
-        <button
-          v-for="entry in entries"
-          :key="entry.key"
-          type="button"
-          role="tab"
-          class="vod-responses__tab"
-          :class="[
-            `vod-responses__tab--${statusBucket(entry.status)}`,
-            { 'vod-responses__tab--active': entry.key === active },
-          ]"
-          :aria-selected="entry.key === active"
-          :aria-controls="`vod-response-${uid}-${entry.key}`"
-          @click="active = entry.key"
-        >
-          <span class="vod-responses__status">{{ entry.status }}</span>
-          <span v-if="entry.description" class="vod-responses__desc">{{
-            stripMarkdown(entry.description)
-          }}</span>
-        </button>
-      </div>
-    </div>
-
-    <div
+    <details
       v-for="entry in entries"
-      v-show="entry.key === active"
       :key="entry.key"
-      :id="`vod-response-${uid}-${entry.key}`"
-      class="vod-responses__panel"
-      role="tabpanel"
-      :aria-label="`Response ${entry.status}`"
+      class="vod-responses__item"
+      :class="`vod-responses__item--${statusBucket(entry.status)}`"
     >
-      <p class="vod-responses__meta">
-        <code>{{ entry.contentType }}</code>
-        <span v-if="entry.derived" class="vod-responses__derived" role="note">
-          example derived from schema
-        </span>
-      </p>
-      <pre class="vod-responses__code" tabindex="0"><code>{{ entry.body }}</code></pre>
-    </div>
+      <summary class="vod-responses__row">
+        <span class="vod-responses__status">{{ entry.status }}</span>
+        <span v-if="entry.description" class="vod-responses__desc">{{
+          stripMarkdown(entry.description)
+        }}</span>
+      </summary>
+      <div class="vod-responses__panel">
+        <p class="vod-responses__meta">
+          <code>{{ entry.contentType }}</code>
+          <span v-if="entry.derived" class="vod-responses__derived" role="note">
+            example derived from schema
+          </span>
+        </p>
+        <pre class="vod-responses__code" tabindex="0"><code>{{ entry.body }}</code></pre>
+      </div>
+    </details>
   </section>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed } from 'vue'
 import { generateJsonBody } from '../runtime/example'
 import type { ParsedResponse } from '../parser/types'
 
@@ -98,17 +79,6 @@ const entries = computed<Entry[]>(() => {
   }
   return panels
 })
-
-const active = ref<string>(entries.value.length > 0 ? entries.value[0]!.key : '')
-const uid = `re-${props.responses.length}-${entries.value[0]?.key ?? '0'}`
-
-watch(
-  () => entries.value,
-  (v) => {
-    if (v.length > 0) active.value = v[0]!.key
-    else active.value = ''
-  }
-)
 
 function stringify(value: unknown): string {
   if (typeof value === 'string') return value

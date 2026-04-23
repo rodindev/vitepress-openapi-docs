@@ -68,20 +68,19 @@ describe('ResponseExamples', () => {
     expect(wrapper.find('.vod-responses__derived').exists()).toBe(true)
   })
 
-  it('emits a tab per status with bucket-specific styling', () => {
+  it('renders one expandable item per status with bucket-specific styling', () => {
     const wrapper = mount(ResponseExamples, { props: { responses: multiStatus } })
-    const tabs = wrapper.findAll('.vod-responses__tab')
-    expect(tabs).toHaveLength(3)
-    expect(tabs[0]!.classes()).toContain('vod-responses__tab--success')
-    expect(tabs[1]!.classes()).toContain('vod-responses__tab--client-error')
-    expect(tabs[2]!.classes()).toContain('vod-responses__tab--server-error')
+    const items = wrapper.findAll('.vod-responses__item')
+    expect(items).toHaveLength(3)
+    expect(items[0]!.classes()).toContain('vod-responses__item--success')
+    expect(items[1]!.classes()).toContain('vod-responses__item--client-error')
+    expect(items[2]!.classes()).toContain('vod-responses__item--server-error')
   })
 
-  it('switches the active tab on click', async () => {
+  it('starts with every item collapsed', () => {
     const wrapper = mount(ResponseExamples, { props: { responses: multiStatus } })
-    expect(wrapper.find('[aria-selected="true"]').text()).toContain('200')
-    await wrapper.findAll('.vod-responses__tab')[1]!.trigger('click')
-    expect(wrapper.find('[aria-selected="true"]').text()).toContain('404')
+    const items = wrapper.findAll('.vod-responses__item')
+    expect(items.filter((i) => (i.element as HTMLDetailsElement).open)).toHaveLength(0)
   })
 
   it('strips markdown syntax from tab descriptions', () => {
