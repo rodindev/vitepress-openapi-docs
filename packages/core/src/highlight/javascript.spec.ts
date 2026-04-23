@@ -51,4 +51,15 @@ describe('highlightJavaScript', () => {
     const html = highlightJavaScript('awaitedValue')
     expect(html).not.toContain('<span class="vod-syntax-keyword">await</span>')
   })
+
+  it('highlights function calls', () => {
+    const html = highlightJavaScript('await fetch(url); JSON.stringify(body)')
+    expect(html).toContain('<span class="vod-syntax-function">fetch</span>')
+    expect(html).toContain('<span class="vod-syntax-function">stringify</span>')
+  })
+
+  it('does not color identifiers without a following paren as functions', () => {
+    const html = highlightJavaScript('const url = path')
+    expect(html).not.toContain('<span class="vod-syntax-function">')
+  })
 })

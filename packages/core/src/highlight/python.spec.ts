@@ -53,4 +53,11 @@ response = requests.get(url, headers={"Authorization": "Bearer x"})`)
     const html = highlightPython('import_spec = 1')
     expect(html).not.toContain('<span class="vod-syntax-keyword">import</span>')
   })
+
+  it('highlights function calls', () => {
+    const html = highlightPython('requests.get(url)\nprint(response.json())')
+    expect(html).toContain('<span class="vod-syntax-function">get</span>')
+    expect(html).toContain('<span class="vod-syntax-function">print</span>')
+    expect(html).toContain('<span class="vod-syntax-function">json</span>')
+  })
 })

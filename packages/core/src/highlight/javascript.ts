@@ -1,6 +1,6 @@
 import { escapeHtml } from './escape'
 
-type TokenType = 'comment' | 'string' | 'keyword' | 'number' | 'text'
+type TokenType = 'comment' | 'string' | 'keyword' | 'function' | 'number' | 'text'
 
 interface Token {
   type: TokenType
@@ -18,6 +18,7 @@ const JS_PATTERN = new RegExp(
     "('(?:\\\\.|[^'\\\\])*')", // single-quoted string
     '(`(?:\\\\.|[^`\\\\])*`)', // template literal
     `\\b(${KEYWORDS})\\b`, // keyword
+    '([A-Za-z_]\\w*)(?=\\s*\\()', // function call
     '(\\b\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?\\b)', // number
   ].join('|'),
   'g'
@@ -31,13 +32,14 @@ function tokenize(text: string): Token[] {
     if (start > cursor) {
       tokens.push({ type: 'text', value: text.slice(cursor, start) })
     }
-    const [whole, block, line, dstr, sstr, tmpl, kw, num] = match
+    const [whole, block, line, dstr, sstr, tmpl, kw, fn, num] = match
     if (block !== undefined) tokens.push({ type: 'comment', value: block })
     else if (line !== undefined) tokens.push({ type: 'comment', value: line })
     else if (dstr !== undefined) tokens.push({ type: 'string', value: dstr })
     else if (sstr !== undefined) tokens.push({ type: 'string', value: sstr })
     else if (tmpl !== undefined) tokens.push({ type: 'string', value: tmpl })
     else if (kw !== undefined) tokens.push({ type: 'keyword', value: kw })
+    else if (fn !== undefined) tokens.push({ type: 'function', value: fn })
     else if (num !== undefined) tokens.push({ type: 'number', value: num })
     cursor = start + whole.length
   }
@@ -51,6 +53,7 @@ const CLASSES: Record<Exclude<TokenType, 'text'>, string> = {
   comment: 'vod-syntax-comment',
   string: 'vod-syntax-string',
   keyword: 'vod-syntax-keyword',
+  function: 'vod-syntax-function',
   number: 'vod-syntax-number',
 }
 
