@@ -1366,6 +1366,62 @@ a.vod-schema__type-token {
   max-height: var(--vod-playground-body-max-height, 16rem);
 }
 
+.vod-endpoint-layout .vap-response__bar {
+  gap: 0.5rem;
+  padding: 0.45rem 0.7rem;
+}
+
+.vod-endpoint-layout .vap-response__bar button[aria-label='Copy as cURL'] {
+  display: none;
+}
+
+.vod-endpoint-layout .vap-response__bar .vap-btn {
+  position: relative;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  font-size: 0;
+  border-radius: 6px;
+  color: var(--vod-text-2);
+  transition:
+    background-color 0.4s ease,
+    transform 0.15s ease,
+    color 0.12s ease;
+}
+
+.vod-endpoint-layout .vap-response__bar .vap-btn:hover {
+  color: var(--vod-text-1);
+}
+
+.vod-endpoint-layout .vap-response__bar .vap-btn:active {
+  background: var(--vod-status-2xx-soft);
+  color: var(--vod-status-2xx);
+  transform: scale(0.92);
+  transition-duration: 0s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vod-endpoint-layout .vap-response__bar .vap-btn {
+    transition: none;
+  }
+  .vod-endpoint-layout .vap-response__bar .vap-btn:active {
+    transform: none;
+  }
+}
+
+.vod-endpoint-layout .vap-response__bar .vap-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 14px;
+  height: 14px;
+  background: currentColor;
+  mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z'/></svg>") center / contain no-repeat;
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z'/></svg>") center / contain no-repeat;
+}
+
 /* Dark-mode surfaces follow vap (which already redefines --vap-surface et al
    under .dark). We only restate the bindings so vod's vars cascade cleanly. */
 .dark {
