@@ -183,22 +183,23 @@ describe('OpenApiEndpoint', () => {
     expect(link.attributes('href')).toBe('/schemas/public/User')
   })
 
-  it('marks webhook operations with a webhook badge and patch-tinted method', () => {
+  it('marks webhook operations with a webhook chip and neutral method tint', () => {
     const wrapper = mount(OpenApiEndpoint, {
       props: { id: 'public.petCreated' },
       global: { provide: registryProvide },
     })
-    expect(wrapper.find('.vod-endpoint__kind-badge').exists()).toBe(true)
-    expect(wrapper.find('.vod-endpoint__kind-badge').text()).toBe('webhook')
+    const chips = wrapper.findAll('.vod-endpoint__title .vod-chip')
+    expect(chips.some((c) => c.text() === 'webhook')).toBe(true)
     expect(wrapper.find('.vod-endpoint__method--webhook').exists()).toBe(true)
   })
 
-  it('does not show the webhook badge on regular path operations', () => {
+  it('does not show the webhook chip on regular path operations', () => {
     const wrapper = mount(OpenApiEndpoint, {
       props: { id: 'public.users.list' },
       global: { provide: registryProvide },
     })
-    expect(wrapper.find('.vod-endpoint__kind-badge').exists()).toBe(false)
+    const chips = wrapper.findAll('.vod-endpoint__title .vod-chip')
+    expect(chips.some((c) => c.text() === 'webhook')).toBe(false)
     expect(wrapper.find('.vod-endpoint__method--webhook').exists()).toBe(false)
   })
 

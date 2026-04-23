@@ -34,9 +34,7 @@
 
       <ul v-if="entry.info.length > 0" class="vod-changelog__list">
         <li v-for="(change, i) in entry.info" :key="`info-${i}`" class="vod-changelog__item">
-          <strong class="vod-changelog__kind vod-changelog__kind--info"
-            >info.{{ change.kind }}</strong
-          >
+          <strong class="vod-chip vod-chip--neutral">info.{{ change.kind }}</strong>
           <span v-if="change.before">
             <code>{{ change.before }}</code> →
           </span>
@@ -52,7 +50,7 @@
           class="vod-changelog__item"
           :data-kind="change.kind"
         >
-          <strong class="vod-changelog__kind" :class="`vod-changelog__kind--${change.kind}`">
+          <strong class="vod-chip" :class="chipVariant(change.kind)">
             {{ kindLabel(change.kind) }}
           </strong>
           <template v-if="change.kind === 'renamed'">
@@ -107,5 +105,12 @@ function kindLabel(kind: ChangeKind): string {
   if (kind === 'summary') return 'Summary changed'
   if (kind === 'description') return 'Description changed'
   return kind
+}
+
+function chipVariant(kind: ChangeKind): string {
+  if (kind === 'added') return 'vod-chip--success'
+  if (kind === 'removed') return 'vod-chip--danger'
+  if (kind === 'renamed') return 'vod-chip--warning'
+  return 'vod-chip--neutral'
 }
 </script>

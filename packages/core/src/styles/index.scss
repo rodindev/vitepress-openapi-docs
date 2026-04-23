@@ -122,29 +122,51 @@
   color: var(--vod-text-2);
 }
 
-.vod-endpoint__deprecated-badge {
-  margin-left: 0.5rem;
-  padding: 0.05rem 0.5rem;
-  border-radius: 999px;
-  background: var(--vod-method-delete-bg);
-  color: var(--vod-method-delete-text);
-  font-size: 0.7rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  vertical-align: middle;
-}
-
-.vod-endpoint__kind-badge {
-  margin-left: 0.5rem;
-  padding: 0.05rem 0.5rem;
+.vod-chip {
+  display: inline-block;
+  padding: 0.1rem 0.5rem;
   border-radius: 999px;
   background: var(--vod-pill-neutral-bg);
   color: var(--vod-pill-neutral-text);
   font-size: 0.7rem;
   font-weight: 600;
-  text-transform: uppercase;
   letter-spacing: 0.04em;
+  text-transform: uppercase;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.vod-chip--neutral {
+  background: var(--vod-pill-neutral-bg);
+  color: var(--vod-pill-neutral-text);
+}
+
+.vod-chip--success {
+  background: var(--vod-status-2xx-soft);
+  color: var(--vod-status-2xx);
+}
+
+.vod-chip--warning {
+  background: var(--vod-status-4xx-soft);
+  color: var(--vod-status-4xx);
+}
+
+.vod-chip--danger {
+  background: var(--vod-status-5xx-soft);
+  color: var(--vod-status-5xx);
+}
+
+.vod-endpoint__params-table td .vod-chip,
+.vod-schema__field .vod-chip {
+  margin-inline-start: 0.4rem;
+}
+
+.vod-changelog__item .vod-chip {
+  margin-inline-end: 0.4rem;
+}
+
+.vod-changelog__item code + .vod-changelog__delta {
+  margin-inline-start: 0.4rem;
 }
 
 .vod-endpoint__method--webhook {
@@ -345,13 +367,14 @@
 /* Compact params table */
 .vod-endpoint__params-table {
   width: 100%;
-  border-collapse: collapse;
-  margin: 0.5rem 0 0.75rem;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 0.25rem 0 0.75rem;
   font-size: 0.9rem;
 
   th,
   td {
-    padding: 0.4rem 0.6rem;
+    padding: 0.5rem 0.6rem;
     border-bottom: 1px solid var(--vod-surface-border);
     text-align: left;
     vertical-align: top;
@@ -365,6 +388,24 @@
     letter-spacing: 0.04em;
   }
 
+  tbody tr {
+    transition: background-color 0.12s ease;
+  }
+
+  tbody tr:hover td {
+    background: var(--vod-surface);
+  }
+
+  tbody tr:hover td:first-child {
+    border-start-start-radius: 6px;
+    border-end-start-radius: 6px;
+  }
+
+  tbody tr:hover td:last-child {
+    border-start-end-radius: 6px;
+    border-end-end-radius: 6px;
+  }
+
   code {
     font-family: var(--vod-font-mono);
     font-weight: 600;
@@ -372,20 +413,14 @@
   }
 }
 
-.vp-doc .vod-endpoint__params-table code {
-  color: var(--vod-text-1);
+@media (prefers-reduced-motion: reduce) {
+  .vod-endpoint__params-table tbody tr {
+    transition: none;
+  }
 }
 
-.vod-endpoint__param-required {
-  margin-left: 0.35rem;
-  padding: 0.05rem 0.35rem;
-  font-size: 0.6rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--vod-method-delete);
-  border: 1px solid currentColor;
-  border-radius: 999px;
-  vertical-align: middle;
+.vp-doc .vod-endpoint__params-table code {
+  color: var(--vod-text-1);
 }
 
 .vod-endpoint__param-type {
@@ -931,17 +966,6 @@
   color: var(--vod-text-1);
 }
 
-.vod-schema__required {
-  margin-left: 0.4rem;
-  padding: 0.05rem 0.4rem;
-  font-size: 0.65rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--vod-method-delete);
-  border: 1px solid currentColor;
-  border-radius: 999px;
-}
-
 .vod-schema__type-token {
   font-family: var(--vod-font-mono);
   font-size: 0.85rem;
@@ -1068,38 +1092,6 @@ a.vod-schema__type-token {
 
 .vod-changelog__item {
   line-height: 1.5;
-}
-
-.vod-changelog__kind {
-  display: inline-block;
-  margin-right: 0.35rem;
-  padding: 0.05rem 0.45rem;
-  border-radius: 999px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--vod-pill-neutral-text);
-  background: var(--vod-pill-neutral-bg);
-}
-
-.vod-changelog__kind--added {
-  background: var(--vod-status-2xx-soft);
-  color: var(--vod-status-2xx);
-}
-.vod-changelog__kind--removed {
-  background: var(--vod-status-5xx-soft);
-  color: var(--vod-status-5xx);
-}
-.vod-changelog__kind--renamed {
-  background: var(--vod-status-4xx-soft);
-  color: var(--vod-status-4xx);
-}
-.vod-changelog__kind--summary,
-.vod-changelog__kind--description,
-.vod-changelog__kind--info {
-  background: var(--vod-pill-neutral-bg);
-  color: var(--vod-pill-neutral-text);
 }
 
 .vod-changelog__delta {

@@ -29,7 +29,7 @@
         <tr v-for="prop in schema.properties" :key="prop.name">
           <th scope="row" class="vod-schema__field">
             <code>{{ prop.name }}</code>
-            <span v-if="prop.required" class="vod-schema__required">required</span>
+            <span v-if="prop.required" class="vod-chip vod-chip--danger">required</span>
           </th>
           <td class="vod-schema__cell-type">
             <component

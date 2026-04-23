@@ -60,7 +60,7 @@ describe('OpenApiChangelog', () => {
     })
     expect(wrapper.find('.vod-changelog__commit').text()).toBe('abc1234')
     expect(wrapper.find('.vod-changelog__subject').text()).toContain('feat: add getPet')
-    const kindLabels = wrapper.findAll('.vod-changelog__kind').map((el) => el.text())
+    const kindLabels = wrapper.findAll('.vod-chip').map((el) => el.text())
     expect(kindLabels).toContain('Added')
     expect(kindLabels).toContain('Removed')
     expect(kindLabels.some((label) => label.startsWith('info.version'))).toBe(true)

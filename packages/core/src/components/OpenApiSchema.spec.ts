@@ -69,7 +69,7 @@ describe('OpenApiSchema', () => {
       props: { name: 'User', specName: 'public' },
       global: { provide },
     })
-    const requiredBadges = wrapper.findAll('.vod-schema__required')
+    const requiredBadges = wrapper.findAll('.vod-schema__table .vod-chip--danger')
     expect(requiredBadges).toHaveLength(2)
   })
 

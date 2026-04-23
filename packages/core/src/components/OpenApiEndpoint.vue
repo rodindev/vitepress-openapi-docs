@@ -18,8 +18,8 @@
             {{ op.method.toUpperCase() }}
           </span>
           <code class="vod-endpoint__path">{{ op.path }}</code>
-          <span v-if="op.deprecated" class="vod-endpoint__deprecated-badge">deprecated</span>
-          <span v-if="op.kind === 'webhook'" class="vod-endpoint__kind-badge">webhook</span>
+          <span v-if="op.deprecated" class="vod-chip vod-chip--warning">deprecated</span>
+          <span v-if="op.kind === 'webhook'" class="vod-chip vod-chip--neutral">webhook</span>
         </h3>
         <p v-if="op.summary" class="vod-endpoint__summary">{{ op.summary }}</p>
       </header>
@@ -48,7 +48,7 @@
             <tr v-for="p in visibleParams" :key="`${p.in}:${p.name}`">
               <td>
                 <code>{{ p.name }}</code>
-                <span v-if="p.required" class="vod-endpoint__param-required">required</span>
+                <span v-if="p.required" class="vod-chip vod-chip--danger">required</span>
               </td>
               <td class="vod-endpoint__param-type">
                 <span class="vod-endpoint__param-in">{{ p.in }}</span>
