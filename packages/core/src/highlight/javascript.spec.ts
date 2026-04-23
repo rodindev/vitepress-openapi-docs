@@ -3,7 +3,7 @@ import { highlightJavaScript } from './javascript'
 
 describe('highlightJavaScript', () => {
   it('wraps keywords, strings, and numbers', () => {
-    const html = highlightJavaScript(`const x = await fetch('https://x', { method: 'POST' })`)
+    const html = highlightJavaScript("const x = await fetch('https://x', { method: 'POST' })")
     expect(html).toContain('<span class="vod-syntax-keyword">const</span>')
     expect(html).toContain('<span class="vod-syntax-keyword">await</span>')
     expect(html).toContain('<span class="vod-syntax-string">&#39;https://x&#39;</span>')
