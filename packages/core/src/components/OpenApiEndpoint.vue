@@ -180,36 +180,57 @@
         <span v-if="specVersionLabel" class="vod-page-aside__spec">{{ specVersionLabel }}</span>
       </header>
 
-      <SdkSnippets
-        v-if="showSection('snippets')"
-        :snippets="snippets"
-        :aria-label="`${op.method.toUpperCase()} ${op.path} code samples`"
-      />
+      <details v-if="showSection('snippets')" class="vod-page-aside__collapsible">
+        <summary class="vod-page-aside__summary">Code</summary>
+        <SdkSnippets
+          :snippets="snippets"
+          :aria-label="`${op.method.toUpperCase()} ${op.path} code samples`"
+        />
+      </details>
 
-      <AuthControls
+      <details
         v-if="showSection('auth') && showSection('try') && resolvedScheme !== 'none'"
-        :spec-name="specName"
-        :scheme="resolvedScheme"
-        :header-name="resolvedHeaderName"
-        :api-key-in="resolvedApiKeyIn"
-        :oauth2-flow="oauth2Flow"
-      />
+        class="vod-page-aside__collapsible"
+      >
+        <summary class="vod-page-aside__summary">Authentication</summary>
+        <AuthControls
+          :spec-name="specName"
+          :scheme="resolvedScheme"
+          :header-name="resolvedHeaderName"
+          :api-key-in="resolvedApiKeyIn"
+          :oauth2-flow="oauth2Flow"
+        />
+      </details>
 
-      <Playground
+      <div
         v-if="showSection('try')"
-        :url="op.path"
-        :method="op.method.toUpperCase()"
-        :data="playgroundData"
-        :headers="baseHeaders"
-        :servers="serverList"
-        :content-type="effectiveBodyInputs ? undefined : requestContentType"
-        :body="effectiveBodyInputs ? undefined : exampleBody"
-        dense
-        @before-send="injectAuth"
-        @request-start="emit('request-start', $event)"
-        @request-success="emit('request-success', $event)"
-        @request-error="emit('request-error', $event)"
-      />
+        class="vod-param-cap"
+        :class="{ 'vod-param-cap--expanded': asideParamsExpanded }"
+      >
+        <Playground
+          :url="op.path"
+          :method="op.method.toUpperCase()"
+          :data="playgroundData"
+          :headers="baseHeaders"
+          :servers="serverList"
+          :content-type="effectiveBodyInputs ? undefined : requestContentType"
+          :body="effectiveBodyInputs ? undefined : exampleBody"
+          dense
+          @before-send="injectAuth"
+          @request-start="emit('request-start', $event)"
+          @request-success="emit('request-success', $event)"
+          @request-error="emit('request-error', $event)"
+        />
+        <button
+          v-if="playgroundData.length > ASIDE_PARAMS_LIMIT"
+          type="button"
+          class="vod-param-cap__toggle"
+          :data-expanded="asideParamsExpanded"
+          @click="asideParamsExpanded = !asideParamsExpanded"
+        >
+          {{ asideParamsExpanded ? 'Show fewer' : `Show all ${playgroundData.length} fields` }}
+        </button>
+      </div>
     </aside>
   </div>
 </template>
@@ -539,7 +560,9 @@ onUnmounted(() => {
 const useColumns = computed(() => effectiveLayout.value === 'columns' && !viewportIsNarrow.value)
 
 const PARAMS_VISIBLE_LIMIT = 5
+const ASIDE_PARAMS_LIMIT = 4
 const paramsExpanded = ref(false)
+const asideParamsExpanded = ref(false)
 
 const visibleParams = computed(() => {
   const all = op.value.parameters
