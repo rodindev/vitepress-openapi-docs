@@ -36,9 +36,9 @@
         <li v-for="(change, i) in entry.info" :key="`info-${i}`" class="vod-changelog__item">
           <strong class="vod-chip vod-chip--neutral">info.{{ change.kind }}</strong>
           <span v-if="change.before">
-            <code>{{ change.before }}</code> →
+            <span class="vod-changelog__md" v-html="md(change.before)" /> →
           </span>
-          <code v-if="change.after">{{ change.after }}</code>
+          <span v-if="change.after" class="vod-changelog__md" v-html="md(change.after)" />
           <em v-else>(cleared)</em>
         </li>
       </ul>
@@ -60,10 +60,14 @@
           <template v-else>
             <code>{{ change.operationId }}</code>
             <span v-if="change.before || change.after" class="vod-changelog__delta">
-              <em v-if="change.before">“{{ change.before }}”</em>
+              <em v-if="change.before"
+                >"<span class="vod-changelog__md" v-html="md(change.before)" />"</em
+              >
               <em v-else>(none)</em>
               →
-              <em v-if="change.after">“{{ change.after }}”</em>
+              <em v-if="change.after"
+                >"<span class="vod-changelog__md" v-html="md(change.after)" />"</em
+              >
               <em v-else>(cleared)</em>
             </span>
           </template>
@@ -76,6 +80,7 @@
 <script setup lang="ts">
 import { computed, inject } from 'vue'
 import { CHANGELOG_REGISTRY_KEY } from '../runtime/registry'
+import { renderInlineMarkdown as md } from '../markdown/inline'
 import type { ChangeKind } from '../changelog/types'
 
 interface Props {
