@@ -19,7 +19,7 @@
       <button
         type="button"
         class="vod-snippets__copy"
-        :aria-label="`Copy ${activeSnippet?.label ?? 'snippet'} to clipboard`"
+        :aria-label="copyAriaLabel"
         :disabled="!activeSnippet"
         @click="copy"
       >
@@ -59,6 +59,12 @@ const activeSnippet = computed(() => props.snippets.find((s) => s.language === a
 
 type CopyState = 'idle' | 'copied' | 'error'
 const copyState = ref<CopyState>('idle')
+const copyAriaLabel = computed(() => {
+  const label = activeSnippet.value?.label ?? 'snippet'
+  if (copyState.value === 'copied') return `${label} copied to clipboard`
+  if (copyState.value === 'error') return `Failed to copy ${label}`
+  return `Copy ${label} to clipboard`
+})
 let resetTimer: ReturnType<typeof setTimeout> | null = null
 
 async function copy() {
