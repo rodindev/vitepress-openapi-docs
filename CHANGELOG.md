@@ -2,6 +2,36 @@
 
 All notable changes to `vitepress-openapi-docs` and `create-vitepress-openapi-docs`.
 
+## 1.6.0
+
+### Added
+
+- Built-in syntax highlighting for response examples and code snippets. Tokenizers for JSON, JavaScript, Python, and shell ship in the bundle and follow the active VitePress theme. No Prism or Shiki dependency.
+- Response examples use an accordion layout so long payloads do not push the Try-It panel off screen.
+- Try-It panel reworked: compact stacked layout, `Send request` button (renamed from `Execute`), collapsible parameter grid with a `Show all` cap.
+- Changelog delta text renders inline markdown (code spans, links, emphasis).
+- Method and status tokens cascade through the host VitePress theme, so `--vp-c-*` overrides reflow into chips and status pills. Hex fallbacks keep non-VitePress hosts rendering.
+
+### Changed
+
+- `vue-api-playground` peer dependency bumped to `^2.4.0`.
+- Parser contract narrowed; endpoint URLs unified under a single `config/routes` helper.
+- Endpoint header typography and section rhythm reworked for a tighter vertical layout.
+- Node.js snippet dropped from code samples (`fetch` covers the same surface).
+- `npm run dev` runs the core watch build in parallel with the docs dev server.
+
+### Fixed
+
+- Token palette and link colors meet WCAG AA contrast in light and dark themes.
+- Webhook method chip routes through the neutral token path instead of the HTTP method map.
+- Parameters table and section toggles tightened up.
+
+### Documentation
+
+- New `/reference/playground` demo page and color swatches in the CSS variables reference.
+- Landing page, README, `/guide/existing-site`, `/reference/components`, and `/reference/cli` refreshed for the current surface.
+- Embedded mock spec bumped to v2.0.1 from api.rodin.dev.
+
 ## 1.5.1
 
 ### Added
