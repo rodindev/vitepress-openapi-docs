@@ -31,6 +31,8 @@ Renders one operation inline with prose.
 
 **Layout note:** In `columns` (default) the aside lives inside the endpoint container. On pages where VitePress renders a right-side TOC (`aside` frontmatter is not `false`), the aside stacks below the card instead — set `aside: false` in the page's frontmatter so the endpoint aside has room. Viewports at 1279px and below automatically fall back to the `stacked` layout regardless of the `layout` setting.
 
+**Parameters table:** Operations with more than 5 parameters collapse to 5 rows with a `Show all N parameters` toggle. The Try-It aside caps at 4 rows before collapsing. Stacked and columns layouts track their expand state independently.
+
 ### Events
 
 | Event             | Payload                 | Description                                  |
@@ -80,7 +82,7 @@ Git-history-driven spec diff.
 | ------ | -------- | ----------- |
 | `name` | `string` | Spec name.  |
 
-Shows added/removed/renamed operations and `info.*` field changes per commit. Empty state when fewer than two commits touch the spec.
+Shows added/removed/renamed operations and `info.*` field changes per commit. Delta summary text from the commit message renders with inline markdown (code, bold, italic, links) and is sanitised before mount. Empty state when fewer than two commits touch the spec.
 
 ::: tip CI note
 The changelog needs real git history. Add `fetch-depth: 0` to your CI checkout step.
@@ -104,7 +106,7 @@ Auth input for a single spec. Normally rendered by `<OpenApiEndpoint>` — use s
 
 ## `<SdkSnippets>`
 
-Tabbed code panel for curl / fetch / Python / Node snippets. Normally rendered by `<OpenApiEndpoint>`.
+Tabbed code panel for curl / fetch / Python snippets with built-in syntax highlighting. Normally rendered by `<OpenApiEndpoint>`.
 
 | Prop        | Type        | Description                                                          |
 | ----------- | ----------- | -------------------------------------------------------------------- |
@@ -113,7 +115,7 @@ Tabbed code panel for curl / fetch / Python / Node snippets. Normally rendered b
 
 ## `<ResponseExamples>`
 
-Status-code tabs with syntax-highlighted response bodies. Normally rendered by `<OpenApiEndpoint>`.
+Accordion of status-code rows with syntax-highlighted JSON response bodies. Rows expand lazily via the native `<details>` element; any number can be open at once. Normally rendered by `<OpenApiEndpoint>`.
 
 | Prop        | Type               | Description                         |
 | ----------- | ------------------ | ----------------------------------- |
@@ -134,13 +136,12 @@ Button that opens the `<OperationJumper>` dialog.
 
 ## `<OperationJumper>`
 
-Cmd+K / Ctrl+K fuzzy-search dialog. Mount in VitePress's `layout-top` slot — see [theme setup](/guide/existing-site#3-theme-setup).
+Cmd+K / Ctrl+K fuzzy-search dialog. Mount in VitePress's `layout-top` slot; see [theme setup](/guide/existing-site#3-theme-setup). Per-spec URL prefixes are read from the provide set by `enhanceAppWithOpenApi`, so no props are needed for cross-link routing.
 
-| Prop          | Type                     | Default                             | Description               |
-| ------------- | ------------------------ | ----------------------------------- | ------------------------- |
-| `prefixes`    | `Record<string, string>` | `{}`                                | URL prefix per spec name. |
-| `placeholder` | `string`                 | `'Jump to an operation or schema…'` | Input placeholder.        |
-| `ariaLabel`   | `string`                 | `'Jump to an operation or schema'`  | Dialog accessible label.  |
+| Prop          | Type     | Default                               | Description              |
+| ------------- | -------- | ------------------------------------- | ------------------------ |
+| `placeholder` | `string` | `'Jump to an operation or schema...'` | Input placeholder.       |
+| `ariaLabel`   | `string` | `'Jump to an operation or schema'`    | Dialog accessible label. |
 
 ## Programmatic API
 
@@ -163,7 +164,7 @@ const snippets = buildSnippets(operation, {
 Re-exported from `vue-api-playground`:
 
 ```ts
-import { toCurlSnippet, toFetch, toPython, toNode } from 'vitepress-openapi-docs'
+import { toCurlSnippet, toFetch, toPython } from 'vitepress-openapi-docs'
 ```
 
 Each takes a `SnippetRequest`:

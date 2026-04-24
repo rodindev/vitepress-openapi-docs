@@ -14,13 +14,17 @@ Creates a VitePress site with the plugin configured and an example OpenAPI spec.
 
 ### Flags
 
-| Flag                      | Description                                 |
-| ------------------------- | ------------------------------------------- |
-| `--spec <path>`           | Path or URL to your OpenAPI spec            |
-| `--pm <manager>`          | Force a package manager (npm/pnpm/yarn/bun) |
-| `-y` / `--no-interactive` | Skip prompts, use defaults                  |
-| `--skip-install`          | Skip post-scaffolding install step          |
-| `-f` / `--force`          | Overwrite existing directory                |
+| Flag                      | Description                                                                   |
+| ------------------------- | ----------------------------------------------------------------------------- |
+| `--spec <path>`           | Path or URL to your OpenAPI spec                                              |
+| `--title <label>`         | Site title written into the generated VitePress config                        |
+| `--server <url>`          | Override the API server base URL in the generated config                      |
+| `--body-inputs`           | Render request body properties as individual inputs in the scaffolded landing |
+| `--pm <manager>`          | Force a package manager (npm/pnpm/yarn/bun)                                   |
+| `-y` / `--no-interactive` | Skip prompts, use defaults                                                    |
+| `--skip-install`          | Skip post-scaffolding install step                                            |
+| `--no-git`                | Do not initialise a git repository in the scaffolded project                  |
+| `-f` / `--force`          | Overwrite existing directory                                                  |
 
 ### Examples
 
