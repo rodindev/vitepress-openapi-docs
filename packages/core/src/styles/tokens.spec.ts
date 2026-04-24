@@ -15,21 +15,22 @@ function parseVodTokens(source: string): Array<{ name: string; value: string }> 
 }
 
 describe('vod token cascade', () => {
-  it('every --vod-* declaration routes through var() so hosts can override', () => {
+  it('every --vod-* declaration resolves to a concrete value (var chain or hex literal)', () => {
     const tokens = parseVodTokens(stylesheet)
     expect(tokens.length).toBeGreaterThan(10)
 
-    const violations = tokens.filter((t) => !t.value.startsWith('var('))
+    const hexLiteral = /^#[0-9a-f]{3,8}$/i
+    const violations = tokens.filter(
+      (t) => !t.value.startsWith('var(') && !hexLiteral.test(t.value)
+    )
     const summary = violations.map((v) => `  ${v.name}: ${v.value}`).join('\n')
     expect(
       violations,
-      'these --vod-* tokens are pre-computed literals — they bypass the ' +
-        "--vap-* / --vp-c-* cascade and won't follow host theme overrides:\n" +
-        summary
+      'these --vod-* tokens are neither a var() chain nor a hex literal:\n' + summary
     ).toEqual([])
   })
 
-  it('method pill bg/text tokens terminate in a hex fallback', () => {
+  it('method pill bg/text tokens resolve to a hex color', () => {
     const tokens = parseVodTokens(stylesheet).filter((t) =>
       /^--vod-method-[a-z]+-(bg|text)$/.test(t.name)
     )
@@ -38,8 +39,8 @@ describe('vod token cascade', () => {
     for (const token of tokens) {
       expect(
         token.value,
-        `${token.name} should end with a hex literal so non-VitePress hosts still render something`
-      ).toMatch(/#[0-9a-f]{3,8}\s*\)+\s*$/i)
+        `${token.name} should be or end with a hex color for AA-safe defaults`
+      ).toMatch(/#[0-9a-f]{3,8}(\s*\)+\s*)?$/i)
     }
   })
 

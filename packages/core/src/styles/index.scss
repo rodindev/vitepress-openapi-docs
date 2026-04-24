@@ -12,40 +12,41 @@
   --vod-method-options: var(--vap-method-options, var(--vp-c-indigo-1, #1e40af));
   --vod-method-trace: var(--vap-method-trace, var(--vp-c-indigo-1, #1e40af));
 
-  --vod-method-get-bg: var(--vap-method-get-bg, var(--vp-c-indigo-soft, #dbeafe));
-  --vod-method-get-text: var(--vap-method-get-text, var(--vp-c-indigo-1, #1e40af));
-  --vod-method-post-bg: var(--vap-method-post-bg, var(--vp-c-yellow-soft, #fef3c7));
-  --vod-method-post-text: var(--vap-method-post-text, var(--vp-c-yellow-1, #92400e));
-  --vod-method-put-bg: var(--vap-method-put-bg, var(--vp-c-yellow-soft, #fef3c7));
-  --vod-method-put-text: var(--vap-method-put-text, var(--vp-c-yellow-1, #92400e));
-  --vod-method-patch-bg: var(--vap-method-patch-bg, var(--vp-c-yellow-soft, #fef3c7));
-  --vod-method-patch-text: var(--vap-method-patch-text, var(--vp-c-yellow-1, #92400e));
-  --vod-method-delete-bg: var(--vap-method-delete-bg, var(--vp-c-red-soft, #fee2e2));
-  --vod-method-delete-text: var(--vap-method-delete-text, var(--vp-c-red-1, #991b1b));
-  --vod-method-head-bg: var(--vap-method-head-bg, var(--vp-c-indigo-soft, #dbeafe));
-  --vod-method-head-text: var(--vap-method-head-text, var(--vp-c-indigo-1, #1e40af));
-  --vod-method-options-bg: var(--vap-method-options-bg, var(--vp-c-indigo-soft, #dbeafe));
-  --vod-method-options-text: var(--vap-method-options-text, var(--vp-c-indigo-1, #1e40af));
-  --vod-method-trace-bg: var(--vap-method-trace-bg, var(--vp-c-indigo-soft, #dbeafe));
-  --vod-method-trace-text: var(--vap-method-trace-text, var(--vp-c-indigo-1, #1e40af));
+  --vod-method-get-bg: #dbeafe;
+  --vod-method-get-text: #1e40af;
+  --vod-method-post-bg: #fef3c7;
+  --vod-method-post-text: #92400e;
+  --vod-method-put-bg: #fef3c7;
+  --vod-method-put-text: #92400e;
+  --vod-method-patch-bg: #fef3c7;
+  --vod-method-patch-text: #92400e;
+  --vod-method-delete-bg: #fee2e2;
+  --vod-method-delete-text: #991b1b;
+  --vod-method-head-bg: #dbeafe;
+  --vod-method-head-text: #1e40af;
+  --vod-method-options-bg: #dbeafe;
+  --vod-method-options-text: #1e40af;
+  --vod-method-trace-bg: #dbeafe;
+  --vod-method-trace-text: #1e40af;
 
-  --vod-pill-neutral-bg: var(--vap-pill-neutral-bg, var(--vp-c-default-soft, #f3f4f6));
-  --vod-pill-neutral-text: var(--vap-pill-neutral-text, var(--vp-c-text-2, #374151));
+  --vod-pill-neutral-bg: #f3f4f6;
+  --vod-pill-neutral-text: #374151;
 
-  --vod-status-2xx: var(--vp-c-green-1, #16a34a);
-  --vod-status-2xx-soft: var(--vp-c-green-soft, rgba(22, 163, 74, 0.14));
-  --vod-status-4xx: var(--vp-c-yellow-1, #d97706);
-  --vod-status-4xx-soft: var(--vp-c-yellow-soft, rgba(217, 119, 6, 0.14));
-  --vod-status-5xx: var(--vp-c-red-1, #dc2626);
-  --vod-status-5xx-soft: var(--vp-c-red-soft, rgba(220, 38, 38, 0.14));
+  --vod-status-2xx: #0f5132;
+  --vod-status-2xx-soft: #d6ede6;
+  --vod-status-4xx: #92400e;
+  --vod-status-4xx-soft: #fef3c7;
+  --vod-status-5xx: #991b1b;
+  --vod-status-5xx-soft: #fee2e2;
 
   /* Surfaces */
   --vod-surface: var(--vap-surface, var(--vp-c-bg-soft, #f6f6f7));
   --vod-surface-border: var(--vap-surface-border, var(--vp-c-divider, #e2e2e3));
-  --vod-text-1: var(--vap-text-1, var(--vp-c-text-1, #213547));
-  --vod-text-2: var(--vap-text-2, var(--vp-c-text-2, #475569));
+  --vod-text-1: #213547;
+  --vod-text-2: #475569;
   --vod-radius: var(--vap-radius, 8px);
   --vod-focus-ring: var(--vap-focus-ring, var(--vp-c-brand-1, #3eaf7c));
+  --vod-link: #1d4ed8;
 
   --vod-syntax-string: var(--vap-syntax-string, #a31515);
   --vod-syntax-number: var(--vap-syntax-number, #098658);
@@ -57,35 +58,37 @@
 .dark {
   --vod-surface: var(--vap-surface, var(--vp-c-bg-alt, #1b1b1f));
   --vod-surface-border: var(--vap-surface-border, var(--vp-c-divider, #2e2e32));
-  --vod-text-1: var(--vap-text-1, var(--vp-c-text-1, #dfdfd6));
-  --vod-text-2: var(--vap-text-2, var(--vp-c-text-2, #98989f));
+  --vod-text-1: #dfdfd6;
+  --vod-text-2: #c8c8cc;
 
-  --vod-method-get-bg: var(--vap-method-get-bg, var(--vp-c-indigo-soft, #172554));
-  --vod-method-get-text: var(--vap-method-get-text, var(--vp-c-indigo-1, #a8b1ff));
-  --vod-method-post-bg: var(--vap-method-post-bg, var(--vp-c-yellow-soft, #451a03));
-  --vod-method-post-text: var(--vap-method-post-text, var(--vp-c-yellow-1, #f9b44e));
-  --vod-method-put-bg: var(--vap-method-put-bg, var(--vp-c-yellow-soft, #451a03));
-  --vod-method-put-text: var(--vap-method-put-text, var(--vp-c-yellow-1, #f9b44e));
-  --vod-method-patch-bg: var(--vap-method-patch-bg, var(--vp-c-yellow-soft, #451a03));
-  --vod-method-patch-text: var(--vap-method-patch-text, var(--vp-c-yellow-1, #f9b44e));
-  --vod-method-delete-bg: var(--vap-method-delete-bg, var(--vp-c-red-soft, #450a0a));
-  --vod-method-delete-text: var(--vap-method-delete-text, var(--vp-c-red-1, #f66f81));
-  --vod-method-head-bg: var(--vap-method-head-bg, var(--vp-c-indigo-soft, #172554));
-  --vod-method-head-text: var(--vap-method-head-text, var(--vp-c-indigo-1, #a8b1ff));
-  --vod-method-options-bg: var(--vap-method-options-bg, var(--vp-c-indigo-soft, #172554));
-  --vod-method-options-text: var(--vap-method-options-text, var(--vp-c-indigo-1, #a8b1ff));
-  --vod-method-trace-bg: var(--vap-method-trace-bg, var(--vp-c-indigo-soft, #172554));
-  --vod-method-trace-text: var(--vap-method-trace-text, var(--vp-c-indigo-1, #a8b1ff));
+  --vod-method-get-bg: #172554;
+  --vod-method-get-text: #a8b1ff;
+  --vod-method-post-bg: #451a03;
+  --vod-method-post-text: #fbbf24;
+  --vod-method-put-bg: #451a03;
+  --vod-method-put-text: #fbbf24;
+  --vod-method-patch-bg: #451a03;
+  --vod-method-patch-text: #fbbf24;
+  --vod-method-delete-bg: #450a0a;
+  --vod-method-delete-text: #fca5a5;
+  --vod-method-head-bg: #172554;
+  --vod-method-head-text: #a8b1ff;
+  --vod-method-options-bg: #172554;
+  --vod-method-options-text: #a8b1ff;
+  --vod-method-trace-bg: #172554;
+  --vod-method-trace-text: #a8b1ff;
 
-  --vod-pill-neutral-bg: var(--vap-pill-neutral-bg, var(--vp-c-default-soft, #1f2937));
-  --vod-pill-neutral-text: var(--vap-pill-neutral-text, var(--vp-c-text-2, #d1d5db));
+  --vod-pill-neutral-bg: #1f2937;
+  --vod-pill-neutral-text: #d1d5db;
 
-  --vod-status-2xx: var(--vp-c-green-1, #3dd68c);
-  --vod-status-2xx-soft: var(--vp-c-green-soft, rgba(74, 222, 128, 0.18));
-  --vod-status-4xx: var(--vp-c-yellow-1, #f9b44e);
-  --vod-status-4xx-soft: var(--vp-c-yellow-soft, rgba(251, 191, 36, 0.18));
-  --vod-status-5xx: var(--vp-c-red-1, #f66f81);
-  --vod-status-5xx-soft: var(--vp-c-red-soft, rgba(248, 113, 113, 0.18));
+  --vod-status-2xx: #86efac;
+  --vod-status-2xx-soft: #14402c;
+  --vod-status-4xx: #fbbf24;
+  --vod-status-4xx-soft: #451a03;
+  --vod-status-5xx: #fca5a5;
+  --vod-status-5xx-soft: #450a0a;
+
+  --vod-link: #93c5fd;
 
   --vod-syntax-string: var(--vap-syntax-string, #ce9178);
   --vod-syntax-number: var(--vap-syntax-number, #b5cea8);
@@ -109,6 +112,20 @@
 }
 .vod-syntax-function {
   color: var(--vod-syntax-function);
+}
+
+.vod-changelog a,
+.vod-endpoint a,
+.vod-spec a,
+.vod-schema a {
+  color: var(--vod-link);
+}
+
+.vod-changelog :not(pre) > code,
+.vod-endpoint :not(pre) > code,
+.vod-spec :not(pre) > code,
+.vod-schema :not(pre) > code {
+  color: var(--vod-text-1);
 }
 
 @mixin vod-icon-copy-btn {
@@ -612,7 +629,7 @@
   gap: 0.4rem;
   font: inherit;
   font-size: 0.8rem;
-  color: var(--vod-focus-ring);
+  color: var(--vod-link);
   cursor: pointer;
   text-decoration: underline;
   text-underline-offset: 2px;
@@ -950,7 +967,7 @@
 }
 
 .vod-auth__link {
-  color: var(--vod-focus-ring);
+  color: var(--vod-link);
   text-decoration: underline;
   text-underline-offset: 2px;
   word-break: break-all;
@@ -1112,7 +1129,7 @@
 }
 
 a.vod-schema__type-token {
-  color: var(--vod-focus-ring);
+  color: var(--vod-link);
   text-decoration: underline;
   text-underline-offset: 2px;
   &:hover {
@@ -1149,7 +1166,7 @@ a.vod-schema__type-token {
 
 .vod-endpoint__type-link {
   font-family: var(--vod-font-mono);
-  color: var(--vod-focus-ring);
+  color: var(--vod-link);
   text-decoration: underline;
   text-underline-offset: 2px;
   &:hover {
@@ -1210,7 +1227,7 @@ a.vod-schema__type-token {
 .vod-changelog__commit {
   font-family: var(--vod-font-mono);
   font-size: 0.8rem;
-  color: var(--vod-focus-ring);
+  color: var(--vod-text-2);
 }
 
 .vod-changelog__subject {
@@ -1564,7 +1581,8 @@ a.vod-schema__type-token {
   text-transform: none;
 }
 
-.vod-endpoint-layout .vap-data-grid__desc {
+.vod-endpoint .vap-data-grid__desc,
+.vod-spec .vap-data-grid__desc {
   grid-column: 2;
   grid-row: 1;
   justify-self: end;
@@ -1697,7 +1715,7 @@ a.vod-schema__type-token {
   gap: 0.4rem;
   font: inherit;
   font-size: 0.75rem;
-  color: var(--vod-focus-ring);
+  color: var(--vod-link);
   cursor: pointer;
   text-decoration: underline;
   text-underline-offset: 2px;

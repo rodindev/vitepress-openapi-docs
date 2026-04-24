@@ -26,8 +26,8 @@ test('full interaction chain: navigate → jumper → operation → try-it', asy
   await expect(page.locator('.vod-endpoint')).toBeVisible({ timeout: 5000 })
   await expect(page.locator('.vod-endpoint__path')).toBeVisible()
 
-  // Verify SDK snippets are rendered
-  await expect(page.locator('.vod-snippets')).toBeVisible()
+  // Verify SDK snippets are rendered (collapsed by default in aside layout)
+  await expect(page.locator('.vod-snippets')).toBeAttached()
 
   // Verify the try-it panel (Playground) is rendered
   const playground = page.locator('.vap-playground')
