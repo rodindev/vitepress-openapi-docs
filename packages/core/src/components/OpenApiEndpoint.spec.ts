@@ -102,12 +102,36 @@ const usersCreate: ParsedOperation = {
   deprecated: false,
 }
 
+const usersSearch: ParsedOperation = {
+  id: 'users.search',
+  operationId: 'users.search',
+  kind: 'path',
+  method: 'get',
+  path: '/users/search',
+  tags: ['users'],
+  parameters: [
+    { name: 'q', in: 'query', required: false, defaultExample: '' },
+    { name: 'limit', in: 'query', required: false, defaultExample: '' },
+    { name: 'offset', in: 'query', required: false, defaultExample: '' },
+    { name: 'sort', in: 'query', required: false, defaultExample: '' },
+    { name: 'order', in: 'query', required: false, defaultExample: '' },
+    { name: 'role', in: 'query', required: false, defaultExample: '' },
+    { name: 'X-Trace', in: 'header', required: false, defaultExample: '' },
+  ],
+  responses: [{ status: '200', description: 'ok' }],
+  requestSchemaRefs: {},
+  responseSchemaRefs: {},
+  defaultServer: '',
+  security: [],
+  deprecated: false,
+}
+
 const spec: ParsedSpec = {
   name: 'public',
   title: 'Public',
   version: '1.0.0',
   servers: ['https://api.example.com'],
-  operations: [usersList, usersDelete, usersCreate, petCreated],
+  operations: [usersList, usersDelete, usersCreate, petCreated, usersSearch],
   componentSchemas: {},
   securitySchemes: {},
 }
@@ -271,5 +295,38 @@ describe('OpenApiEndpoint', () => {
       global: { provide: registryProvide },
     })
     expect(wrapper.find('.vod-page-aside__header').exists()).toBe(false)
+  })
+
+  it('caps the parameters table at 5 rows and shows a toggle for the rest', () => {
+    const wrapper = mount(OpenApiEndpoint, {
+      props: { id: 'public.users.search' },
+      global: { provide: registryProvide },
+    })
+    const rows = wrapper.findAll('.vod-endpoint__params-table tbody tr')
+    expect(rows).toHaveLength(5)
+    const toggle = wrapper.find('.vod-endpoint__params-toggle')
+    expect(toggle.exists()).toBe(true)
+    expect(toggle.text()).toBe('Show all 7 parameters')
+    expect(toggle.attributes('data-expanded')).toBe('false')
+  })
+
+  it('reveals every parameter after clicking the expand toggle', async () => {
+    const wrapper = mount(OpenApiEndpoint, {
+      props: { id: 'public.users.search' },
+      global: { provide: registryProvide },
+    })
+    await wrapper.find('.vod-endpoint__params-toggle').trigger('click')
+    expect(wrapper.findAll('.vod-endpoint__params-table tbody tr')).toHaveLength(7)
+    const toggle = wrapper.find('.vod-endpoint__params-toggle')
+    expect(toggle.text()).toBe('Show fewer')
+    expect(toggle.attributes('data-expanded')).toBe('true')
+  })
+
+  it('does not render a parameters toggle when the operation has few params', () => {
+    const wrapper = mount(OpenApiEndpoint, {
+      props: { id: 'public.users.list' },
+      global: { provide: registryProvide },
+    })
+    expect(wrapper.find('.vod-endpoint__params-toggle').exists()).toBe(false)
   })
 })
