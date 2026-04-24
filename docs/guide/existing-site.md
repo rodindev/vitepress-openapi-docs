@@ -35,7 +35,7 @@ See [Configuration reference](/reference/configuration) for all available fields
 import { h } from 'vue'
 import DefaultTheme from 'vitepress/theme'
 import { enhanceAppWithOpenApi, OperationJumper } from 'vitepress-openapi-docs'
-import specs, { defaults } from 'virtual:vitepress-openapi-docs/specs'
+import specs, { defaults, prefixes } from 'virtual:vitepress-openapi-docs/specs'
 import changelogs from 'virtual:vitepress-openapi-docs/changelogs'
 import 'vue-api-playground/styles'
 import 'vitepress-openapi-docs/styles'
@@ -48,14 +48,14 @@ export default {
     })
   },
   enhanceApp({ app }) {
-    enhanceAppWithOpenApi({ app, specs, changelogs, defaults })
+    enhanceAppWithOpenApi({ app, specs, changelogs, defaults, prefixes })
   },
 }
 ```
 
 Import order matters: `vue-api-playground/styles` first, then `vitepress-openapi-docs/styles`, then your overrides. Each layer expands the CSS variable cascade without losing defaults.
 
-The `changelogs` and `defaults` properties are optional — omit them if you don't use `<OpenApiChangelog>` or custom defaults.
+`changelogs`, `defaults`, and `prefixes` are optional - omit them if you don't use `<OpenApiChangelog>`, custom defaults, or multi-spec cross-linking.
 
 The `OperationJumper` enables **Cmd+K / Ctrl+K** fuzzy search across all operations.
 
@@ -110,4 +110,4 @@ Or use a triple-slash directive in your theme file:
 - **Node.js** >= 18
 - **Vue** >= 3.3
 - **VitePress** >= 1.0
-- **vue-api-playground** >= 2.2 (peer dependency)
+- **vue-api-playground** >= 2.4 (peer dependency)

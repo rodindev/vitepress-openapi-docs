@@ -60,7 +60,7 @@ Drop these into a stylesheet imported after the plugin styles in your [theme set
 ```
 
 ::: tip Accent vs badge
-`--vod-method-get` controls borders and tab indicators. `--vod-method-get-bg` / `--vod-method-get-text` control the badge pill. See the [full variable reference](/reference/css-variables#method-badge-colours) for every method.
+`--vod-method-get` controls borders and tab indicators. `--vod-method-get-bg` / `--vod-method-get-text` control the badge pill. See the [full variable reference](/reference/css-variables#method-badges) for every method.
 :::
 
 ## Dark mode

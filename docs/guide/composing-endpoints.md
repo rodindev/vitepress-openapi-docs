@@ -101,7 +101,7 @@ OpenAPI 3.1 webhooks appear in the sidebar, search, and full-spec page with a `w
 
 ## SDK snippets
 
-Every endpoint renders tabbed code snippets in curl, fetch, Python, and Node.js. When the user enters credentials via the auth input, all snippets update with the real token. No configuration needed.
+Every endpoint renders tabbed code snippets in curl, fetch, and Python, with built-in syntax highlighting. When the user enters credentials via the auth input, all snippets update with the real token. No configuration needed.
 
 To hide snippets, omit `'snippets'` from the `show` prop.
 
