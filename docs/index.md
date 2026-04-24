@@ -18,7 +18,7 @@ hero:
 
 ## See it live
 
-A real Petstore endpoint rendered inline — click Execute, get a response:
+A real Petstore endpoint rendered inline - click Send request, get a response:
 
 <OpenApiEndpoint id="petstore.getPetById" :show="['summary', 'params', 'try']" />
 
@@ -37,5 +37,5 @@ Or [add to an existing VitePress site](/guide/existing-site).
 
 - **Inline composition** — endpoints render as Vue components in light DOM. Weave them into tutorials, drop them between paragraphs, theme them with VitePress CSS variables.
 - **Multiple APIs** — array of specs, each with its own sidebar, URL prefix, and search index.
-- **Auth and SDK snippets** — bearer / basic / API key / OAuth2 with session persistence. curl / fetch / Python / Node snippets update live with credentials.
-- **< 10 KB client bundle** — peer dependencies (Vue, VitePress, vue-api-playground) excluded.
+- **Auth and SDK snippets** - bearer / basic / API key / OAuth2 with session persistence. curl / fetch / Python snippets with syntax highlighting, refreshed live as credentials change.
+- **< 13 KB client bundle** - peer dependencies (Vue, VitePress, vue-api-playground) excluded.
