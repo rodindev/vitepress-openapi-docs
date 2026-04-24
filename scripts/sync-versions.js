@@ -49,11 +49,25 @@ if (create.data.version !== version) {
   changed++
 }
 
+const vapPeer = core.data.peerDependencies?.['vue-api-playground']
 const currentPin = template.data.dependencies?.['vitepress-openapi-docs']
+const currentVap = template.data.dependencies?.['vue-api-playground']
+let templateChanged = false
+
 if (currentPin !== range) {
   template.data.dependencies['vitepress-openapi-docs'] = range
+  templateChanged = true
+  console.log(`  packages/create/template/package.json vitepress-openapi-docs → ${range}`)
+}
+
+if (vapPeer && currentVap !== vapPeer) {
+  template.data.dependencies['vue-api-playground'] = vapPeer
+  templateChanged = true
+  console.log(`  packages/create/template/package.json vue-api-playground → ${vapPeer}`)
+}
+
+if (templateChanged) {
   writeJson(template.path, template.data)
-  console.log(`  packages/create/template/package.json → ${range}`)
   changed++
 }
 
