@@ -22,7 +22,7 @@ A real Petstore endpoint rendered inline - click Send request, get a response:
 
 <OpenApiEndpoint id="petstore.getPetById" :show="['summary', 'params', 'try']" />
 
-This site documents two APIs: [Petstore](/api/petstore/) (19 ops) and a [Mock API](/api/mock/) (57 ops). Each has its own sidebar and search index.
+This site documents two APIs: [Petstore](/api/petstore/) (19 ops) and a [Mock API](/api/mock/) (107 ops). Each has its own sidebar and search index.
 
 ## Install
 

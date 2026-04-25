@@ -8,7 +8,7 @@
 
 - **Package (npm):** `vitepress-openapi-docs`
 - **Scaffold CLI:** `npm create vitepress-openapi-docs@latest`
-- **Peer deps:** `vue ^3.3`, `vitepress ^1.0`, `vue-api-playground ^2.2`
+- **Peer deps:** `vue ^3.3`, `vitepress ^1.0`, `vue-api-playground ^2.4`
 - **License:** MIT
 - **Repo:** https://github.com/rodindev/vitepress-openapi-docs
 - **Docs:** https://rodindev.github.io/vitepress-openapi-docs/
@@ -140,7 +140,7 @@ Returns a VitePress config object to pass to `extends`.
 - Troubleshooting: https://rodindev.github.io/vitepress-openapi-docs/troubleshooting
 - Live demo (Petstore): https://rodindev.github.io/vitepress-openapi-docs/api/petstore/
 - Live demo (Mock API): https://rodindev.github.io/vitepress-openapi-docs/api/mock/
-- Live mock origin: https://api.rodin.dev/mock/ (OpenAPI 3.1, 57 operations, 34 webhooks, bearer auth, CORS open)
+- Live mock origin: https://api.rodin.dev/mock/ (OpenAPI 3.1, 107 operations, 34 webhooks, bearer auth, CORS open)
 - Petstore origin: https://petstore3.swagger.io/api/v3 (OpenAPI 3.0, 19 operations, CORS open)
 - npm: https://www.npmjs.com/package/vitepress-openapi-docs
 - GitHub: https://github.com/rodindev/vitepress-openapi-docs
