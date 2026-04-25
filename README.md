@@ -50,14 +50,14 @@ Two files to wire up — [full guide](https://rodindev.github.io/vitepress-opena
 - **Cmd+K jumper** — fuzzy search across all operations and schemas
 - **Multi-API** — N specs, one config, independent sidebar per spec, one jumper
 - **Auth** — bearer / basic / apikey / OAuth2 passthrough, stored in sessionStorage
-- **Syntax highlighting**: curl, JavaScript, Python snippets and JSON response examples rendered with a zero-dependency tokenizer
+- **Syntax highlighting** - built-in tokenizer for curl, fetch, Python, and JSON; no Prism or Shiki
 - **< 13 KB** client bundle (peer deps excluded), enforced in CI
 
 ## Why this over Swagger UI or Scalar
 
 Swagger UI is heavy and looks dated. Scalar is modern but renders inside a web component — a black box you can't mix with your own content. Both give you a standalone widget, not documentation.
 
-This gives you a full docs site: auto-generated pages, Cmd+K search, schema cross-links, git-driven changelog, multi-API with independent sidebars. SDK snippets in 4 languages. Auth that persists across pages. And one thing no other tool does — endpoints that compose inline with your markdown prose.
+This gives you a full docs site: auto-generated pages, Cmd+K search, schema cross-links, git-driven changelog, multi-API with independent sidebars. SDK snippets that update with your auth token. Auth that persists across pages. And one thing no other tool does: endpoints that compose inline with your markdown prose.
 
 ## Requirements
 
@@ -65,12 +65,6 @@ This gives you a full docs site: auto-generated pages, Cmd+K search, schema cros
 - Vue >= 3.3
 - VitePress >= 1.0
 - vue-api-playground >= 2.4
-
-## Acknowledgements
-
-- [VitePress](https://vitepress.dev) — static site generator that powers the docs experience
-- [vue-api-playground](https://github.com/nicepkg/vue-api-playground) — interactive endpoint components under the hood
-- [Vue](https://vuejs.org) — the reactive framework everything is built on
 
 ## License
 
