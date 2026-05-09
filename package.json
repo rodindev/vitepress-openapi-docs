@@ -31,7 +31,7 @@
     "eslint": "^9.0.0",
     "eslint-config-prettier": "^10.0.0",
     "eslint-plugin-vue": "^9.32.0",
-    "jsdom": "^26.0.0",
+    "jsdom": "^29.1.1",
     "prettier": "^3.4.0",
     "sass-embedded": "^1.83.0",
     "typescript": "^5.7.0",
