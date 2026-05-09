@@ -59,4 +59,64 @@ describe('vod token cascade', () => {
       expect(darkTokens).toContain(`--vod-status-${family}-soft`)
     }
   })
+
+  it('syntax tokens cover the 9 SnippetTokenType colors in light and dark', () => {
+    const families = [
+      'string',
+      'number',
+      'keyword',
+      'comment',
+      'function',
+      'flag',
+      'url',
+      'identifier',
+      'punct',
+    ]
+    const lightNames = new Set(parseVodTokens(stylesheet).map((t) => t.name))
+    for (const family of families) {
+      expect(lightNames).toContain(`--vod-syntax-${family}`)
+    }
+
+    const darkBlockMatch = stylesheet.match(/\.dark\s*\{[\s\S]*?\n\}/)
+    const darkTokens = parseVodTokens(darkBlockMatch![0]).map((t) => t.name)
+    for (const family of families) {
+      expect(darkTokens).toContain(`--vod-syntax-${family}`)
+    }
+  })
+
+  it('syntax token fallbacks match the vscode default palette', () => {
+    const lightExpected: Record<string, string> = {
+      'vod-syntax-string': '#a31515',
+      'vod-syntax-number': '#098658',
+      'vod-syntax-keyword': '#af00db',
+      'vod-syntax-comment': '#008000',
+      'vod-syntax-function': '#795e26',
+      'vod-syntax-url': '#0451a5',
+    }
+    const darkExpected: Record<string, string> = {
+      'vod-syntax-string': '#ce9178',
+      'vod-syntax-number': '#b5cea8',
+      'vod-syntax-keyword': '#c586c0',
+      'vod-syntax-comment': '#6a9955',
+      'vod-syntax-function': '#dcdcaa',
+      'vod-syntax-url': '#4ec9b0',
+    }
+
+    const rootMatch = stylesheet.match(/:root\s*\{[\s\S]*?\n\}/)
+    expect(rootMatch, ':root block should exist').toBeTruthy()
+    const lightTokens = new Map(
+      parseVodTokens(rootMatch![0]).map((t) => [t.name.slice(2), t.value])
+    )
+    for (const [name, hex] of Object.entries(lightExpected)) {
+      expect(lightTokens.get(name), `${name} light fallback`).toContain(hex)
+    }
+
+    const darkBlockMatch = stylesheet.match(/\.dark\s*\{[\s\S]*?\n\}/)
+    const darkTokens = new Map(
+      parseVodTokens(darkBlockMatch![0]).map((t) => [t.name.slice(2), t.value])
+    )
+    for (const [name, hex] of Object.entries(darkExpected)) {
+      expect(darkTokens.get(name), `${name} dark fallback`).toContain(hex)
+    }
+  })
 })

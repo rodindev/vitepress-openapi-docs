@@ -35,14 +35,14 @@
       role="tabpanel"
       tabindex="0"
       :aria-label="`${s.label} code sample`"
-    ><code v-html="highlight(s.code, s.language)" /></pre>
+    ><code v-html="renderTokens(s.tokens)" /></pre>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import type { Snippet, SnippetLanguage } from 'vue-api-playground'
-import { highlight } from '../highlight'
+import type { Snippet, SnippetLanguage, SnippetToken } from 'vue-api-playground'
+import { escapeHtml } from '../highlight/escape'
 
 interface Props {
   snippets: Snippet[]
@@ -57,6 +57,15 @@ const props = withDefaults(defineProps<Props>(), {
 const active = ref<SnippetLanguage>(props.snippets[0]?.language ?? 'curl')
 const uid = Math.random().toString(36).slice(2, 8)
 const activeSnippet = computed(() => props.snippets.find((s) => s.language === active.value))
+
+function renderTokens(tokens: SnippetToken[]): string {
+  return tokens
+    .map((t) => {
+      const safe = escapeHtml(t.text)
+      return t.type === 'text' ? safe : `<span class="vod-syntax-${t.type}">${safe}</span>`
+    })
+    .join('')
+}
 
 type CopyState = 'idle' | 'copied' | 'error'
 const copyState = ref<CopyState>('idle')

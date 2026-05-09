@@ -2,10 +2,12 @@
 
 All notable changes to `vitepress-openapi-docs` and `create-vitepress-openapi-docs`.
 
-## Unreleased
+## 1.7.0
 
 ### Changed
 
+- SDK snippet tabs now render from structured tokens emitted by `vue-api-playground` 2.5.0 instead of post-tokenising the snippet string. Token classes cover request method, flags, URLs, headers, identifiers, and punctuation. The regex-based JS / Python / shell highlighters were removed.
+- `vue-api-playground` peer dependency bumped to `^2.5.0`.
 - Stacked layout now mirrors the columns aside structure: Authentication and Code examples are wrapped in `<details>` collapsed by default, Parameters collapse by default, and the Try-It Playground stays open with a `Try it` section header.
 - Section headers in the main card unified: `Parameters` and `Response examples` share the same accent-bar treatment.
 - Columns aside `Code` summary renamed to `Code examples` for parity with the stacked layout.
