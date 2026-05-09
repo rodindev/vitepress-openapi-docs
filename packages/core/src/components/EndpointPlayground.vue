@@ -14,6 +14,14 @@
       @request-success="emit('request-success', $event)"
       @request-error="emit('request-error', $event)"
     >
+      <template #response-headers="{ headers }">
+        <details v-if="headers && Object.keys(headers).length > 0" class="vap-response__headers">
+          <summary>Response Headers</summary>
+          <pre
+            class="vap-code"
+          ><code><template v-for="(value, name) in headers" :key="name"><span class="vap-json-key">{{ name }}</span><span class="vod-syntax-punct">: </span><span class="vap-json-string">{{ value }}</span>{{ '\n' }}</template></code></pre>
+        </details>
+      </template>
       <template #send-button="{ loading, execute, abort, streaming }">
         <button
           v-if="data.length > paramsLimit"

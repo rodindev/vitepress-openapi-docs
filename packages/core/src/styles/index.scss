@@ -57,6 +57,11 @@
   --vod-syntax-url: #0451a5;
   --vod-syntax-identifier: var(--vap-text-1, #213547);
   --vod-syntax-punct: var(--vap-text-2, #6e7781);
+
+  --vap-json-key: var(--vod-syntax-url);
+  --vap-json-string: var(--vod-syntax-string);
+  --vap-json-number: var(--vod-syntax-number);
+  --vap-json-bool: var(--vod-syntax-keyword);
 }
 
 .dark {
