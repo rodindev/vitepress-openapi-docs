@@ -87,7 +87,7 @@
   "dependencies": {
     "@scalar/openapi-parser": "^0.25.8",
     "dompurify": "^3.4.0",
-    "jsdom": "^26.1.0",
+    "jsdom": "^29.1.1",
     "marked": "^18.0.0"
   },
   "devDependencies": {
