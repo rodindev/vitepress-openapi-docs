@@ -126,14 +126,30 @@ const usersSearch: ParsedOperation = {
   deprecated: false,
 }
 
+const usersBearer: ParsedOperation = {
+  id: 'users.me',
+  operationId: 'users.me',
+  kind: 'path',
+  method: 'get',
+  path: '/users/me',
+  tags: ['users'],
+  parameters: [],
+  responses: [{ status: '200', description: 'ok' }],
+  requestSchemaRefs: {},
+  responseSchemaRefs: {},
+  defaultServer: '',
+  security: ['bearer'],
+  deprecated: false,
+}
+
 const spec: ParsedSpec = {
   name: 'public',
   title: 'Public',
   version: '1.0.0',
   servers: ['https://api.example.com'],
-  operations: [usersList, usersDelete, usersCreate, petCreated, usersSearch],
+  operations: [usersList, usersDelete, usersCreate, petCreated, usersSearch, usersBearer],
   componentSchemas: {},
-  securitySchemes: {},
+  securitySchemes: { bearer: { type: 'bearer', rawType: 'http' } },
 }
 
 const registryProvide = {
@@ -297,13 +313,13 @@ describe('OpenApiEndpoint', () => {
     expect(wrapper.find('.vod-page-aside__header').exists()).toBe(false)
   })
 
-  it('caps the parameters table at 5 rows and shows a toggle for the rest', () => {
+  it('caps the parameters table at 3 rows and shows a toggle for the rest in columns layout', () => {
     const wrapper = mount(OpenApiEndpoint, {
       props: { id: 'public.users.search' },
       global: { provide: registryProvide },
     })
     const rows = wrapper.findAll('.vod-endpoint__params-table tbody tr')
-    expect(rows).toHaveLength(5)
+    expect(rows).toHaveLength(3)
     const toggle = wrapper.find('.vod-endpoint__params-toggle')
     expect(toggle.exists()).toBe(true)
     expect(toggle.text()).toBe('Show all 7 parameters')
@@ -328,5 +344,99 @@ describe('OpenApiEndpoint', () => {
       global: { provide: registryProvide },
     })
     expect(wrapper.find('.vod-endpoint__params-toggle').exists()).toBe(false)
+  })
+
+  it('renders Code examples summary in the columns aside', () => {
+    const wrapper = mount(OpenApiEndpoint, {
+      props: { id: 'public.users.list' },
+      global: { provide: registryProvide },
+    })
+    const summaries = wrapper.findAll('.vod-page-aside__collapsible > summary').map((s) => s.text())
+    expect(summaries).toContain('Code examples')
+  })
+
+  it('wraps Parameters in collapsed details in stacked layout', () => {
+    const wrapper = mount(OpenApiEndpoint, {
+      props: { id: 'public.users.search', layout: 'stacked' },
+      global: { provide: registryProvide },
+    })
+    const details = wrapper.find('.vod-endpoint__main-details')
+    expect(details.exists()).toBe(true)
+    expect(details.attributes('open')).toBeUndefined()
+    expect(details.find('summary').text()).toContain('Parameters')
+  })
+
+  it('shows every parameter in stacked layout without a Show all toggle', () => {
+    const wrapper = mount(OpenApiEndpoint, {
+      props: { id: 'public.users.search', layout: 'stacked' },
+      global: { provide: registryProvide },
+    })
+    expect(wrapper.findAll('.vod-endpoint__params-table tbody tr')).toHaveLength(7)
+    expect(wrapper.find('.vod-endpoint__params-toggle').exists()).toBe(false)
+  })
+
+  it('keeps Parameters as an open section in columns layout', () => {
+    const wrapper = mount(OpenApiEndpoint, {
+      props: { id: 'public.users.search' },
+      global: { provide: registryProvide },
+    })
+    expect(wrapper.find('.vod-endpoint__main-details').exists()).toBe(false)
+    expect(wrapper.find('h4.vod-endpoint__section-title').exists()).toBe(true)
+  })
+
+  it('wraps Authentication in collapsed details inside the inline aside in stacked layout', () => {
+    const wrapper = mount(OpenApiEndpoint, {
+      props: { id: 'public.users.me', layout: 'stacked' },
+      global: { provide: registryProvide },
+    })
+    const aside = wrapper.find('.vod-page-aside--inline')
+    expect(aside.exists()).toBe(true)
+    const collapsibles = aside
+      .findAll('.vod-page-aside__collapsible')
+      .filter((d) => d.find('summary').text() === 'Authentication')
+    expect(collapsibles).toHaveLength(1)
+    expect(collapsibles[0].attributes('open')).toBeUndefined()
+  })
+
+  it('wraps Code examples in collapsed details inside the inline aside in stacked layout', () => {
+    const wrapper = mount(OpenApiEndpoint, {
+      props: { id: 'public.users.list', layout: 'stacked' },
+      global: { provide: registryProvide },
+    })
+    const aside = wrapper.find('.vod-page-aside--inline')
+    expect(aside.exists()).toBe(true)
+    const collapsibles = aside
+      .findAll('.vod-page-aside__collapsible')
+      .filter((d) => d.find('summary').text() === 'Code examples')
+    expect(collapsibles).toHaveLength(1)
+    expect(collapsibles[0].attributes('open')).toBeUndefined()
+  })
+
+  it('places Code examples adjacent to Authentication in stacked layout', () => {
+    const wrapper = mount(OpenApiEndpoint, {
+      props: { id: 'public.users.me', layout: 'stacked' },
+      global: { provide: registryProvide },
+    })
+    const aside = wrapper.find('.vod-page-aside--inline')
+    const summaries = aside.findAll('.vod-page-aside__collapsible > summary').map((s) => s.text())
+    expect(summaries).toEqual(['Code examples', 'Authentication'])
+  })
+
+  it('renders the Try it section title in stacked layout', () => {
+    const wrapper = mount(OpenApiEndpoint, {
+      props: { id: 'public.users.list', layout: 'stacked' },
+      global: { provide: registryProvide },
+    })
+    const heading = wrapper.find('.vod-page-aside--inline > h4.vod-endpoint__section-title')
+    expect(heading.exists()).toBe(true)
+    expect(heading.text()).toBe('Try it')
+  })
+
+  it('renders Playground exactly once', () => {
+    const wrapper = mount(OpenApiEndpoint, {
+      props: { id: 'public.users.list' },
+      global: { provide: registryProvide },
+    })
+    expect(wrapper.findAllComponents(Playground)).toHaveLength(1)
   })
 })
