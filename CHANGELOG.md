@@ -2,6 +2,21 @@
 
 All notable changes to `vitepress-openapi-docs` and `create-vitepress-openapi-docs`.
 
+## Unreleased
+
+### Changed
+
+- Stacked layout now mirrors the columns aside structure: Authentication and Code examples are wrapped in `<details>` collapsed by default, Parameters collapse by default, and the Try-It Playground stays open with a `Try it` section header.
+- Section headers in the main card unified: `Parameters` and `Response examples` share the same accent-bar treatment.
+- Columns aside `Code` summary renamed to `Code examples` for parity with the stacked layout.
+- Parameters table and Try-It field grid both collapse to 3 visible rows (was 5 and 4 respectively).
+- Parameters table inside the stacked-layout `<details>` renders every row. The `Show all N parameters` toggle now only appears in the columns layout, where the table sits open above the fold.
+- Parameters and schema tables horizontally scroll on narrow viewports. The mobile-only rule that hid parameter descriptions has been removed.
+
+### Removed
+
+- `collapse` prop on `<OpenApiEndpoint>` and the matching `defaults.collapse` option. Stacked-layout collapse defaults are now built in.
+
 ## 1.6.0
 
 ### Added

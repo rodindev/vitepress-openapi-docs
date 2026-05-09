@@ -87,7 +87,6 @@ openApiDocs({
 | `server`           | `string`                                                                                                 | —           | Default server URL override.                                                                                                |
 | `apiKeyHeaderName` | `string`                                                                                                 | —           | Default header name for `apikey` schemes.                                                                                   |
 | `bodyInputs`       | `boolean`                                                                                                | `false`     | Render request body properties as individual inputs instead of a JSON textarea.                                             |
-| `collapse`         | `Section[]`                                                                                              | `[]`        | Sections to render collapsed (inside a toggle). Applies only in `stacked` layout.                                           |
 | `layout`           | `'columns' \| 'stacked'`                                                                                 | `'columns'` | Default card layout. `columns` renders the Try-It panel as a sticky aside; `stacked` keeps everything in one vertical card. |
 
 Pass `defaults` to `enhanceAppWithOpenApi` in your [theme setup](/guide/existing-site#3-theme-setup).

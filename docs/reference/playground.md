@@ -97,16 +97,6 @@ Stress test for title wrap and params limit. The `batchOperations` endpoint is t
 
 <OpenApiEndpoint id="mock.listPosts" layout="stacked" />
 
-### Stacked with collapsed sections
-
-Sections `response`, `snippets`, and `try` are hidden behind `<details>` toggles - the design-doc "under viewport pressure" fallback.
-
-<OpenApiEndpoint
-  id="mock.createPost"
-  layout="stacked"
-  :collapse="['response', 'snippets', 'try']"
-/>
-
 ### Stacked with body inputs
 
 `bodyInputs` decomposes the JSON body schema into one input per top-level property (required first). Exercises the `jsonFields` path and the params toggle.

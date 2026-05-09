@@ -24,14 +24,15 @@ Renders one operation inline with prose.
 | `show`             | `Section[]`                                             | all sections    | Which sections to render.                                                                                               |
 | `apiKeyHeaderName` | `string`                                                | auto from spec  | Header name for `apikey` schemes.                                                                                       |
 | `bodyInputs`       | `boolean`                                               | `false`         | Render request body properties as individual inputs instead of a JSON textarea.                                         |
-| `collapse`         | `Section[]`                                             | `[]`            | Sections to render collapsed (inside a toggle). Applies only in `stacked` layout.                                       |
 | `layout`           | `'columns' \| 'stacked'`                                | `'columns'`     | `columns` renders the Try-It panel as a sticky aside next to the card. `stacked` keeps everything in one vertical card. |
 
 **Section names:** `summary`, `description`, `params`, `request`, `response`, `auth`, `snippets`, `try`.
 
 **Layout note:** In `columns` (default) the aside lives inside the endpoint container. On pages where VitePress renders a right-side TOC (`aside` frontmatter is not `false`), the aside stacks below the card instead — set `aside: false` in the page's frontmatter so the endpoint aside has room. Viewports at 1279px and below automatically fall back to the `stacked` layout regardless of the `layout` setting.
 
-**Parameters table:** Operations with more than 5 parameters collapse to 5 rows with a `Show all N parameters` toggle. The Try-It aside caps at 4 rows before collapsing. Stacked and columns layouts track their expand state independently.
+**Stacked layout collapsing:** In `stacked`, Parameters, Authentication, and Code examples are wrapped in `<details>` collapsed by default. The Try-It panel stays open as the primary call to action.
+
+**Parameters table:** Operations with more than 3 parameters collapse to 3 rows with a `Show all N parameters` toggle. The Try-It panel caps at 3 fields before collapsing.
 
 ### Events
 

@@ -49,11 +49,7 @@ Show only specific sections with the `show` prop:
 
 Available sections: `summary`, `description`, `params`, `request`, `response`, `auth`, `snippets`, `try`.
 
-Collapse sections behind a toggle with `collapse`:
-
-```md
-<OpenApiEndpoint id="api.users.list" :collapse="['response']" />
-```
+In the `stacked` layout, Parameters, Authentication, and Code examples are wrapped in `<details>` collapsed by default. The Try-It panel stays open as the primary call to action.
 
 ## Per-field body inputs
 
