@@ -1,6 +1,5 @@
 <template>
   <section v-if="entries.length > 0" class="vod-responses">
-    <h4 class="vod-responses__heading">Response examples</h4>
     <details
       v-for="entry in entries"
       :key="entry.key"

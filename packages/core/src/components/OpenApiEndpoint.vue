@@ -32,43 +32,20 @@
         v-if="showSection('params') && op.parameters.length > 0"
         class="vod-endpoint__section"
       >
-        <h4 class="vod-endpoint__section-title">
-          Parameters
-          <span class="vod-endpoint__section-count">{{ op.parameters.length }}</span>
-        </h4>
-        <table class="vod-endpoint__params-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Type</th>
-              <th class="vod-endpoint__params-desc-col">Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="p in visibleParams" :key="`${p.in}:${p.name}`">
-              <td>
-                <code>{{ p.name }}</code>
-                <span v-if="p.required" class="vod-chip vod-chip--danger">required</span>
-              </td>
-              <td class="vod-endpoint__param-type">
-                <span class="vod-endpoint__param-in">{{ p.in }}</span>
-                <template v-if="p.typeLabel"> · {{ p.typeLabel }}</template>
-              </td>
-              <td v-if="p.description" class="vod-endpoint__params-desc-col">
-                {{ p.description }}
-              </td>
-              <td v-else class="vod-endpoint__params-desc-col" />
-            </tr>
-          </tbody>
-        </table>
-        <button
-          v-if="hiddenParamsCount > 0"
-          class="vod-endpoint__params-toggle"
-          :data-expanded="paramsExpanded"
-          @click="paramsExpanded = !paramsExpanded"
-        >
-          {{ paramsExpanded ? 'Show fewer' : `Show all ${op.parameters.length} parameters` }}
-        </button>
+        <details v-if="!useColumns" class="vod-endpoint__main-details">
+          <summary class="vod-endpoint__section-title">
+            Parameters
+            <span class="vod-endpoint__section-count">{{ op.parameters.length }}</span>
+          </summary>
+          <ParametersTable :params="op.parameters" :visible-limit="Infinity" />
+        </details>
+        <template v-else>
+          <h4 class="vod-endpoint__section-title">
+            Parameters
+            <span class="vod-endpoint__section-count">{{ op.parameters.length }}</span>
+          </h4>
+          <ParametersTable :params="op.parameters" :visible-limit="PARAMS_VISIBLE_LIMIT" />
+        </template>
       </section>
 
       <p v-if="showSection('response') && responseTypeLink" class="vod-endpoint__returns">
@@ -104,267 +81,52 @@
         <span>{{ authLabel }} required</span>
       </p>
 
-      <AuthControls
-        v-if="!useColumns && showSection('auth') && resolvedScheme !== 'none'"
-        :spec-name="specName"
-        :scheme="resolvedScheme"
-        :header-name="resolvedHeaderName"
-        :api-key-in="resolvedApiKeyIn"
-        :oauth2-flow="oauth2Flow"
-      />
-
-      <ResponseExamples v-if="useColumns && showSection('response')" :responses="op.responses" />
-
-      <template v-if="!useColumns">
-        <details
-          v-if="showSection('response') && isCollapsed('response')"
-          class="vod-endpoint__collapsible"
-        >
-          <summary>Response examples</summary>
+      <section v-if="showSection('response') && hasResponseExamples" class="vod-endpoint__section">
+        <details v-if="!useColumns" class="vod-endpoint__main-details">
+          <summary class="vod-endpoint__section-title">Response examples</summary>
           <ResponseExamples :responses="op.responses" />
         </details>
-        <ResponseExamples v-else-if="showSection('response')" :responses="op.responses" />
-
-        <details
-          v-if="showSection('snippets') && isCollapsed('snippets')"
-          class="vod-endpoint__collapsible"
-        >
-          <summary>Code samples</summary>
-          <SdkSnippets
-            :snippets="snippets"
-            :aria-label="`${op.method.toUpperCase()} ${op.path} code samples`"
-          />
-        </details>
-        <SdkSnippets
-          v-else-if="showSection('snippets')"
-          :snippets="snippets"
-          :aria-label="`${op.method.toUpperCase()} ${op.path} code samples`"
-        />
-
-        <details v-if="showSection('try') && isCollapsed('try')" class="vod-endpoint__collapsible">
-          <summary>Try it</summary>
-          <div class="vod-param-cap" :class="{ 'vod-param-cap--expanded': stackedParamsExpanded }">
-            <Playground
-              :url="op.path"
-              :method="op.method.toUpperCase()"
-              :data="playgroundData"
-              :headers="baseHeaders"
-              :servers="serverList"
-              :content-type="effectiveBodyInputs ? undefined : requestContentType"
-              :body="effectiveBodyInputs ? undefined : exampleBody"
-              dense
-              @before-send="injectAuth"
-              @request-start="emit('request-start', $event)"
-              @request-success="emit('request-success', $event)"
-              @request-error="emit('request-error', $event)"
-            >
-              <template #send-button="{ loading, execute, abort, streaming }">
-                <div class="vod-param-cap__send">
-                  <button
-                    v-if="playgroundData.length > ASIDE_PARAMS_LIMIT"
-                    type="button"
-                    class="vod-param-cap__toggle"
-                    :data-expanded="stackedParamsExpanded"
-                    @click="stackedParamsExpanded = !stackedParamsExpanded"
-                  >
-                    {{
-                      stackedParamsExpanded
-                        ? 'Show fewer'
-                        : `Show all ${playgroundData.length} fields`
-                    }}
-                  </button>
-                  <button
-                    v-if="streaming"
-                    type="button"
-                    class="vap-btn vap-btn--primary"
-                    aria-label="Stop request"
-                    @click="abort && abort()"
-                  >
-                    Stop
-                  </button>
-                  <button
-                    v-else
-                    type="button"
-                    class="vap-btn vap-btn--primary"
-                    :disabled="loading"
-                    aria-label="Send request"
-                    @click="execute()"
-                  >
-                    <span v-if="loading" class="vap-spinner" />
-                    {{ loading ? 'Sending' : 'Send request' }}
-                  </button>
-                </div>
-              </template>
-            </Playground>
-          </div>
-        </details>
-        <div
-          v-else-if="showSection('try')"
-          class="vod-param-cap"
-          :class="{ 'vod-param-cap--expanded': stackedParamsExpanded }"
-        >
-          <Playground
-            :url="op.path"
-            :method="op.method.toUpperCase()"
-            :data="playgroundData"
-            :headers="baseHeaders"
-            :servers="serverList"
-            :content-type="effectiveBodyInputs ? undefined : requestContentType"
-            :body="effectiveBodyInputs ? undefined : exampleBody"
-            dense
-            @before-send="injectAuth"
-            @request-start="emit('request-start', $event)"
-            @request-success="emit('request-success', $event)"
-            @request-error="emit('request-error', $event)"
-          >
-            <template #send-button="{ loading, execute, abort, streaming }">
-              <div class="vod-param-cap__send">
-                <button
-                  v-if="playgroundData.length > ASIDE_PARAMS_LIMIT"
-                  type="button"
-                  class="vod-param-cap__toggle"
-                  :data-expanded="stackedParamsExpanded"
-                  @click="stackedParamsExpanded = !stackedParamsExpanded"
-                >
-                  {{
-                    stackedParamsExpanded
-                      ? 'Show fewer'
-                      : `Show all ${playgroundData.length} fields`
-                  }}
-                </button>
-                <button
-                  v-if="streaming"
-                  type="button"
-                  class="vap-btn vap-btn--primary"
-                  aria-label="Stop request"
-                  @click="abort && abort()"
-                >
-                  Stop
-                </button>
-                <button
-                  v-else
-                  type="button"
-                  class="vap-btn vap-btn--primary"
-                  :disabled="loading"
-                  aria-label="Send request"
-                  @click="execute()"
-                >
-                  <span v-if="loading" class="vap-spinner" />
-                  {{ loading ? 'Sending' : 'Send request' }}
-                </button>
-              </div>
-            </template>
-          </Playground>
-        </div>
-      </template>
+        <template v-else>
+          <h4 class="vod-endpoint__section-title">Response examples</h4>
+          <ResponseExamples :responses="op.responses" />
+        </template>
+      </section>
     </section>
 
-    <aside v-if="useColumns" class="vod-page-aside">
-      <header class="vod-page-aside__header">
-        <span class="vod-page-aside__label">Try It</span>
-        <span v-if="specVersionLabel" class="vod-page-aside__spec">{{ specVersionLabel }}</span>
-      </header>
-
-      <details v-if="showSection('snippets')" class="vod-page-aside__collapsible">
-        <summary>Code</summary>
-        <SdkSnippets
-          :snippets="snippets"
-          :aria-label="`${op.method.toUpperCase()} ${op.path} code samples`"
-        />
-      </details>
-
-      <details
-        v-if="showSection('auth') && showSection('try') && resolvedScheme !== 'none'"
-        class="vod-page-aside__collapsible"
-      >
-        <summary>Authentication</summary>
-        <AuthControls
-          :spec-name="specName"
-          :scheme="resolvedScheme"
-          :header-name="resolvedHeaderName"
-          :api-key-in="resolvedApiKeyIn"
-          :oauth2-flow="oauth2Flow"
-        />
-      </details>
-
-      <div
-        v-if="showSection('try')"
-        class="vod-param-cap"
-        :class="{ 'vod-param-cap--expanded': asideParamsExpanded }"
-      >
-        <Playground
-          :url="op.path"
-          :method="op.method.toUpperCase()"
-          :data="playgroundData"
-          :headers="baseHeaders"
-          :servers="serverList"
-          :content-type="effectiveBodyInputs ? undefined : requestContentType"
-          :body="effectiveBodyInputs ? undefined : exampleBody"
-          dense
-          @before-send="injectAuth"
-          @request-start="emit('request-start', $event)"
-          @request-success="emit('request-success', $event)"
-          @request-error="emit('request-error', $event)"
-        >
-          <template #send-button="{ loading, execute, abort, streaming }">
-            <div class="vod-param-cap__send">
-              <button
-                v-if="playgroundData.length > ASIDE_PARAMS_LIMIT"
-                type="button"
-                class="vod-param-cap__toggle"
-                :data-expanded="asideParamsExpanded"
-                @click="asideParamsExpanded = !asideParamsExpanded"
-              >
-                {{
-                  asideParamsExpanded ? 'Show fewer' : `Show all ${playgroundData.length} fields`
-                }}
-              </button>
-              <button
-                v-if="streaming"
-                type="button"
-                class="vap-btn vap-btn--primary"
-                aria-label="Stop request"
-                @click="abort && abort()"
-              >
-                Stop
-              </button>
-              <button
-                v-else
-                type="button"
-                class="vap-btn vap-btn--primary"
-                :disabled="loading"
-                aria-label="Send request"
-                @click="execute()"
-              >
-                <span v-if="loading" class="vap-spinner" />
-                {{ loading ? 'Sending' : 'Send request' }}
-              </button>
-            </div>
-          </template>
-        </Playground>
-      </div>
-    </aside>
+    <EndpointTryPanel
+      :op="op"
+      :spec-name="specName"
+      :spec-version-label="specVersionLabel"
+      :server-list="serverList"
+      :scheme="resolvedScheme"
+      :header-name="resolvedHeaderName"
+      :api-key-in="resolvedApiKeyIn"
+      :oauth2-flow="oauth2Flow"
+      :body-inputs="effectiveBodyInputs"
+      :inline="!useColumns"
+      :show-snippets="showSection('snippets')"
+      :show-auth="showSection('auth')"
+      :show-try="showSection('try')"
+      @request-start="emit('request-start', $event)"
+      @request-success="emit('request-success', $event)"
+      @request-error="emit('request-error', $event)"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
-import { Playground } from 'vue-api-playground'
 import type {
-  PlaygroundContentType,
-  PlaygroundDataItem,
   RequestErrorPayload,
   RequestStartPayload,
   RequestSuccessPayload,
 } from 'vue-api-playground'
 import { resolveOperation, useDefaults, useSpecRegistry } from '../runtime/registry'
 import { useRoutes } from '../runtime/routes'
-import { buildSnippets } from '../snippets/index'
-import { useAuthState, type AuthScheme } from '../runtime/auth'
-import { generateJsonBody } from '../runtime/example'
-import AuthControls from './AuthControls.vue'
-import SdkSnippets from './SdkSnippets.vue'
+import { type AuthScheme } from '../runtime/auth'
 import ResponseExamples from './ResponseExamples.vue'
+import EndpointTryPanel from './EndpointTryPanel.vue'
+import ParametersTable from './ParametersTable.vue'
 import type { ParsedOAuth2Flow, ParsedOperation, ParsedSpec } from '../parser/types'
 
 type Section =
@@ -394,8 +156,6 @@ interface Props {
   apiKeyHeaderName?: string
   /** When true, request body properties render as individual inputs instead of a JSON textarea. */
   bodyInputs?: boolean
-  /** Sections to render collapsed (inside a toggle). Useful for reducing card height. */
-  collapse?: Section[]
   /** Card layout. `columns` splits docs/code into a two-column grid. `stacked` preserves vertical layout. */
   layout?: 'columns' | 'stacked'
 }
@@ -419,7 +179,6 @@ const props = withDefaults(defineProps<Props>(), {
   servers: () => [],
   apiKeyHeaderName: undefined,
   bodyInputs: undefined,
-  collapse: undefined,
   layout: undefined,
 })
 
@@ -439,7 +198,6 @@ const effectiveApiKeyHeaderName = computed(
   () => props.apiKeyHeaderName ?? defaults.apiKeyHeaderName
 )
 const effectiveBodyInputs = computed(() => props.bodyInputs ?? defaults.bodyInputs ?? false)
-const effectiveCollapse = computed(() => props.collapse ?? defaults.collapse ?? [])
 const effectiveLayout = computed(() => props.layout ?? defaults.layout ?? 'columns')
 
 const resolved = computed(() => {
@@ -524,92 +282,9 @@ const resolvedApiKeyIn = computed<'header' | 'query' | 'cookie' | undefined>(() 
   return 'header'
 })
 
-const authState = useAuthState(specName)
-
 const serverList = computed<string[]>(() => {
   if (effectiveServer.value) return [effectiveServer.value]
   return resolved.value?.servers ?? []
-})
-
-const bodyFieldItems = computed<PlaygroundDataItem[]>(() => {
-  if (!effectiveBodyInputs.value) return []
-  const fields = op.value.requestBody?.jsonFields ?? []
-  return fields.map((f) => ({
-    name: f.name,
-    value: f.example,
-    ...(useColumns.value && f.typeLabel ? { description: f.typeLabel } : {}),
-  }))
-})
-
-const playgroundData = computed<PlaygroundDataItem[]>(() => {
-  const includeDesc = !useColumns.value
-  const params = op.value.parameters
-    .filter((p) => p.in === 'path' || p.in === 'query')
-    .map((p) => {
-      const hint = includeDesc ? p.description : p.typeLabel
-      return {
-        name: p.name,
-        value: p.defaultExample,
-        type: p.in,
-        ...(hint ? { description: hint } : {}),
-      }
-    })
-  return [...params, ...bodyFieldItems.value]
-})
-
-const baseHeaders = computed<Record<string, string> | undefined>(() => {
-  const headers: Record<string, string> = {}
-  for (const p of op.value.parameters) {
-    if (p.in === 'header') headers[p.name] = p.defaultExample
-  }
-  return Object.keys(headers).length > 0 ? headers : undefined
-})
-
-const requestContentType = computed<PlaygroundContentType | undefined>(() => {
-  const contentMap = op.value.requestBody?.content
-  if (!contentMap) return undefined
-  const first = Object.keys(contentMap)[0]
-  if (
-    first === 'application/json' ||
-    first === 'application/x-www-form-urlencoded' ||
-    first === 'multipart/form-data' ||
-    first === 'text/plain'
-  ) {
-    return first
-  }
-  return undefined
-})
-
-const exampleBody = computed<string | undefined>(() => {
-  const jsonSchema = op.value.requestBody?.content['application/json']?.schema
-  return jsonSchema ? generateJsonBody(jsonSchema) : undefined
-})
-
-const snippetAuthScheme = computed<'bearer' | 'apikey' | 'basic' | undefined>(() => {
-  const s = resolvedScheme.value
-  if (s === 'none') return undefined
-  if (s === 'oauth2') return 'bearer'
-  return s
-})
-
-const snippets = computed(() => {
-  if (!snippetAuthScheme.value) {
-    return buildSnippets(op.value, {
-      baseUrl: serverList.value[0],
-      exampleBody: exampleBody.value,
-    })
-  }
-  const cred = authState.credential.value
-  return buildSnippets(op.value, {
-    baseUrl: serverList.value[0],
-    exampleBody: exampleBody.value,
-    auth: {
-      scheme: snippetAuthScheme.value,
-      value: cred?.value,
-      headerName: cred?.headerName ?? resolvedHeaderName.value,
-      apiKeyIn: cred?.apiKeyIn ?? resolvedApiKeyIn.value,
-    },
-  })
 })
 
 interface TypeLink {
@@ -627,35 +302,16 @@ const responseTypeLink = computed<TypeLink | undefined>(() => {
   return { label: first.name, href: routes.schemaUrl(specName.value, first.name) }
 })
 
+const hasResponseExamples = computed(() =>
+  op.value.responses.some((r) => r.content && Object.keys(r.content).length > 0)
+)
+
 const requestTypeLink = computed<TypeLink | undefined>(() => {
   const refs = op.value.requestSchemaRefs ?? {}
   const first = refs['application/json'] ?? Object.values(refs)[0]
   if (!first) return undefined
   return { label: first.name, href: routes.schemaUrl(specName.value, first.name) }
 })
-
-function injectAuth(envelope: { url: string; init: RequestInit }): void {
-  const cred = authState.credential.value
-  if (!cred) return
-  const headers = { ...(envelope.init.headers as Record<string, string> | undefined) }
-  if (cred.scheme === 'bearer' || cred.scheme === 'oauth2')
-    headers['Authorization'] = `Bearer ${cred.value}`
-  else if (cred.scheme === 'basic') headers['Authorization'] = `Basic ${cred.value}`
-  else if (cred.scheme === 'apikey') {
-    const keyIn = cred.apiKeyIn ?? 'header'
-    const keyName = cred.headerName ?? resolvedHeaderName.value ?? 'X-API-Key'
-    if (keyIn === 'query') {
-      const sep = envelope.url.includes('?') ? '&' : '?'
-      envelope.url = `${envelope.url}${sep}${encodeURIComponent(keyName)}=${encodeURIComponent(cred.value)}`
-    } else if (keyIn === 'cookie') {
-      // Cookie is a forbidden request header in the Fetch API - browsers silently drop it.
-      // Cookie-based API key auth cannot be tested from the Try-It panel.
-    } else {
-      headers[keyName] = cred.value
-    }
-  }
-  envelope.init.headers = headers
-}
 
 const NARROW_BREAKPOINT = '(max-width: 1279px)'
 const viewportIsNarrow = ref(false)
@@ -678,22 +334,7 @@ onUnmounted(() => {
 
 const useColumns = computed(() => effectiveLayout.value === 'columns' && !viewportIsNarrow.value)
 
-const PARAMS_VISIBLE_LIMIT = 5
-const ASIDE_PARAMS_LIMIT = 4
-const paramsExpanded = ref(false)
-const asideParamsExpanded = ref(false)
-const stackedParamsExpanded = ref(false)
-
-const visibleParams = computed(() => {
-  const all = op.value.parameters
-  if (all.length <= PARAMS_VISIBLE_LIMIT || paramsExpanded.value) return all
-  return all.slice(0, PARAMS_VISIBLE_LIMIT)
-})
-
-const hiddenParamsCount = computed(() => {
-  const total = op.value.parameters.length
-  return total > PARAMS_VISIBLE_LIMIT ? total - PARAMS_VISIBLE_LIMIT : 0
-})
+const PARAMS_VISIBLE_LIMIT = 3
 
 const authLabel = computed(() => {
   const s = resolvedScheme.value
@@ -705,9 +346,5 @@ const authLabel = computed(() => {
 
 function showSection(section: Section): boolean {
   return effectiveShow.value.includes(section)
-}
-
-function isCollapsed(section: Section): boolean {
-  return effectiveCollapse.value.includes(section)
 }
 </script>

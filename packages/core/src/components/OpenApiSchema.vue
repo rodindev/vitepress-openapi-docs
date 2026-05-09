@@ -17,33 +17,35 @@
       <p v-if="schema.description" class="vod-schema__description">{{ schema.description }}</p>
     </header>
 
-    <table v-if="schema.properties.length > 0" class="vod-schema__table">
-      <thead>
-        <tr>
-          <th scope="col">Field</th>
-          <th scope="col">Type</th>
-          <th scope="col">Description</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="prop in schema.properties" :key="prop.name">
-          <th scope="row" class="vod-schema__field">
-            <code>{{ prop.name }}</code>
-            <span v-if="prop.required" class="vod-chip vod-chip--danger">required</span>
-          </th>
-          <td class="vod-schema__cell-type">
-            <component
-              :is="prop.refTarget ? 'a' : 'span'"
-              :href="prop.refTarget ? schemaLinkFor(prop.refTarget) : undefined"
-              class="vod-schema__type-token"
-            >
-              {{ prop.typeLabel }}
-            </component>
-          </td>
-          <td class="vod-schema__cell-description">{{ prop.description ?? '' }}</td>
-        </tr>
-      </tbody>
-    </table>
+    <div v-if="schema.properties.length > 0" class="vod-schema__table-scroll">
+      <table class="vod-schema__table">
+        <thead>
+          <tr>
+            <th scope="col">Field</th>
+            <th scope="col">Type</th>
+            <th scope="col">Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="prop in schema.properties" :key="prop.name">
+            <th scope="row" class="vod-schema__field">
+              <code>{{ prop.name }}</code>
+              <span v-if="prop.required" class="vod-chip vod-chip--danger">required</span>
+            </th>
+            <td class="vod-schema__cell-type">
+              <component
+                :is="prop.refTarget ? 'a' : 'span'"
+                :href="prop.refTarget ? schemaLinkFor(prop.refTarget) : undefined"
+                class="vod-schema__type-token"
+              >
+                {{ prop.typeLabel }}
+              </component>
+            </td>
+            <td class="vod-schema__cell-description">{{ prop.description ?? '' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
     <p v-else class="vod-schema__empty">No properties documented.</p>
   </article>

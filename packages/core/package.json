@@ -63,7 +63,7 @@
     {
       "name": "client bundle (min + gzip, excludes peer deps)",
       "path": "dist/vitepress-openapi-docs.js",
-      "limit": "13 kB",
+      "limit": "14 kB",
       "ignore": [
         "vue",
         "vitepress",

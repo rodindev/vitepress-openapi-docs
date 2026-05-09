@@ -29,17 +29,6 @@ export interface OpenApiDocsDefaults {
   apiKeyHeaderName?: string
   /** When true, request body properties render as individual inputs instead of a JSON textarea. */
   bodyInputs?: boolean
-  /** Sections to render collapsed (inside a toggle). */
-  collapse?: (
-    | 'summary'
-    | 'description'
-    | 'params'
-    | 'request'
-    | 'response'
-    | 'auth'
-    | 'snippets'
-    | 'try'
-  )[]
   /** Card layout. `columns` splits docs/code into a two-column grid. `stacked` preserves vertical layout. */
   layout?: 'columns' | 'stacked'
 }
