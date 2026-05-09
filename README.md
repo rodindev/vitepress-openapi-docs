@@ -50,8 +50,8 @@ Two files to wire up — [full guide](https://rodindev.github.io/vitepress-opena
 - **Cmd+K jumper** — fuzzy search across all operations and schemas
 - **Multi-API** — N specs, one config, independent sidebar per spec, one jumper
 - **Auth** — bearer / basic / apikey / OAuth2 passthrough, stored in sessionStorage
-- **Syntax highlighting** - built-in tokenizer for curl, fetch, Python, and JSON; no Prism or Shiki
-- **< 13 KB** client bundle (peer deps excluded), enforced in CI
+- **Syntax highlighting** - SDK snippets and response JSON share a VS Code Default palette via vue-api-playground tokens; no Prism or Shiki dependency
+- **< 14 KB** client bundle (peer deps excluded), enforced in CI
 
 ## Why this over Swagger UI or Scalar
 
@@ -64,7 +64,7 @@ This gives you a full docs site: auto-generated pages, Cmd+K search, schema cros
 - Node.js >= 18
 - Vue >= 3.3
 - VitePress >= 1.0
-- vue-api-playground >= 2.4
+- vue-api-playground >= 2.5
 
 ## License
 

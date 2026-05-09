@@ -107,12 +107,12 @@ Auth input for a single spec. Normally rendered by `<OpenApiEndpoint>` — use s
 
 ## `<SdkSnippets>`
 
-Tabbed code panel for curl / fetch / Python snippets with built-in syntax highlighting. Normally rendered by `<OpenApiEndpoint>`.
+Tabbed code panel for curl / fetch / Python snippets. Tokens come from `vue-api-playground` 2.5 and render in the shared VS Code Default palette. Normally rendered by `<OpenApiEndpoint>`.
 
-| Prop        | Type        | Description                                                          |
-| ----------- | ----------- | -------------------------------------------------------------------- |
-| `snippets`  | `Snippet[]` | Array of `{ language, label, code }` objects from `buildSnippets()`. |
-| `ariaLabel` | `string`    | Accessible label for the tab list.                                   |
+| Prop        | Type        | Description                                                                  |
+| ----------- | ----------- | ---------------------------------------------------------------------------- |
+| `snippets`  | `Snippet[]` | Array of `{ language, label, code, tokens }` objects from `buildSnippets()`. |
+| `ariaLabel` | `string`    | Accessible label for the tab list.                                           |
 
 ## `<ResponseExamples>`
 

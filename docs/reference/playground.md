@@ -21,7 +21,7 @@ A dense case: summary, description, multiple params across `in` values, a JSON r
 
 ### GET with query parameters
 
-Pagination and filter params - exercises the parameter table and its visibility limit (`Show all N parameters` toggle when `> 5`).
+Pagination and filter params - exercises the parameter table and its visibility limit (`Show all N parameters` toggle when `> 3`).
 
 <OpenApiEndpoint id="mock.listPosts" />
 
