@@ -146,7 +146,7 @@ export async function run(argv: string[]): Promise<void> {
 }
 
 function checkNodeVersion(): void {
-  const required = 18
+  const required = 20
   const current = parseInt(globalThis.process.versions.node, 10)
   if (current < required) {
     console.error(

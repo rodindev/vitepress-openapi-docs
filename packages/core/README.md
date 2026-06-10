@@ -65,7 +65,7 @@ Per-operation, per-schema, and per-spec-changelog pages are auto-generated. Hand
 
 ## Requirements
 
-- Node.js >= 18
+- Node.js >= 20
 - Vue >= 3.3
 - VitePress >= 1.0
 - vue-api-playground >= 2.5
