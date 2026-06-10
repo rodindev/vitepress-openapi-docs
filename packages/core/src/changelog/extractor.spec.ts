@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process'
-import { mkdtemp, writeFile } from 'node:fs/promises'
+import { mkdir, mkdtemp, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
@@ -185,5 +185,118 @@ describe('extractChangelog', () => {
       cwd: repo.cwd,
     })
     expect(result.isEmpty).toBe(true)
+  })
+})
+
+const beforeRenameYaml = `
+openapi: 3.0.3
+info:
+  title: Users
+  version: 1.0.0
+paths:
+  /users:
+    get:
+      operationId: listUsers
+      summary: List users
+      responses:
+        '200': { description: ok }
+  /users/{id}:
+    get:
+      operationId: getUser
+      summary: Get a user
+      responses:
+        '200': { description: ok }
+`.trim()
+
+const afterRenameYaml = `
+openapi: 3.0.3
+info:
+  title: Users
+  version: 1.1.0
+paths:
+  /users:
+    get:
+      operationId: listUsers
+      summary: List users
+      responses:
+        '200': { description: ok }
+  /users/{id}/profile:
+    get:
+      operationId: getUser
+      summary: Get a user
+      responses:
+        '200': { description: ok }
+  /users/{id}:
+    get:
+      operationId: fetchUser
+      summary: Fetch a user
+      responses:
+        '200': { description: ok }
+`.trim()
+
+async function setupRenamedRepo(): Promise<{ cwd: string; specPath: string }> {
+  const cwd = await mkdtemp(join(tmpdir(), 'vod-rename-'))
+  const oldPath = join('api', 'openapi.yaml')
+  const specPath = 'openapi.yaml'
+  const git = (...args: string[]) =>
+    execFileSync('git', args, { cwd, stdio: 'pipe', env: { ...globalThis.process.env, HOME: cwd } })
+  git('init', '-b', 'main')
+  git('config', 'user.email', 'test@example.com')
+  git('config', 'user.name', 'Test')
+  git('config', 'commit.gpgsign', 'false')
+
+  await mkdir(join(cwd, 'api'), { recursive: true })
+  await writeFile(join(cwd, oldPath), beforeRenameYaml, 'utf8')
+  git('add', '.')
+  git('commit', '-m', 'initial: add users spec')
+
+  git('mv', oldPath, specPath)
+  await writeFile(join(cwd, specPath), afterRenameYaml, 'utf8')
+  git('add', '.')
+  git('commit', '-m', 'feat: move spec, move getUser route, add fetchUser')
+
+  return { cwd, specPath }
+}
+
+describe('extractChangelog across a file rename', () => {
+  let repo: { cwd: string; specPath: string }
+
+  beforeAll(async () => {
+    repo = await setupRenamedRepo()
+  })
+
+  it('keeps pre-rename history via --follow', async () => {
+    const result = await extractChangelog({
+      specPath: repo.specPath,
+      specName: 'users',
+      cwd: repo.cwd,
+    })
+    expect(result.isEmpty).toBe(false)
+    expect(result.entries.some((e) => e.subject.startsWith('feat: move spec'))).toBe(true)
+  })
+
+  it('emits a route change when an operationId keeps its id but moves', async () => {
+    const result = await extractChangelog({
+      specPath: repo.specPath,
+      specName: 'users',
+      cwd: repo.cwd,
+    })
+    const routeChange = result.entries
+      .flatMap((e) => e.operations)
+      .find((o) => o.kind === 'route' && o.operationId === 'getUser')
+    expect(routeChange?.before).toBe('get /users/{id}')
+    expect(routeChange?.after).toBe('get /users/{id}/profile')
+  })
+
+  it('reports an added operation that reuses a vacated route', async () => {
+    const result = await extractChangelog({
+      specPath: repo.specPath,
+      specName: 'users',
+      cwd: repo.cwd,
+    })
+    const added = result.entries
+      .flatMap((e) => e.operations)
+      .find((o) => o.kind === 'added' && o.operationId === 'fetchUser')
+    expect(added).toBeDefined()
   })
 })
