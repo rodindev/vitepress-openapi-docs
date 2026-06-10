@@ -22,6 +22,7 @@
         :key="op.id"
         :id="`${spec.name}.${op.id}`"
         :operation="op"
+        :spec-name="spec.name"
         :servers="spec.servers"
         :layout="layout"
       />
