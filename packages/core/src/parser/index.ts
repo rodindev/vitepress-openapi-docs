@@ -39,8 +39,6 @@ const HTTP_METHODS: HttpMethod[] = [
 ]
 
 const SCHEMA_REF_PREFIX = '#/components/schemas/'
-const PARAM_REF_PREFIX = '#/components/parameters/'
-const COMPONENTS_PREFIX = '#/components/'
 
 export interface ParseSpecOptions {
   /** Logical name of the spec (matches `OpenApiSpecConfig.name`). */
@@ -73,9 +71,14 @@ export async function parseSpec(
     throw new ParseError(`OpenAPI spec "${source}" failed to parse`, source, validation.errors)
   }
 
+  const refNames = new WeakMap<object, string>()
   let dereffed: Awaited<ReturnType<typeof dereference>>
   try {
-    dereffed = await dereference(input)
+    dereffed = await dereference(input, {
+      onDereference: ({ schema, ref }) => {
+        refNames.set(schema, ref)
+      },
+    })
   } catch (cause) {
     throw new ParseError(
       `OpenAPI spec "${source}" failed to dereference: ${(cause as Error).message}`,
@@ -83,7 +86,7 @@ export async function parseSpec(
     )
   }
 
-  const spec = dereffed.specification
+  const spec = dereffed.schema
   if (!spec) {
     throw new ParseError(
       `OpenAPI spec "${source}" produced no specification after dereferencing`,
@@ -92,39 +95,24 @@ export async function parseSpec(
     )
   }
 
+  pruneCircularRefs(spec as Record<string, unknown>, refNames, new Set())
+
   const rawSpec = (validation.specification ?? {}) as Record<string, unknown>
   const rawPaths = (rawSpec.paths ?? {}) as Record<string, Record<string, unknown>>
   const specLevelSecurity = readSecurity(spec.security)
-  const specComponents = (spec.components ?? {}) as Record<string, unknown>
-  const componentParams = (specComponents.parameters ?? {}) as Record<string, unknown>
-  const componentResponses = (specComponents.responses ?? {}) as Record<string, unknown>
-  const componentRequestBodies = (specComponents.requestBodies ?? {}) as Record<string, unknown>
 
   const operations: ParsedOperation[] = []
   const paths = (spec.paths ?? {}) as Record<string, Record<string, unknown>>
   for (const [path, pathItem] of Object.entries(paths)) {
     if (!pathItem || typeof pathItem !== 'object') continue
-    const pathLevelParams = readParameters(
-      resolveParameterRefs(pathItem.parameters, componentParams)
-    )
+    const pathLevelParams = readParameters(pathItem.parameters)
     const rawPathItem = (rawPaths[path] ?? {}) as Record<string, unknown>
     for (const method of HTTP_METHODS) {
       const op = pathItem[method] as Record<string, unknown> | undefined
       if (!op || typeof op !== 'object') continue
       const rawOp = (rawPathItem[method] ?? {}) as Record<string, unknown>
       operations.push(
-        buildOperation(
-          path,
-          method,
-          op,
-          rawOp,
-          pathLevelParams,
-          'path',
-          specLevelSecurity,
-          componentParams,
-          componentResponses,
-          componentRequestBodies
-        )
+        buildOperation(path, method, op, rawOp, pathLevelParams, 'path', specLevelSecurity)
       )
     }
   }
@@ -139,9 +127,7 @@ export async function parseSpec(
   const rawWebhooks = (rawSpec.webhooks ?? {}) as Record<string, Record<string, unknown>>
   for (const [webhookName, pathItem] of Object.entries(webhooks)) {
     if (!pathItem || typeof pathItem !== 'object') continue
-    const pathLevelParams = readParameters(
-      resolveParameterRefs(pathItem.parameters, componentParams)
-    )
+    const pathLevelParams = readParameters(pathItem.parameters)
     const rawPathItem = (rawWebhooks[webhookName] ?? {}) as Record<string, unknown>
     for (const method of HTTP_METHODS) {
       const op = pathItem[method] as Record<string, unknown> | undefined
@@ -155,10 +141,7 @@ export async function parseSpec(
           rawOp,
           pathLevelParams,
           'webhook',
-          specLevelSecurity,
-          componentParams,
-          componentResponses,
-          componentRequestBodies
+          specLevelSecurity
         )
       )
     }
@@ -168,22 +151,20 @@ export async function parseSpec(
 
   const info = (spec.info ?? {}) as { title?: string; version?: string; description?: string }
   const components = (spec.components ?? {}) as Record<string, unknown>
-  const rawSchemas = (components.schemas ?? {}) as Record<string, unknown>
 
   for (const op of operations) {
-    resolveOperationRefs(op, rawSchemas)
     if (op.requestBody) {
       op.requestBody.jsonFields = orderedBodyFields(
-        op.requestBody.content['application/json']?.schema
+        op.requestBody.content['application/json']?.schema,
+        refNames
       )
     }
   }
 
   const componentSchemas = readComponentSchemas(components.schemas)
   for (const entry of Object.values(componentSchemas)) {
-    entry.schema = resolveSchemaRefs(entry.schema, rawSchemas)
-    entry.typeLabel = describeTypeLabel(entry.schema)
-    entry.properties = readPropertyList(entry.schema)
+    entry.typeLabel = describeTypeLabel(entry.schema, refNames)
+    entry.properties = readPropertyList(entry.schema, refNames)
   }
 
   return {
@@ -206,10 +187,7 @@ function buildOperation(
   rawOp: Record<string, unknown>,
   pathLevelParams: ParsedParameter[],
   kind: 'path' | 'webhook' = 'path',
-  specLevelSecurity: string[] = [],
-  componentParams: Record<string, unknown> = {},
-  componentResponses: Record<string, unknown> = {},
-  componentRequestBodies: Record<string, unknown> = {}
+  specLevelSecurity: string[] = []
 ): ParsedOperation {
   const operationId = typeof op.operationId === 'string' ? op.operationId : undefined
   const id =
@@ -218,7 +196,7 @@ function buildOperation(
   const tags = Array.isArray(op.tags)
     ? op.tags.filter((t): t is string => typeof t === 'string')
     : []
-  const opLevelParams = readParameters(resolveParameterRefs(op.parameters, componentParams))
+  const opLevelParams = readParameters(op.parameters)
   const parameters = mergeParameters(pathLevelParams, opLevelParams)
   const opSecurity = op.security !== undefined ? readSecurity(op.security) : specLevelSecurity
 
@@ -232,14 +210,8 @@ function buildOperation(
     description: typeof op.description === 'string' ? op.description : undefined,
     tags,
     parameters,
-    requestBody: readRequestBody(
-      resolveComponentRef(
-        op.requestBody,
-        COMPONENTS_PREFIX + 'requestBodies/',
-        componentRequestBodies
-      )
-    ),
-    responses: readResponses(op.responses, componentResponses),
+    requestBody: readRequestBody(op.requestBody),
+    responses: readResponses(op.responses),
     requestSchemaRefs: readBodyRefs(rawOp.requestBody),
     responseSchemaRefs: readResponseRefs(rawOp.responses),
     defaultServer: '',
@@ -291,28 +263,21 @@ function readRequestBody(value: unknown): ParsedRequestBody | undefined {
     required: body.required === true,
     description: typeof body.description === 'string' ? body.description : undefined,
     content,
-    // Populated after resolveOperationRefs so nested $refs are inlined.
+    // Populated in parseSpec once all operations are built.
     jsonFields: [],
   }
 }
 
-function readResponses(
-  value: unknown,
-  componentResponses: Record<string, unknown> = {}
-): ParsedResponse[] {
+function readResponses(value: unknown): ParsedResponse[] {
   if (!value || typeof value !== 'object') return []
   const responses: ParsedResponse[] = []
   for (const [status, raw] of Object.entries(value as Record<string, unknown>)) {
     if (!raw || typeof raw !== 'object') continue
-    const resolved = resolveComponentRef(
-      raw,
-      COMPONENTS_PREFIX + 'responses/',
-      componentResponses
-    ) as Record<string, unknown>
+    const response = raw as Record<string, unknown>
     responses.push({
       status,
-      description: typeof resolved.description === 'string' ? resolved.description : undefined,
-      content: resolved.content as ParsedResponse['content'],
+      description: typeof response.description === 'string' ? response.description : undefined,
+      content: response.content as ParsedResponse['content'],
     })
   }
   return responses.sort((a, b) => a.status.localeCompare(b.status))
@@ -491,73 +456,20 @@ function byTagPathMethod(a: ParsedOperation, b: ParsedOperation): number {
   return METHOD_ORDER[a.method] - METHOD_ORDER[b.method]
 }
 
-function resolveComponentRef(
-  value: unknown,
-  prefix: string,
-  components: Record<string, unknown>
-): unknown {
-  if (!value || typeof value !== 'object') return value
-  const ref = (value as Record<string, unknown>).$ref
-  if (typeof ref === 'string' && ref.startsWith(prefix)) {
-    const name = ref.slice(prefix.length)
-    return components[name] ?? value
-  }
-  return value
-}
-
-function resolveParameterRefs(
-  params: unknown,
-  componentParams: Record<string, unknown>
-): unknown[] {
-  if (!Array.isArray(params)) return []
-  return params.map((p) => {
-    if (!p || typeof p !== 'object') return p
-    const ref = (p as Record<string, unknown>).$ref
-    if (typeof ref === 'string' && ref.startsWith(PARAM_REF_PREFIX)) {
-      const name = ref.slice(PARAM_REF_PREFIX.length)
-      return componentParams[name] ?? p
+function pruneCircularRefs(
+  node: Record<string, unknown> | unknown[],
+  refNames: WeakMap<object, string>,
+  resolving: Set<string>
+): void {
+  for (const [key, child] of Object.entries(node)) {
+    if (!child || typeof child !== 'object') continue
+    const ref = refNames.get(child)
+    if (ref && resolving.has(ref)) {
+      ;(node as Record<string, unknown>)[key] = { $ref: ref }
+      continue
     }
-    return p
-  })
-}
-
-function resolveSchemaRefs(
-  value: unknown,
-  schemas: Record<string, unknown>,
-  resolving: Set<string> = new Set()
-): unknown {
-  if (!value || typeof value !== 'object') return value
-  if (Array.isArray(value)) {
-    return value.map((item) => resolveSchemaRefs(item, schemas, resolving))
-  }
-  const obj = value as Record<string, unknown>
-  if (typeof obj.$ref === 'string' && obj.$ref.startsWith(SCHEMA_REF_PREFIX)) {
-    const name = obj.$ref.slice(SCHEMA_REF_PREFIX.length)
-    if (resolving.has(name)) return obj
-    const target = schemas[name]
-    if (!target) return obj
-    const next = new Set(resolving)
-    next.add(name)
-    return resolveSchemaRefs(target, schemas, next)
-  }
-  const result: Record<string, unknown> = {}
-  for (const [key, val] of Object.entries(obj)) {
-    result[key] = resolveSchemaRefs(val, schemas, resolving)
-  }
-  return result
-}
-
-function resolveOperationRefs(op: ParsedOperation, schemas: Record<string, unknown>): void {
-  if (op.requestBody) {
-    for (const entry of Object.values(op.requestBody.content)) {
-      if (entry.schema) entry.schema = resolveSchemaRefs(entry.schema, schemas)
-    }
-  }
-  for (const resp of op.responses) {
-    if (!resp.content) continue
-    for (const entry of Object.values(resp.content)) {
-      if (entry.schema) entry.schema = resolveSchemaRefs(entry.schema, schemas)
-    }
+    const next = ref ? new Set(resolving).add(ref) : resolving
+    pruneCircularRefs(child as Record<string, unknown> | unknown[], refNames, next)
   }
 }
 
@@ -566,22 +478,28 @@ async function renderMarkdown(src: string): Promise<string> {
   return (await getPurify()).sanitize(html)
 }
 
-function readPropertyList(objectSchema: unknown): ParsedProperty[] {
+function readPropertyList(
+  objectSchema: unknown,
+  refNames: WeakMap<object, string>
+): ParsedProperty[] {
   if (!objectSchema || typeof objectSchema !== 'object') return []
-  const s = objectSchema as Record<string, unknown>
+  const s = flattenAllOf(objectSchema as Record<string, unknown>)
   const props = (s.properties ?? {}) as Record<string, unknown>
   if (Object.keys(props).length === 0) return []
   const required = schemaRequiredList(s)
   const result: ParsedProperty[] = []
   for (const [name, propSchema] of Object.entries(props)) {
-    result.push(buildProperty(name, propSchema, required.includes(name)))
+    result.push(buildProperty(name, propSchema, required.includes(name), refNames))
   }
   return result
 }
 
-function orderedBodyFields(objectSchema: unknown): ParsedProperty[] {
+function orderedBodyFields(
+  objectSchema: unknown,
+  refNames: WeakMap<object, string>
+): ParsedProperty[] {
   if (!objectSchema || typeof objectSchema !== 'object') return []
-  const s = objectSchema as Record<string, unknown>
+  const s = flattenAllOf(objectSchema as Record<string, unknown>)
   const props = (s.properties ?? {}) as Record<string, unknown>
   if (Object.keys(props).length === 0) return []
   const required = schemaRequiredList(s)
@@ -589,7 +507,38 @@ function orderedBodyFields(objectSchema: unknown): ParsedProperty[] {
     ...required.filter((k) => k in props),
     ...Object.keys(props).filter((k) => !required.includes(k)),
   ]
-  return names.map((name) => buildProperty(name, props[name], required.includes(name)))
+  return names.map((name) => buildProperty(name, props[name], required.includes(name), refNames))
+}
+
+function flattenAllOf(schema: Record<string, unknown>): Record<string, unknown> {
+  if (!Array.isArray(schema.allOf) || schema.allOf.length === 0) return schema
+  const merged: Record<string, unknown> = {}
+  const properties: Record<string, unknown> = {}
+  const required: string[] = []
+  const visit = (value: unknown): void => {
+    if (!value || typeof value !== 'object') return
+    const s = value as Record<string, unknown>
+    if (Array.isArray(s.allOf)) {
+      for (const sub of s.allOf) visit(sub)
+    }
+    for (const [key, val] of Object.entries(s)) {
+      if (key === 'allOf' || key === 'properties' || key === 'required') continue
+      merged[key] = val
+    }
+    if (s.properties && typeof s.properties === 'object') {
+      Object.assign(properties, s.properties)
+    }
+    for (const name of schemaRequiredList(s)) {
+      if (!required.includes(name)) required.push(name)
+    }
+  }
+  visit(schema)
+  if (Object.keys(properties).length > 0) {
+    merged.properties = properties
+    if (merged.type === undefined) merged.type = 'object'
+  }
+  if (required.length > 0) merged.required = required
+  return merged
 }
 
 function schemaRequiredList(schema: Record<string, unknown>): string[] {
@@ -598,13 +547,20 @@ function schemaRequiredList(schema: Record<string, unknown>): string[] {
     : []
 }
 
-function buildProperty(name: string, schema: unknown, required: boolean): ParsedProperty {
+function buildProperty(
+  name: string,
+  schema: unknown,
+  required: boolean,
+  refNames: WeakMap<object, string>
+): ParsedProperty {
   const obj =
     schema && typeof schema === 'object'
       ? (schema as Record<string, unknown>)
       : ({} as Record<string, unknown>)
-  const refTarget = detectInlineRef(obj)
-  const typeLabel = refTarget ? formatRefTypeLabel(obj, refTarget) : describeTypeLabel(obj)
+  const refTarget = detectInlineRef(obj, refNames)
+  const typeLabel = refTarget
+    ? formatRefTypeLabel(obj, refTarget)
+    : describeTypeLabel(obj, refNames)
   return {
     name,
     required,
@@ -615,15 +571,15 @@ function buildProperty(name: string, schema: unknown, required: boolean): Parsed
   }
 }
 
-function detectInlineRef(value: unknown): string | undefined {
+function detectInlineRef(value: unknown, refNames: WeakMap<object, string>): string | undefined {
   if (!value || typeof value !== 'object') return undefined
   const obj = value as Record<string, unknown>
-  const ref = obj.$ref
+  const ref = refNames.get(obj) ?? obj.$ref
   if (typeof ref === 'string' && ref.startsWith(SCHEMA_REF_PREFIX)) {
     return ref.slice(SCHEMA_REF_PREFIX.length)
   }
   if (obj.type === 'array' && obj.items && typeof obj.items === 'object') {
-    return detectInlineRef(obj.items)
+    return detectInlineRef(obj.items, refNames)
   }
   return undefined
 }
@@ -633,7 +589,7 @@ function formatRefTypeLabel(schema: Record<string, unknown>, refTarget: string):
   return refTarget
 }
 
-function describeTypeLabel(value: unknown): string {
+function describeTypeLabel(value: unknown, refNames: WeakMap<object, string>): string {
   if (!value || typeof value !== 'object') return 'unknown'
   const obj = value as Record<string, unknown>
   const t = obj.type
@@ -641,8 +597,8 @@ function describeTypeLabel(value: unknown): string {
     if (t === 'array') {
       const items = obj.items as Record<string, unknown> | undefined
       if (items) {
-        const itemRef = detectInlineRef(items)
-        return itemRef ? `${itemRef}[]` : `${describeTypeLabel(items)}[]`
+        const itemRef = detectInlineRef(items, refNames)
+        return itemRef ? `${itemRef}[]` : `${describeTypeLabel(items, refNames)}[]`
       }
       return 'array'
     }
@@ -653,6 +609,9 @@ function describeTypeLabel(value: unknown): string {
   if (Array.isArray(obj.enum)) return 'enum'
   if ('oneOf' in obj) return 'oneOf'
   if ('anyOf' in obj) return 'anyOf'
+  if (Array.isArray(obj.allOf) && obj.allOf.length > 0) {
+    return describeTypeLabel(flattenAllOf(obj), refNames)
+  }
   if ('allOf' in obj) return 'allOf'
   return 'unknown'
 }

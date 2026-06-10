@@ -1,0 +1,46 @@
+openapi: 3.1.0
+info:
+  title: Dereference
+  version: 1.0.0
+paths:
+  /pets:
+    $ref: '#/components/pathItems/PetCollection'
+  /pets/{petId}:
+    get:
+      operationId: getPet
+      parameters:
+        - $ref: '#/components/parameters/PetId'
+        - name: verbose
+          in: query
+          schema:
+            $ref: '#/components/schemas/Verbose'
+      responses:
+        '200':
+          description: ok
+components:
+  pathItems:
+    PetCollection:
+      get:
+        operationId: listPets
+        responses:
+          '200':
+            description: ok
+  parameters:
+    PetId:
+      name: petId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+        example: 7
+  schemas:
+    Verbose:
+      type: boolean
+      default: false
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+    legacyAuth:
+      $ref: '#/components/securitySchemes/bearerAuth'

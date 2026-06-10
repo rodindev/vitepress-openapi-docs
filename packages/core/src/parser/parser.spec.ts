@@ -1,5 +1,12 @@
+import { readFile } from 'node:fs/promises'
+import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { ParseError, parseSpec } from './index'
+
+async function parseFixture(file: string) {
+  const yaml = await readFile(resolve(__dirname, '../test/fixtures/specs', file), 'utf8')
+  return parseSpec(yaml, { name: file.replace(/\.yaml$/, '') })
+}
 
 const minimal = {
   openapi: '3.1.0',
@@ -494,5 +501,83 @@ describe('parseSpec', () => {
     const unnamed = spec.operations.find((op) => !op.operationId)
     expect(unnamed).toBeDefined()
     expect(unnamed!.id).toMatch(/post.orderCancelled/i)
+  })
+
+  it('dereferences parameter schemas so typeLabel and defaultExample are set', async () => {
+    const spec = await parseFixture('dereference.yaml')
+    const op = spec.operations.find((o) => o.operationId === 'getPet')
+    const petId = op?.parameters.find((p) => p.name === 'petId')
+    expect(petId?.required).toBe(true)
+    expect(petId?.typeLabel).toBe('integer')
+    expect(petId?.defaultExample).toBe('7')
+    const verbose = op?.parameters.find((p) => p.name === 'verbose')
+    expect(verbose?.typeLabel).toBe('boolean')
+    expect(verbose?.defaultExample).toBe('false')
+  })
+
+  it('resolves path-item-level $refs into operations', async () => {
+    const spec = await parseFixture('dereference.yaml')
+    const op = spec.operations.find((o) => o.operationId === 'listPets')
+    expect(op).toBeDefined()
+    expect(op?.path).toBe('/pets')
+    expect(op?.method).toBe('get')
+  })
+
+  it('resolves $refs inside securitySchemes', async () => {
+    const spec = await parseFixture('dereference.yaml')
+    expect(spec.securitySchemes.legacyAuth).toEqual({
+      type: 'bearer',
+      rawType: 'http',
+    })
+  })
+
+  it('merges allOf request bodies into ordered json fields', async () => {
+    const spec = await parseFixture('allof.yaml')
+    const op = spec.operations.find((o) => o.operationId === 'createPet')
+    const fields = op?.requestBody?.jsonFields ?? []
+    expect(fields.map((f) => f.name)).toEqual(['name', 'id', 'tag'])
+    expect(fields.find((f) => f.name === 'name')?.required).toBe(true)
+    expect(fields.find((f) => f.name === 'id')?.required).toBe(true)
+    expect(fields.find((f) => f.name === 'tag')?.required).toBe(false)
+  })
+
+  it('merges allOf component schemas into an object property list', async () => {
+    const spec = await parseFixture('allof.yaml')
+    const pet = spec.componentSchemas.Pet
+    expect(pet?.typeLabel).toBe('object')
+    expect(pet?.properties.map((p) => p.name)).toEqual(['name', 'tag', 'id'])
+    expect(pet?.properties.find((p) => p.name === 'name')?.required).toBe(true)
+    expect(pet?.properties.find((p) => p.name === 'id')?.required).toBe(true)
+  })
+
+  it('sets refTarget for properties pointing at component schemas', async () => {
+    const spec = await parseFixture('schema-refs.yaml')
+    const user = spec.componentSchemas.User
+    const pet = user?.properties.find((p) => p.name === 'pet')
+    expect(pet?.refTarget).toBe('Pet')
+    expect(pet?.typeLabel).toBe('Pet')
+    const pets = user?.properties.find((p) => p.name === 'pets')
+    expect(pets?.refTarget).toBe('Pet')
+    expect(pets?.typeLabel).toBe('Pet[]')
+  })
+
+  it('sets refTarget on request body json fields', async () => {
+    const spec = await parseFixture('schema-refs.yaml')
+    const op = spec.operations.find((o) => o.operationId === 'createUser')
+    const pet = op?.requestBody?.jsonFields.find((f) => f.name === 'pet')
+    expect(pet?.refTarget).toBe('Pet')
+    const pets = op?.requestBody?.jsonFields.find((f) => f.name === 'pets')
+    expect(pets?.typeLabel).toBe('Pet[]')
+  })
+
+  it('parses a circular schema into serialisable output', async () => {
+    const spec = await parseFixture('circular.yaml')
+    expect(() => JSON.stringify(spec)).not.toThrow()
+    const person = spec.componentSchemas.Person
+    expect(person?.typeLabel).toBe('object')
+    const friend = person?.properties.find((p) => p.name === 'friend')
+    expect(friend?.refTarget).toBe('Person')
+    const op = spec.operations.find((o) => o.operationId === 'createPerson')
+    expect(op?.requestBody?.jsonFields.map((f) => f.name)).toEqual(['name', 'friend'])
   })
 })
