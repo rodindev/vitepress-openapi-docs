@@ -37,7 +37,7 @@ Each entry:
 | -------- | -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------ |
 | `name`   | `string` | yes      | Short identifier. Used in URLs, sidebar, and `<OpenApiEndpoint id="{name}.{operationId}">`.                                    |
 | `spec`   | `string` | yes      | Path (relative to project root) or URL to an OpenAPI 3.0/3.1 document (YAML or JSON).                                          |
-| `label`  | `string` | no       | Human-readable label for the sidebar header. Defaults to `name`.                                                               |
+| `label`  | `string` | no       | Human-readable label for the sidebar header. Defaults to the spec title.                                                       |
 | `prefix` | `string` | no       | URL prefix for generated pages, e.g. `/api/public`. Required when more than one spec is configured. Defaults to `/api/{name}`. |
 
 ### `theme`

@@ -71,7 +71,7 @@ npm run test:a11y
 ## Release flow
 
 1. `node scripts/sync-versions.js <version>` — sync all packages
-2. Update `CHANGELOG.md` — move `Unreleased` to `## <version>` with date
+2. Update `CHANGELOG.md` — rename the `Unreleased` heading to `## <version>`
 3. Commit: `chore(release): v<version>`
 4. Tag: `git tag v<version>`
 5. Push: `git push origin main --tags`

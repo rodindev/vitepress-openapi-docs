@@ -4,7 +4,7 @@
 
 # vitepress-openapi-docs
 
-The only OpenAPI docs tool where endpoints render inline with your markdown prose. Vue-native VitePress plugin — no shadow DOM, no iframes, no walls.
+A Vue-native VitePress plugin that composes OpenAPI endpoints inline with your markdown prose and generates the rest of the site around them: per-operation and per-schema pages, a tag-grouped sidebar, a git-driven changelog, Cmd+K search, and multi-API support.
 
 ## Why this exists
 

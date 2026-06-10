@@ -24,7 +24,7 @@ export default defineConfig({
 })
 ```
 
-The `spec` path is relative to the project root. Remote URLs (e.g. `https://api.example.com/openapi.json`) are also supported — fetched at build time and cached.
+The `spec` path is relative to the project root. Remote URLs (e.g. `https://api.example.com/openapi.json`) are also supported, fetched at build time.
 
 See [Configuration reference](/reference/configuration) for all available fields.
 

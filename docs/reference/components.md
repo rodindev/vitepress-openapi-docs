@@ -16,24 +16,26 @@ Renders one operation inline with prose.
 
 ### Props
 
-| Prop               | Type                                                    | Default         | Description                                                                                                             |
-| ------------------ | ------------------------------------------------------- | --------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| `id`               | `string`                                                | (required)      | `{specName}.{operationId}` for multi-spec, or bare `{operationId}` with one spec.                                       |
-| `auth`             | `'none' \| 'bearer' \| 'apikey' \| 'basic' \| 'oauth2'` | auto from spec  | Override the auth scheme.                                                                                               |
-| `server`           | `string`                                                | first from spec | Single-server URL override.                                                                                             |
-| `show`             | `Section[]`                                             | all sections    | Which sections to render.                                                                                               |
-| `apiKeyHeaderName` | `string`                                                | auto from spec  | Header name for `apikey` schemes.                                                                                       |
-| `bodyInputs`       | `boolean`                                               | `false`         | Render request body properties as individual inputs instead of a JSON textarea.                                         |
-| `layout`           | `'columns' \| 'stacked'`                                | `'columns'`     | `columns` renders the Try-It panel as a sticky aside next to the card. `stacked` keeps everything in one vertical card. |
-| `specName`         | `string`                                                | auto from `id`  | Spec name used to resolve auth schemes and schema links when `operation` bypasses the registry.                         |
+| Prop               | Type                                                    | Default         | Description                                                                                                                                              |
+| ------------------ | ------------------------------------------------------- | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`               | `string`                                                | (required)      | `{specName}.{operationId}` for multi-spec, or bare `{operationId}` with one spec.                                                                        |
+| `operation`        | `ParsedOperation`                                       | —               | Pass a parsed operation directly to bypass the registry. Pair with `specName` to resolve auth and schema links; without it the spec reports as `inline`. |
+| `servers`          | `string[]`                                              | `[]`            | Server URL list to draw from when `operation` is supplied directly.                                                                                      |
+| `auth`             | `'none' \| 'bearer' \| 'apikey' \| 'basic' \| 'oauth2'` | auto from spec  | Override the auth scheme.                                                                                                                                |
+| `server`           | `string`                                                | first from spec | Single-server URL override.                                                                                                                              |
+| `show`             | `Section[]`                                             | all sections    | Which sections to render.                                                                                                                                |
+| `apiKeyHeaderName` | `string`                                                | auto from spec  | Header name for `apikey` schemes.                                                                                                                        |
+| `bodyInputs`       | `boolean`                                               | `false`         | Render request body properties as individual inputs instead of a JSON textarea.                                                                          |
+| `layout`           | `'columns' \| 'stacked'`                                | `'columns'`     | `columns` renders the Try-It panel as a sticky aside next to the card. `stacked` keeps everything in one vertical card.                                  |
+| `specName`         | `string`                                                | auto from `id`  | Spec name used to resolve auth schemes and schema links when `operation` bypasses the registry.                                                          |
 
 **Section names:** `summary`, `description`, `params`, `request`, `response`, `auth`, `snippets`, `try`.
 
 **Layout note:** In `columns` (default) the aside lives inside the endpoint container. On pages where VitePress renders a right-side TOC (`aside` frontmatter is not `false`), the aside stacks below the card instead — set `aside: false` in the page's frontmatter so the endpoint aside has room. Viewports at 1279px and below automatically fall back to the `stacked` layout regardless of the `layout` setting.
 
-**Stacked layout collapsing:** In `stacked`, Parameters, Authentication, and Code examples are wrapped in `<details>` collapsed by default. The Try-It panel stays open as the primary call to action.
+**Stacked layout collapsing:** In `stacked`, Parameters and Response examples are wrapped in `<details>` collapsed by default. Code examples and Authentication are `<details>` in the Try-It panel in both layouts (in `columns` they sit in the aside). The Try-It panel itself stays open as the primary call to action.
 
-**Parameters table:** Operations with more than 3 parameters collapse to 3 rows with a `Show all N parameters` toggle. The Try-It panel caps at 3 fields before collapsing.
+**Parameters table:** In `columns`, operations with more than 3 parameters collapse to 3 rows with a `Show all N parameters` toggle, and the Try-It panel caps at 3 fields before collapsing. In `stacked`, the parameters table renders every row.
 
 ### Events
 
@@ -140,10 +142,10 @@ Button that opens the `<OperationJumper>` dialog.
 
 Cmd+K / Ctrl+K fuzzy-search dialog. Mount in VitePress's `layout-top` slot; see [theme setup](/guide/existing-site#3-theme-setup). Per-spec URL prefixes are read from the provide set by `enhanceAppWithOpenApi`, so no props are needed for cross-link routing.
 
-| Prop          | Type     | Default                               | Description              |
-| ------------- | -------- | ------------------------------------- | ------------------------ |
-| `placeholder` | `string` | `'Jump to an operation or schema...'` | Input placeholder.       |
-| `ariaLabel`   | `string` | `'Jump to an operation or schema'`    | Dialog accessible label. |
+| Prop          | Type     | Default                             | Description              |
+| ------------- | -------- | ----------------------------------- | ------------------------ |
+| `placeholder` | `string` | `'Jump to an operation or schema…'` | Input placeholder.       |
+| `ariaLabel`   | `string` | `'Jump to an operation or schema'`  | Dialog accessible label. |
 
 ## Programmatic API
 

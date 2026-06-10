@@ -21,6 +21,8 @@ Each layer falls back to the next. Override whichever layer you want; everything
 - **`--vp-c-*`** — VitePress's standard tokens. Most sites already theme through these.
 - The hex fallback is only reached outside a VitePress host.
 
+Not every token chains. The method badge `-bg` / `-text` tokens (`--vod-method-get-bg`, `--vod-method-delete-text`, and the rest) are flat hex by design: each light and dark pair is tuned for AA contrast, so they do not fall through `--vap-*` or `--vp-c-*`. Override the pair directly if you need to retint a badge.
+
 ## Common overrides
 
 Drop these into a stylesheet imported after the plugin styles in your [theme setup](/guide/existing-site#3-theme-setup):
