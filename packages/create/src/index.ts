@@ -382,6 +382,7 @@ export async function scaffoldInto(targetDir: string, options: ScaffoldOptions):
 
   try {
     await cp(TEMPLATE_DIR, staging, { recursive: true })
+    await rename(join(staging, '_gitignore'), join(staging, '.gitignore'))
     await rewritePackageJson(staging, options.name)
 
     const defaults = buildDefaults(options)

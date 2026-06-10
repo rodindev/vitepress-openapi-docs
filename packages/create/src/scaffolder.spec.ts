@@ -49,6 +49,15 @@ describe('scaffoldInto', () => {
     expect(pkg.dependencies['vitepress-openapi-docs']).toBeDefined()
   })
 
+  it('renames the template _gitignore to .gitignore in the scaffold', async () => {
+    const target = await freshTarget()
+    await scaffoldInto(target, { name: 'demo' })
+
+    const entries = await readdir(target)
+    expect(entries).toContain('.gitignore')
+    expect(entries).not.toContain('_gitignore')
+  })
+
   it('rewrites config, theme, and pages when custom specs are supplied', async () => {
     const target = await freshTarget()
     await scaffoldInto(target, {
