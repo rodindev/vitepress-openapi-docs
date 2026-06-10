@@ -101,6 +101,7 @@ function kindLabel(kind: ChangeKind): string {
   if (kind === 'added') return 'Added'
   if (kind === 'removed') return 'Removed'
   if (kind === 'renamed') return 'Renamed'
+  if (kind === 'route') return 'Route changed'
   if (kind === 'summary') return 'Summary changed'
   if (kind === 'description') return 'Description changed'
   return kind
