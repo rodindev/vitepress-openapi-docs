@@ -25,6 +25,7 @@ Renders one operation inline with prose.
 | `apiKeyHeaderName` | `string`                                                | auto from spec  | Header name for `apikey` schemes.                                                                                       |
 | `bodyInputs`       | `boolean`                                               | `false`         | Render request body properties as individual inputs instead of a JSON textarea.                                         |
 | `layout`           | `'columns' \| 'stacked'`                                | `'columns'`     | `columns` renders the Try-It panel as a sticky aside next to the card. `stacked` keeps everything in one vertical card. |
+| `specName`         | `string`                                                | auto from `id`  | Spec name used to resolve auth schemes and schema links when `operation` bypasses the registry.                         |
 
 **Section names:** `summary`, `description`, `params`, `request`, `response`, `auth`, `snippets`, `try`.
 

@@ -202,6 +202,58 @@ describe('OpenApiEndpoint', () => {
     expect(wrapper.find('.vod-endpoint--missing').exists()).toBe(false)
   })
 
+  it('resolves auth schemes from the registry when `operation` and `spec-name` are given', () => {
+    const securedOp: ParsedOperation = {
+      ...usersBearer,
+      security: ['bearerAuth'],
+    }
+    const securedSpec: ParsedSpec = {
+      ...spec,
+      securitySchemes: { bearerAuth: { type: 'bearer', rawType: 'http' } },
+    }
+    const wrapper = mount(OpenApiEndpoint, {
+      props: { id: 'inline', operation: securedOp, specName: 'public', layout: 'stacked' },
+      global: {
+        provide: {
+          [SPEC_REGISTRY_KEY as unknown as symbol]: { specs: { public: securedSpec } },
+        },
+      },
+    })
+    const summaries = wrapper.findAll('.vod-page-aside__collapsible > summary').map((s) => s.text())
+    expect(summaries).toContain('Authentication')
+  })
+
+  it('hides the auth panel for inline operations whose scheme name is not in any spec', () => {
+    const securedOp: ParsedOperation = {
+      ...usersBearer,
+      security: ['bearerAuth'],
+    }
+    const wrapper = mount(OpenApiEndpoint, {
+      props: { id: 'inline', operation: securedOp, layout: 'stacked' },
+    })
+    const summaries = wrapper.findAll('.vod-page-aside__collapsible > summary').map((s) => s.text())
+    expect(summaries).not.toContain('Authentication')
+  })
+
+  it('builds schema links against the real spec name when `spec-name` is given', () => {
+    const wrapper = mount(OpenApiEndpoint, {
+      props: { id: 'inline', operation: usersList, specName: 'public' },
+      global: { provide: registryProvide },
+    })
+    const link = wrapper.find('.vod-endpoint__returns a.vod-endpoint__type-link')
+    expect(link.exists()).toBe(true)
+    expect(link.attributes('href')).toBe('/schemas/public/User')
+  })
+
+  it('falls back to inline schema links when `operation` is given without `spec-name`', () => {
+    const wrapper = mount(OpenApiEndpoint, {
+      props: { id: 'inline', operation: usersList },
+    })
+    const link = wrapper.find('.vod-endpoint__returns a.vod-endpoint__type-link')
+    expect(link.exists()).toBe(true)
+    expect(link.attributes('href')).toBe('/schemas/inline/User')
+  })
+
   it('cross-links to the response schema when an operation references one', () => {
     const wrapper = mount(OpenApiEndpoint, {
       props: { id: 'public.users.list' },

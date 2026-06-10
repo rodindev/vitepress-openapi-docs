@@ -95,7 +95,7 @@
 
     <EndpointTryPanel
       :op="op"
-      :spec-name="specName"
+      :spec-name="resolvedSpecName"
       :spec-version-label="specVersionLabel"
       :server-list="serverList"
       :scheme="resolvedScheme"
@@ -127,7 +127,7 @@ import { type AuthScheme } from '../runtime/auth'
 import ResponseExamples from './ResponseExamples.vue'
 import EndpointTryPanel from './EndpointTryPanel.vue'
 import ParametersTable from './ParametersTable.vue'
-import type { ParsedOAuth2Flow, ParsedOperation, ParsedSpec } from '../parser/types'
+import type { ParsedOAuth2Flow, ParsedOperation } from '../parser/types'
 
 type Section =
   | 'summary'
@@ -150,6 +150,8 @@ interface Props {
   show?: Section[]
   /** Bypass the injected registry. Useful for tests and isolated examples. */
   operation?: ParsedOperation
+  /** Spec name the `operation` belongs to. Resolves auth schemes and schema links against the registry. */
+  specName?: string
   /** Server URL list to draw from when `operation` is supplied directly. */
   servers?: string[]
   /** Custom header name for `apikey` schemes. Defaults to `X-API-Key`. */
@@ -176,6 +178,7 @@ const props = withDefaults(defineProps<Props>(), {
   server: undefined,
   show: undefined,
   operation: undefined,
+  specName: undefined,
   servers: () => [],
   apiKeyHeaderName: undefined,
   bodyInputs: undefined,
@@ -202,11 +205,12 @@ const effectiveLayout = computed(() => props.layout ?? defaults.layout ?? 'colum
 
 const resolved = computed(() => {
   if (props.operation) {
+    const spec = props.specName ? registry.specs[props.specName] : undefined
     return {
       operation: props.operation,
       servers: props.servers,
-      specName: 'inline',
-      spec: undefined as ParsedSpec | undefined,
+      specName: spec?.name ?? 'inline',
+      spec,
     }
   }
   const hit = resolveOperation(registry, props.id)
@@ -221,7 +225,7 @@ const resolved = computed(() => {
 })
 
 const op = computed(() => resolved.value!.operation)
-const specName = computed(() => resolved.value?.specName ?? 'inline')
+const resolvedSpecName = computed(() => resolved.value?.specName ?? 'inline')
 const specVersionLabel = computed(() => {
   const spec = resolved.value?.spec
   if (!spec) return ''
@@ -299,7 +303,7 @@ const responseTypeLink = computed<TypeLink | undefined>(() => {
   const refs = responseRefs[successStatus]!
   const first = refs['application/json'] ?? Object.values(refs)[0]
   if (!first) return undefined
-  return { label: first.name, href: routes.schemaUrl(specName.value, first.name) }
+  return { label: first.name, href: routes.schemaUrl(resolvedSpecName.value, first.name) }
 })
 
 const hasResponseExamples = computed(() =>
@@ -310,7 +314,7 @@ const requestTypeLink = computed<TypeLink | undefined>(() => {
   const refs = op.value.requestSchemaRefs ?? {}
   const first = refs['application/json'] ?? Object.values(refs)[0]
   if (!first) return undefined
-  return { label: first.name, href: routes.schemaUrl(specName.value, first.name) }
+  return { label: first.name, href: routes.schemaUrl(resolvedSpecName.value, first.name) }
 })
 
 const NARROW_BREAKPOINT = '(max-width: 1279px)'
