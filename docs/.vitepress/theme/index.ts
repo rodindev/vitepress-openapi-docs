@@ -1,7 +1,7 @@
 import { h } from 'vue'
 import DefaultTheme from 'vitepress/theme'
 import { enhanceAppWithOpenApi, OperationJumper, SearchTrigger } from 'vitepress-openapi-docs'
-import specs, { defaults, prefixes } from 'virtual:vitepress-openapi-docs/specs'
+import specs, { defaults, prefixes, theme } from 'virtual:vitepress-openapi-docs/specs'
 import changelogs from 'virtual:vitepress-openapi-docs/changelogs'
 import Swatch from './Swatch.vue'
 import 'vue-api-playground/styles'
@@ -17,7 +17,7 @@ export default {
     })
   },
   enhanceApp({ app }) {
-    enhanceAppWithOpenApi({ app, specs, changelogs, defaults, prefixes })
+    enhanceAppWithOpenApi({ app, specs, changelogs, defaults, prefixes, theme })
     app.component('Swatch', Swatch)
   },
 }

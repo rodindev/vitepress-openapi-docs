@@ -16,6 +16,8 @@ export interface SidebarGroup {
 export interface BuildSidebarOptions {
   /** URL prefix per spec, e.g. `{ public: '/api/public' }`. Falls back to `/api/{name}`. */
   prefixes?: Record<string, string>
+  /** Group header label per spec, e.g. `{ public: 'Public API' }`. Falls back to the spec title. */
+  labels?: Record<string, string>
 }
 
 /**
@@ -32,15 +34,18 @@ export function buildSidebar(
 
   if (specs.length === 1) {
     const spec = specs[0]!
-    return [
+    const groups = [
       ...groupByTag(spec, routes),
       ...schemaGroup(spec, routes),
       ...changelogGroup(spec, routes),
     ]
+    const label = options.labels?.[spec.name]
+    if (label) return [{ text: label, collapsed: false, items: groups }]
+    return groups
   }
 
   return specs.map((spec) => ({
-    text: spec.title,
+    text: options.labels?.[spec.name] ?? spec.title,
     collapsed: false,
     items: [
       ...groupByTag(spec, routes),

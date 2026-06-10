@@ -53,6 +53,7 @@ export async function openApiDocs(
 
   const parsed: ParsedSpec[] = []
   const prefixes: Record<string, string> = {}
+  const labels: Record<string, string> = {}
   const changelogs: Record<string, SpecChangelog> = {}
 
   for (const spec of config.specs) {
@@ -60,6 +61,7 @@ export async function openApiDocs(
     const { parsedSpec, absoluteSpecPath } = await loadAndParseSpec(spec)
     parsed.push(parsedSpec)
     if (spec.prefix) prefixes[spec.name] = spec.prefix
+    if (spec.label) labels[spec.name] = spec.label
 
     log(
       `  "${spec.name}": ${parsedSpec.operations.length} operations, ` +
@@ -113,7 +115,7 @@ export async function openApiDocs(
   const routes = buildRoutes(prefixes)
   const sidebar: Record<string, SidebarGroup[]> = {}
   for (const spec of parsed) {
-    const specSidebar = buildSidebar([spec], { prefixes })
+    const specSidebar = buildSidebar([spec], { prefixes, labels })
     sidebar[`${routes.apiPrefix(spec.name)}/`] = specSidebar
     sidebar[`${routes.schemaUrl(spec.name, '')}`] = specSidebar
     sidebar[routes.changelogUrl(spec.name)] = specSidebar
@@ -123,7 +125,7 @@ export async function openApiDocs(
     rewrites,
     vite: {
       plugins: [
-        specsVirtualModule(parsed, config.defaults, prefixes),
+        specsVirtualModule(parsed, config.defaults, prefixes, config.theme),
         changelogsVirtualModule(changelogs),
       ],
     },
