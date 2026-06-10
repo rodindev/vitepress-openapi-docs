@@ -32,6 +32,22 @@ const TARGETS = [
 
 const WCAG_TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']
 
+type AxeResults = Awaited<ReturnType<AxeBuilder['analyze']>>
+
+function blockingViolations(results: AxeResults): AxeResults['violations'] {
+  const blocking = results.violations.filter(
+    (v) => v.impact === 'critical' || v.impact === 'serious'
+  )
+  if (blocking.length > 0) {
+    console.error(
+      blocking
+        .map((v) => `${v.id} [${v.impact}] ${v.help}\n  ${v.nodes.map((n) => n.html).join('\n  ')}`)
+        .join('\n---\n')
+    )
+  }
+  return blocking
+}
+
 for (const target of TARGETS) {
   test(`${target.name} — no critical or serious axe violations`, async ({ page }) => {
     await page.goto(target.path, { waitUntil: 'networkidle' })
@@ -42,18 +58,7 @@ for (const target of TARGETS) {
     }
     const results = await builder.analyze()
 
-    const blocking = results.violations.filter(
-      (v) => v.impact === 'critical' || v.impact === 'serious'
-    )
-    if (blocking.length > 0) {
-      console.error(
-        blocking
-          .map(
-            (v) => `${v.id} [${v.impact}] ${v.help}\n  ${v.nodes.map((n) => n.html).join('\n  ')}`
-          )
-          .join('\n---\n')
-      )
-    }
+    const blocking = blockingViolations(results)
     expect(blocking, `${blocking.length} critical/serious violation(s) in vod components`).toEqual(
       []
     )
@@ -69,14 +74,7 @@ test('Cmd+K operation jumper dialog is accessible', async ({ page }) => {
     .include('[role="dialog"][aria-modal="true"]')
     .withTags(WCAG_TAGS)
     .analyze()
-  const blocking = results.violations.filter(
-    (v) => v.impact === 'critical' || v.impact === 'serious'
-  )
-  if (blocking.length > 0) {
-    console.error(
-      blocking.map((v) => `${v.id}: ${v.nodes.map((n) => n.html).join(' | ')}`).join('\n')
-    )
-  }
+  const blocking = blockingViolations(results)
   expect(blocking, `${blocking.length} critical/serious violation(s) in operation jumper`).toEqual(
     []
   )
