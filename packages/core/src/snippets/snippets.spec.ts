@@ -58,6 +58,37 @@ describe('buildSnippets', () => {
     }
   })
 
+  it('base64-encodes basic credentials across every language', () => {
+    const snippets = buildSnippets(op, {
+      baseUrl: 'https://api.example.com',
+      auth: { scheme: 'basic', value: 'alice:s3cret' },
+    })
+    const encoded = btoa('alice:s3cret')
+    for (const snippet of snippets) {
+      expect(snippet.code).toContain(`Basic ${encoded}`)
+      expect(snippet.code).not.toContain('alice:s3cret')
+    }
+  })
+
+  it('emits a readable basic placeholder when the value is not yet set', () => {
+    const snippets = buildSnippets(op, { auth: { scheme: 'basic' } })
+    for (const snippet of snippets) {
+      expect(snippet.code).toContain('Basic <BASE64(USERNAME:PASSWORD)>')
+      expect(snippet.code).not.toContain('<TOKEN>')
+    }
+  })
+
+  it('renders an apikey in:cookie as a Cookie header', () => {
+    const snippets = buildSnippets(op, {
+      baseUrl: 'https://api.example.com',
+      auth: { scheme: 'apikey', value: 'abc123', headerName: 'session_id', apiKeyIn: 'cookie' },
+    })
+    for (const snippet of snippets) {
+      expect(snippet.code).toContain('Cookie')
+      expect(snippet.code).toContain('session_id=abc123')
+    }
+  })
+
   it('adds Content-Type: application/json when the operation has a JSON body', () => {
     const postOp: ParsedOperation = {
       ...op,

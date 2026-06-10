@@ -178,7 +178,7 @@ function injectAuth(envelope: { url: string; init: RequestInit }): void {
   if (cred.scheme === 'bearer' || cred.scheme === 'oauth2') {
     headers['Authorization'] = `Bearer ${cred.value}`
   } else if (cred.scheme === 'basic') {
-    headers['Authorization'] = `Basic ${cred.value}`
+    headers['Authorization'] = `Basic ${btoa(cred.value)}`
   } else if (cred.scheme === 'apikey') {
     const keyIn = cred.apiKeyIn ?? 'header'
     const keyName = cred.headerName ?? props.headerName ?? 'X-API-Key'

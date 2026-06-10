@@ -36,13 +36,19 @@ export function buildSnippets(
   if (options.auth) {
     const { scheme, value = '<TOKEN>' } = options.auth
     if (scheme === 'bearer') headers['Authorization'] = `Bearer ${value}`
-    else if (scheme === 'basic') headers['Authorization'] = `Basic ${value}`
-    else if (scheme === 'apikey') {
+    else if (scheme === 'basic') {
+      headers['Authorization'] =
+        options.auth.value === undefined
+          ? 'Basic <BASE64(USERNAME:PASSWORD)>'
+          : `Basic ${btoa(value)}`
+    } else if (scheme === 'apikey') {
       const keyName = options.auth.headerName ?? 'X-API-Key'
       const keyIn = options.auth.apiKeyIn ?? 'header'
       if (keyIn === 'query') {
         const sep = url.includes('?') ? '&' : '?'
         url = `${url}${sep}${encodeURIComponent(keyName)}=${encodeURIComponent(value)}`
+      } else if (keyIn === 'cookie') {
+        headers['Cookie'] = `${keyName}=${value}`
       } else {
         headers[keyName] = value
       }
