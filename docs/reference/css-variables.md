@@ -6,20 +6,20 @@ description: Every CSS variable in vitepress-openapi-docs with defaults and wher
 
 These variables control the visual appearance of `vitepress-openapi-docs` components. Override them in a stylesheet loaded after the plugin styles. See [Theming](/guide/theming) for the cascade model and usage examples.
 
-Every `--vod-*` token chains through `--vap-*` (vue-api-playground) and then `--vp-c-*` (VitePress) before falling back to a hardcoded value, so a host theme can re-tint the plugin at any layer.
+Some `--vod-*` tokens chain through `--vap-*` (vue-api-playground) and then `--vp-c-*` (VitePress) before falling back to a hardcoded value: method accents, surfaces, fonts, radius, focus ring, and the `identifier`/`punct` syntax tokens. The rest are flat hex by design (method badges, status colours, the neutral chip, text and link colours, and most syntax tokens) so the light and dark palettes stay readable regardless of the host theme. The "Default" column below shows which is which.
 
 ## Method accents
 
 Used for method-coloured borders, tab indicators, and sidebar accents. The badge fill is controlled separately - see [Method badges](#method-badges).
 
-| Variable                          | Default                                                            | Used by                                  |
-| --------------------------------- | ------------------------------------------------------------------ | ---------------------------------------- |
-| `--vod-method-get`                | `--vap-method-get` → indigo <Swatch color="#1e40af" /> `#1e40af`   | Borders, tab indicators, sidebar accents |
-| `--vod-method-post`               | `--vap-method-post` → yellow <Swatch color="#d97706" /> `#d97706`  | same                                     |
-| `--vod-method-put`                | `--vap-method-put` → yellow <Swatch color="#d97706" /> `#d97706`   | same                                     |
-| `--vod-method-patch`              | `--vap-method-patch` → yellow <Swatch color="#d97706" /> `#d97706` | same                                     |
-| `--vod-method-delete`             | `--vap-method-delete` → red <Swatch color="#dc2626" /> `#dc2626`   | same, plus the deprecated badge          |
-| `--vod-method-head/options/trace` | `--vap-method-*` → indigo <Swatch color="#1e40af" /> `#1e40af`     | same                                     |
+| Variable                          | Default                                                            | Used by                                       |
+| --------------------------------- | ------------------------------------------------------------------ | --------------------------------------------- |
+| `--vod-method-get`                | `--vap-method-get` → indigo <Swatch color="#1e40af" /> `#1e40af`   | Borders, tab indicators, sidebar accents      |
+| `--vod-method-post`               | `--vap-method-post` → yellow <Swatch color="#d97706" /> `#d97706`  | same                                          |
+| `--vod-method-put`                | `--vap-method-put` → yellow <Swatch color="#d97706" /> `#d97706`   | same                                          |
+| `--vod-method-patch`              | `--vap-method-patch` → yellow <Swatch color="#d97706" /> `#d97706` | same                                          |
+| `--vod-method-delete`             | `--vap-method-delete` → red <Swatch color="#dc2626" /> `#dc2626`   | same, plus missing-endpoint and error borders |
+| `--vod-method-head/options/trace` | `--vap-method-*` → indigo <Swatch color="#1e40af" /> `#1e40af`     | same                                          |
 
 ## Method badges
 
@@ -50,7 +50,7 @@ The pill-shaped method labels next to each endpoint header. Both the light- and 
 
 ## Response status colours
 
-Drive the response accordion rows and the Try-It response bar. The `-soft` variants are used for row backgrounds.
+Drive the response accordion rows and the Try-It response bar. The `-soft` variants are used for row backgrounds. The `deprecated` badge reuses `--vod-status-4xx` / `--vod-status-4xx-soft`.
 
 | Variable                | Light default                        | Dark default                         |
 | ----------------------- | ------------------------------------ | ------------------------------------ |
@@ -72,22 +72,30 @@ Neutral pill used for `webhook`, schema badges, and other non-method tags.
 
 ## Syntax highlighting
 
-Applied to cURL, JavaScript, Python snippets and JSON response examples. Each falls through `--vap-syntax-*` before landing on the built-in defaults.
+Applied to cURL, JavaScript, Python snippets and JSON response examples. Most tokens are flat hex (a VS Code Default palette). `--vod-syntax-identifier` and `--vod-syntax-punct` chain through `--vap-text-1` / `--vap-text-2`. The `--vap-json-*` tokens at the bottom remap vue-api-playground's JSON colours onto these.
 
-| Variable                | Light default                        | Dark default                         |
-| ----------------------- | ------------------------------------ | ------------------------------------ |
-| `--vod-syntax-string`   | <Swatch color="#a31515" /> `#a31515` | <Swatch color="#ce9178" /> `#ce9178` |
-| `--vod-syntax-number`   | <Swatch color="#098658" /> `#098658` | <Swatch color="#b5cea8" /> `#b5cea8` |
-| `--vod-syntax-keyword`  | <Swatch color="#af00db" /> `#af00db` | <Swatch color="#c586c0" /> `#c586c0` |
-| `--vod-syntax-comment`  | <Swatch color="#6a737d" /> `#6a737d` | <Swatch color="#6a9955" /> `#6a9955` |
-| `--vod-syntax-function` | <Swatch color="#795e26" /> `#795e26` | <Swatch color="#dcdcaa" /> `#dcdcaa` |
+| Variable                  | Light default                                         | Dark default                                          |
+| ------------------------- | ----------------------------------------------------- | ----------------------------------------------------- |
+| `--vod-syntax-string`     | <Swatch color="#a31515" /> `#a31515`                  | <Swatch color="#ce9178" /> `#ce9178`                  |
+| `--vod-syntax-number`     | <Swatch color="#098658" /> `#098658`                  | <Swatch color="#b5cea8" /> `#b5cea8`                  |
+| `--vod-syntax-keyword`    | <Swatch color="#af00db" /> `#af00db`                  | <Swatch color="#c586c0" /> `#c586c0`                  |
+| `--vod-syntax-comment`    | <Swatch color="#008000" /> `#008000`                  | <Swatch color="#6a9955" /> `#6a9955`                  |
+| `--vod-syntax-function`   | <Swatch color="#795e26" /> `#795e26`                  | <Swatch color="#dcdcaa" /> `#dcdcaa`                  |
+| `--vod-syntax-flag`       | <Swatch color="#af00db" /> `#af00db`                  | <Swatch color="#c586c0" /> `#c586c0`                  |
+| `--vod-syntax-url`        | <Swatch color="#0451a5" /> `#0451a5`                  | <Swatch color="#4ec9b0" /> `#4ec9b0`                  |
+| `--vod-syntax-identifier` | `--vap-text-1` → <Swatch color="#213547" /> `#213547` | `--vap-text-1` → <Swatch color="#dfdfd6" /> `#dfdfd6` |
+| `--vod-syntax-punct`      | `--vap-text-2` → <Swatch color="#6e7781" /> `#6e7781` | `--vap-text-2` → <Swatch color="#8b949e" /> `#8b949e` |
+| `--vap-json-key`          | `--vod-syntax-url`                                    | `--vod-syntax-url`                                    |
+| `--vap-json-string`       | `--vod-syntax-string`                                 | `--vod-syntax-string`                                 |
+| `--vap-json-number`       | `--vod-syntax-number`                                 | `--vod-syntax-number`                                 |
+| `--vap-json-bool`         | `--vod-syntax-keyword`                                | `--vod-syntax-keyword`                                |
 
 ## Typography
 
-| Variable          | Default                                                      |
-| ----------------- | ------------------------------------------------------------ |
-| `--vod-font-ui`   | `--vap-font-ui` → `--vp-font-family-base` → `system-ui`      |
-| `--vod-font-mono` | `--vap-font-mono` → `--vp-font-family-mono` → `ui-monospace` |
+| Variable          | Default                                     |
+| ----------------- | ------------------------------------------- |
+| `--vod-font-ui`   | `--vap-font-ui` → `--vp-font-family-base`   |
+| `--vod-font-mono` | `--vap-font-mono` → `--vp-font-family-mono` |
 
 ## Surfaces
 

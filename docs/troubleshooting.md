@@ -39,7 +39,7 @@ Check the console output for operation counts. Common causes:
 
 ## Empty changelog
 
-`<OpenApiChangelog>` shows "No changes recorded yet."
+`<OpenApiChangelog>` shows "No history yet" with a note that the spec file has fewer than two commits touching it, so there's nothing to diff.
 
 **Cause:** The spec file has fewer than two commits in git history.
 
@@ -71,7 +71,7 @@ Or use a triple-slash directive in your theme file:
 /// <reference types="vitepress-openapi-docs/virtual" />
 ```
 
-See [existing site setup](/guide/existing-site#5-typescript-optional) for details.
+See [existing site setup](/guide/existing-site#6-typescript-optional) for details.
 
 ## CORS errors in Try-It
 

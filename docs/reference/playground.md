@@ -33,7 +33,7 @@ Minimal GET, one required path param, cross-link `Returns` to the component sche
 
 ### DELETE minimal
 
-Destructive method - method-pill colour must read as red-family. Single path param, no body, single 204 response.
+Destructive method - method-pill colour must read as red-family. Single path param, no body, 200 and 404 responses.
 
 <OpenApiEndpoint id="mock.deletePost" />
 
@@ -123,7 +123,7 @@ What the landing page's "See it live" uses - pill + path + Send button, nothing 
 
 <OpenApiEndpoint id="petstore.getPetById" :show="['summary', 'try']" />
 
-### `show=["summary", "params", "request", "response"]` - docs-only shape
+### `show=["summary", "description", "params", "request", "response"]` - docs-only shape
 
 Documentation without the interactive panel - use when the surrounding markdown already explains how to call the API.
 

@@ -24,7 +24,7 @@ Creates a VitePress site with the plugin configured and an example OpenAPI spec.
 | `-y` / `--no-interactive` | Skip prompts, use defaults                                                    |
 | `--skip-install`          | Skip post-scaffolding install step                                            |
 | `--no-git`                | Do not initialise a git repository in the scaffolded project                  |
-| `-f` / `--force`          | Overwrite existing directory                                                  |
+| `-f` / `--force`          | Scaffold into a non-empty directory, overwriting only colliding files         |
 
 ### Examples
 

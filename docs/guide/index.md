@@ -20,7 +20,7 @@ Open `http://localhost:5173`. You'll see a working docs site with an interactive
 ### What just happened
 
 1. The scaffolder dropped an OpenAPI spec into `docs/openapi/`
-2. The plugin parsed it and generated one page per operation, schema, and changelog entry under `docs/_openapi/`
+2. The plugin parsed it and generated one page per operation and schema, plus a changelog page for the spec, under `docs/_openapi/`
 3. VitePress serves those pages with a sidebar grouped by tag
 
 ### Next: add your spec
