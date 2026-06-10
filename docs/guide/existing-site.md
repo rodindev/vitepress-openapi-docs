@@ -107,7 +107,7 @@ Or use a triple-slash directive in your theme file:
 
 ## Requirements
 
-- **Node.js** >= 18
-- **Vue** >= 3.3
-- **VitePress** >= 1.0
-- **vue-api-playground** >= 2.4 (peer dependency)
+- **Node.js** >= {{ $facts.node }}
+- **Vue** >= {{ $facts.vue }}
+- **VitePress** >= {{ $facts.vitepress }}
+- **vue-api-playground** >= {{ $facts.vueApiPlayground }} (peer dependency)

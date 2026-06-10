@@ -61,8 +61,8 @@ This gives you a full docs site: auto-generated pages, Cmd+K search, schema cros
 
 ## Requirements
 
-- Node.js >= 18
-- Vue >= 3.3
+- Node.js >= 20
+- Vue >= 3.5
 - VitePress >= 1.0
 - vue-api-playground >= 2.5
 

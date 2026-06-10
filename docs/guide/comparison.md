@@ -58,16 +58,16 @@ Both are Vue-native with no web components or iframes. `vitepress-openapi-docs` 
 
 Scalar ships as a framework-agnostic web component (shadow DOM). `vitepress-openapi-docs` trades portability for deep VitePress integration and inline composition.
 
-|                                  | Scalar                        | `vitepress-openapi-docs`                  |
-| -------------------------------- | ----------------------------- | ----------------------------------------- |
-| Runtime                          | Web component (shadow DOM)    | Vue 3 component (light DOM)               |
-| Framework                        | Any                           | VitePress + Vue 3                         |
-| Bundle                           | ~400 KB gzipped (full widget) | < 10 KB gzipped (client only)             |
-| Themes                           | Scalar's own system           | CSS variables cascading through VitePress |
-| Inline composition with markdown | No — iframe-like isolation    | Yes                                       |
-| Sidebar navigation               | Internal to the widget        | Native VitePress routing                  |
-| Auth persistence                 | Widget-internal               | `sessionStorage`, visible in snippets     |
-| Multi-API                        | One widget per spec           | Array of specs, independent sidebars      |
+|                                  | Scalar                        | `vitepress-openapi-docs`                          |
+| -------------------------------- | ----------------------------- | ------------------------------------------------- |
+| Runtime                          | Web component (shadow DOM)    | Vue 3 component (light DOM)                       |
+| Framework                        | Any                           | VitePress + Vue 3                                 |
+| Bundle                           | ~400 KB gzipped (full widget) | < {{ $facts.bundleBudget }} gzipped (client only) |
+| Themes                           | Scalar's own system           | CSS variables cascading through VitePress         |
+| Inline composition with markdown | No, iframe-like isolation     | Yes                                               |
+| Sidebar navigation               | Internal to the widget        | Native VitePress routing                          |
+| Auth persistence                 | Widget-internal               | `sessionStorage`, visible in snippets             |
+| Multi-API                        | One widget per spec           | Array of specs, independent sidebars              |
 
 Scalar gives you a self-contained widget that works anywhere. `vitepress-openapi-docs` gives you a full docs site where API reference, guides, and tutorials share one page tree, one search, and one theme.
 
