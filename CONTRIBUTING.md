@@ -4,8 +4,8 @@
 
 ```
 packages/
-  core/       # vitepress-openapi-docs — Vue components + VitePress plugin
-  create/     # create-vitepress-openapi-docs — scaffolder CLI
+  core/       # vitepress-openapi-docs: Vue components + VitePress plugin
+  create/     # create-vitepress-openapi-docs: scaffolder CLI
 docs/         # VitePress dogfood site
 e2e/          # Playwright tests (a11y + happy-path)
 scripts/      # Release helpers
@@ -64,14 +64,14 @@ npm run test:a11y
 
 ## Commit conventions
 
-- **Conventional commits** — `feat:`, `fix:`, `chore:`, `docs:`, `test:`, `ci:`, `refactor:`, `perf:`
+- **Conventional commits**: `feat:`, `fix:`, `chore:`, `docs:`, `test:`, `ci:`, `refactor:`, `perf:`
 - Keep commits focused: one concern per commit
 - No `Co-Authored-By` trailers
 
 ## Release flow
 
-1. `node scripts/sync-versions.js <version>` — sync all packages
-2. Update `CHANGELOG.md` — rename the `Unreleased` heading to `## <version>`
+1. `node scripts/sync-versions.js <version>` to sync all packages
+2. Update `CHANGELOG.md`: rename the `Unreleased` heading to `## <version>`
 3. Commit: `chore(release): v<version>`
 4. Tag: `git tag v<version>`
 5. Push: `git push origin main --tags`
@@ -79,7 +79,7 @@ npm run test:a11y
 
 ## Code style
 
-- TypeScript strict — no `any`
+- TypeScript strict, no `any`
 - Single quotes, no semicolons (Prettier)
 - Vue SFC order: `<template>`, `<script setup lang="ts">`
 - CSS classes: BEM with `vod-` prefix

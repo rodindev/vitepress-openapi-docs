@@ -53,7 +53,7 @@ Always prefix the `operationId` with the spec name:
 
 ## Landing pages
 
-The plugin doesn't generate landing pages — write them yourself:
+The plugin doesn't generate landing pages; write them yourself:
 
 ```md
 <!-- docs/api/public/index.md -->

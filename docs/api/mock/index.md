@@ -8,6 +8,6 @@ aside: false
 
 The live reference demo for `vitepress-openapi-docs`, backed by a mock server at [api.rodin.dev/mock](https://api.rodin.dev/mock/). OpenAPI 3.1, 107 operations across 15 tags, 34 webhooks, bearer auth, callbacks, `oneOf`, rich examples: everything the plugin renders, rendered here.
 
-Pick any operation from the sidebar and hit **Try-It** — the request goes to the real origin, CORS is open, you get real JSON back. The spec is fetched at build time so this page mirrors the live contract.
+Pick any operation from the sidebar and hit **Try-It**: the request goes to the real origin, CORS is open, you get real JSON back. The spec is fetched at build time so this page mirrors the live contract.
 
 <OpenApiSpec name="mock" :show-header="false" />
