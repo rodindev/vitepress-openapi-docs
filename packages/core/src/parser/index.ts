@@ -149,6 +149,7 @@ export async function parseSpec(
   }
 
   operations.sort(byTagPathMethod)
+  dedupeOperationIds(operations, options.name)
 
   const info = (spec.info ?? {}) as { title?: string; version?: string; description?: string }
   const components = (spec.components ?? {}) as Record<string, unknown>
@@ -191,9 +192,10 @@ function buildOperation(
   specLevelSecurity: string[] = []
 ): ParsedOperation {
   const operationId = typeof op.operationId === 'string' ? op.operationId : undefined
-  const id =
+  const id = sanitizeId(
     operationId ??
-    (kind === 'webhook' ? slugifyWebhook(method, path) : slugifyFallback(method, path))
+      (kind === 'webhook' ? slugifyWebhook(method, path) : slugifyFallback(method, path))
+  )
   const tags = Array.isArray(op.tags)
     ? op.tags.filter((t): t is string => typeof t === 'string')
     : []
@@ -322,8 +324,9 @@ function readComponentSchemas(value: unknown): Record<string, ParsedSchema> {
   for (const [name, raw] of Object.entries(value as Record<string, unknown>)) {
     if (!raw || typeof raw !== 'object') continue
     const description = (raw as Record<string, unknown>).description
-    schemas[name] = {
-      name,
+    const safeName = sanitizeId(name)
+    schemas[safeName] = {
+      name: safeName,
       description: typeof description === 'string' ? description : undefined,
       schema: raw,
       // typeLabel and properties are filled after resolveSchemaRefs in parseSpec.
@@ -423,6 +426,33 @@ function schemaRefName(schema: unknown): string | undefined {
   const items = (schema as { items?: unknown }).items
   if (items) return schemaRefName(items)
   return undefined
+}
+
+function dedupeOperationIds(operations: ParsedOperation[], specName: string): void {
+  const seen = new Map<string, number>()
+  for (const op of operations) {
+    const count = seen.get(op.id) ?? 0
+    if (count > 0) {
+      const original = op.id
+      const next = `${original}-${count + 1}`
+      seen.set(original, count + 1)
+      seen.set(next, 1)
+      op.id = next
+      console.warn(
+        `[vitepress-openapi-docs] Duplicate operation id "${original}" in spec "${specName}"; ` +
+          `renaming ${specName}.${original} to ${specName}.${next} so its page is not overwritten.`
+      )
+    } else {
+      seen.set(op.id, 1)
+    }
+  }
+}
+
+function sanitizeId(id: string): string {
+  return id
+    .replace(/[^A-Za-z0-9._-]/g, '_')
+    .replace(/\.\.+/g, '.')
+    .replace(/^\.+/, '')
 }
 
 function slugifyFallback(method: HttpMethod, path: string): string {

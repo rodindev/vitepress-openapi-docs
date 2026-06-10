@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { ParseError, parseSpec } from './index'
 
 async function parseFixture(file: string) {
@@ -579,5 +579,98 @@ describe('parseSpec', () => {
     expect(friend?.refTarget).toBe('Person')
     const op = spec.operations.find((o) => o.operationId === 'createPerson')
     expect(op?.requestBody?.jsonFields.map((f) => f.name)).toEqual(['name', 'friend'])
+  })
+
+  it('leaves dotted and underscored operation ids byte-identical', async () => {
+    const spec = await parseSpec(
+      {
+        openapi: '3.1.0',
+        info: { title: 'T', version: '1' },
+        paths: {
+          '/users': {
+            get: { operationId: 'users.list', responses: { '200': { description: 'ok' } } },
+          },
+          '/auth': {
+            post: { operationId: 'auth.login', responses: { '200': { description: 'ok' } } },
+          },
+        },
+        webhooks: {
+          payment: {
+            post: {
+              operationId: 'webhook_post_payment',
+              responses: { '200': { description: 'ok' } },
+            },
+          },
+        },
+      },
+      { name: 'test' }
+    )
+    expect(spec.operations.map((o) => o.id).sort()).toEqual([
+      'auth.login',
+      'users.list',
+      'webhook_post_payment',
+    ])
+  })
+
+  it('sanitises path separators and parent traversal out of operation ids', async () => {
+    const spec = await parseSpec(
+      {
+        openapi: '3.1.0',
+        info: { title: 'T', version: '1' },
+        paths: {
+          '/evil': {
+            get: { operationId: '../../../tmp/evil', responses: { '200': { description: 'ok' } } },
+          },
+        },
+      },
+      { name: 'test' }
+    )
+    const id = spec.operations[0]!.id
+    expect(id).not.toContain('/')
+    expect(id).not.toContain('..')
+    expect(id.startsWith('.')).toBe(false)
+  })
+
+  it('sanitises component schema names the same way', async () => {
+    const spec = await parseSpec(
+      {
+        openapi: '3.1.0',
+        info: { title: 'T', version: '1' },
+        paths: {},
+        components: {
+          schemas: {
+            User: { type: 'object' },
+            '../escape': { type: 'object' },
+          },
+        },
+      },
+      { name: 'test' }
+    )
+    expect(spec.componentSchemas.User?.name).toBe('User')
+    const escaped = Object.keys(spec.componentSchemas).find((n) => n !== 'User')!
+    expect(escaped).not.toContain('/')
+    expect(escaped.startsWith('.')).toBe(false)
+  })
+
+  it('suffixes duplicate operation ids and warns about both routes', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const spec = await parseSpec(
+      {
+        openapi: '3.1.0',
+        info: { title: 'T', version: '1' },
+        paths: {
+          '/a': { get: { operationId: 'dupe', responses: { '200': { description: 'ok' } } } },
+          '/b': { get: { operationId: 'dupe', responses: { '200': { description: 'ok' } } } },
+        },
+      },
+      { name: 'public' }
+    )
+    const ids = spec.operations.map((o) => o.id).sort()
+    expect(ids).toEqual(['dupe', 'dupe-2'])
+    expect(warn).toHaveBeenCalledTimes(1)
+    const message = warn.mock.calls[0]![0] as string
+    expect(message).toContain('public.dupe')
+    expect(message).toContain('public.dupe-2')
+    warn.mockRestore()
   })
 })

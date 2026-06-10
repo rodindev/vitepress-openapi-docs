@@ -55,38 +55,51 @@ export async function scanForBrokenEmbeds(
       if (dot < 0 || !extensions.has(relativeFile.slice(dot))) return
       const fullPath = join(rootDir, relativeFile)
       const content = await readFile(fullPath, 'utf8')
-      const lines = content.split('\n')
-      let inFence = false
-      let fenceMarker = ''
-      for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
-        const line = lines[lineIndex]!
-        const fenceMatch = line.match(FENCE_RE)
-        if (fenceMatch) {
-          const marker = fenceMatch[1]!
-          if (!inFence) {
-            inFence = true
-            fenceMarker = marker[0]!
-          } else if (marker.startsWith(fenceMarker)) {
-            inFence = false
-            fenceMarker = ''
-          }
-          continue
-        }
-        if (inFence) continue
-        const stripped = stripInlineCode(line)
-        EMBED_RE.lastIndex = 0
-        let match: RegExpExecArray | null
-        while ((match = EMBED_RE.exec(stripped)) !== null) {
-          const id = match[1] ?? match[2]!
-          if (!resolveOperation(registry, id)) {
-            broken.push({ file: relativeFile, line: lineIndex + 1, id })
-          }
+      const masked = maskCode(content)
+      EMBED_RE.lastIndex = 0
+      let match: RegExpExecArray | null
+      while ((match = EMBED_RE.exec(masked)) !== null) {
+        const id = match[1] ?? match[2]!
+        if (!resolveOperation(registry, id)) {
+          broken.push({ file: relativeFile, line: lineFromIndex(masked, match.index), id })
         }
       }
     },
     ignoreDirs
   )
   return broken
+}
+
+function maskCode(content: string): string {
+  const lines = content.split('\n')
+  let inFence = false
+  let fenceMarker = ''
+  const out: string[] = []
+  for (const line of lines) {
+    const fenceMatch = line.match(FENCE_RE)
+    if (fenceMatch) {
+      const marker = fenceMatch[1]!
+      if (!inFence) {
+        inFence = true
+        fenceMarker = marker[0]!
+      } else if (marker.startsWith(fenceMarker)) {
+        inFence = false
+        fenceMarker = ''
+      }
+      out.push(' '.repeat(line.length))
+      continue
+    }
+    out.push(inFence ? ' '.repeat(line.length) : stripInlineCode(line))
+  }
+  return out.join('\n')
+}
+
+function lineFromIndex(content: string, index: number): number {
+  let line = 1
+  for (let i = 0; i < index && i < content.length; i++) {
+    if (content[i] === '\n') line++
+  }
+  return line
 }
 
 /**
@@ -133,7 +146,12 @@ async function walk(
     if (ignoreDirs.has(entry)) continue
     const entryRel = relative ? `${relative}/${entry}` : entry
     const fullPath = join(rootDir, entryRel)
-    const stats = await stat(fullPath)
+    let stats: Awaited<ReturnType<typeof stat>>
+    try {
+      stats = await stat(fullPath)
+    } catch {
+      continue
+    }
     if (stats.isDirectory()) {
       await walk(rootDir, entryRel, visit, ignoreDirs)
     } else if (stats.isFile()) {
