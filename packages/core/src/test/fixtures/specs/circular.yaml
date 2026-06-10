@@ -1,0 +1,25 @@
+openapi: 3.1.0
+info:
+  title: Circular
+  version: 1.0.0
+paths:
+  /people:
+    post:
+      operationId: createPerson
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Person'
+      responses:
+        '201':
+          description: created
+components:
+  schemas:
+    Person:
+      type: object
+      properties:
+        name:
+          type: string
+        friend:
+          $ref: '#/components/schemas/Person'
