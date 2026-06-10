@@ -1,10 +1,33 @@
 import { mkdtemp, readdir, readFile, stat, writeFile } from 'node:fs/promises'
-import { existsSync } from 'node:fs'
+import { existsSync, mkdirSync } from 'node:fs'
 import { execSync } from 'node:child_process'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { scaffoldInto, deriveSpecName, pickDemoEndpoint, run } from './index.js'
+
+vi.mock('node:child_process', async () => {
+  const actual = await vi.importActual<typeof import('node:child_process')>('node:child_process')
+  const exec: typeof actual.exec = ((command: string, options?: unknown, callback?: unknown) => {
+    const cb = (typeof options === 'function' ? options : callback) as
+      | ((err: Error | null, stdout: string, stderr: string) => void)
+      | undefined
+    if (/\b(npm|pnpm|yarn|bun)\b.*\binstall\b/.test(command)) {
+      const cwd = (options as { cwd?: string } | undefined)?.cwd
+      if (cwd) mkdirSync(join(cwd, 'node_modules'), { recursive: true })
+      cb?.(null, '', '')
+      return {} as ReturnType<typeof actual.exec>
+    }
+    return (actual.exec as (...args: unknown[]) => unknown)(
+      command,
+      options,
+      callback
+    ) as ReturnType<typeof actual.exec>
+  }) as typeof actual.exec
+  return { ...actual, exec }
+})
+
+import { scaffoldInto, deriveSpecName, pickDemoEndpoint } from './scaffolder.js'
+import { run } from './index.js'
 
 const createdDirs: string[] = []
 
@@ -338,45 +361,23 @@ describe('run', () => {
     expect(output).not.toContain('npm install')
     logSpy.mockRestore()
     warnSpy.mockRestore()
-  }, 120_000)
-
-  it('passes --server flag through to the scaffolded config', async () => {
-    const target = await freshTarget()
-    vi.spyOn(console, 'log').mockImplementation(() => {})
-    vi.spyOn(console, 'warn').mockImplementation(() => {})
-    await run([
-      target,
-      '--spec',
-      'https://api.example.com/spec.json',
-      '--server',
-      'https://api.example.com',
-      '-y',
-      '--skip-install',
-      '--no-git',
-    ])
-
-    const config = await readFile(join(target, 'docs/.vitepress/config.ts'), 'utf8')
-    expect(config).toContain('server: "https://api.example.com"')
   })
 
-  it('passes --title flag through to the scaffolded config', async () => {
+  it.each([
+    {
+      flags: ['--server', 'https://api.example.com'],
+      expected: 'server: "https://api.example.com"',
+    },
+    { flags: ['--title', 'Acme API'], expected: "title: 'Acme API'" },
+    { flags: ['--body-inputs'], expected: 'bodyInputs: true' },
+  ])('passes $flags through to the scaffolded config', async ({ flags, expected }) => {
     const target = await freshTarget()
     vi.spyOn(console, 'log').mockImplementation(() => {})
     vi.spyOn(console, 'warn').mockImplementation(() => {})
-    await run([target, '--title', 'Acme API', '-y', '--skip-install', '--no-git'])
+    await run([target, ...flags, '-y', '--skip-install', '--no-git'])
 
     const config = await readFile(join(target, 'docs/.vitepress/config.ts'), 'utf8')
-    expect(config).toContain("title: 'Acme API'")
-  })
-
-  it('passes --body-inputs flag through to the scaffolded config', async () => {
-    const target = await freshTarget()
-    vi.spyOn(console, 'log').mockImplementation(() => {})
-    vi.spyOn(console, 'warn').mockImplementation(() => {})
-    await run([target, '--body-inputs', '-y', '--skip-install', '--no-git'])
-
-    const config = await readFile(join(target, 'docs/.vitepress/config.ts'), 'utf8')
-    expect(config).toContain('bodyInputs: true')
+    expect(config).toContain(expected)
   })
 
   it('combines --server, --title, and --body-inputs flags', async () => {
@@ -463,7 +464,7 @@ describe('install dependencies', () => {
     expect(existsSync(join(target, 'node_modules')) || warned).toBe(true)
     logSpy.mockRestore()
     warnSpy.mockRestore()
-  }, 120_000)
+  })
 
   it('skips install when --skip-install is passed', async () => {
     const target = await freshTarget()
