@@ -1,16 +1,14 @@
 # vitepress-openapi-docs
 
-Interactive OpenAPI documentation for VitePress. Vue-native, composable in markdown.
+Interactive OpenAPI documentation for VitePress. Lightweight, Vue-native, composable in markdown.
 
-> Pre-release. v1.0 is the launch milestone.
+[Documentation](https://rodindev.github.io/vitepress-openapi-docs/)
 
 ## Install
 
 ```bash
 npm i vitepress-openapi-docs vue-api-playground
 ```
-
-Peer deps: `vue ^3.3.0`, `vitepress ^1.0.0`, `vue-api-playground ^2.2.0`.
 
 ## Configure
 
@@ -21,10 +19,7 @@ import { openApiDocs } from 'vitepress-openapi-docs/vitepress'
 
 export default defineConfig({
   extends: await openApiDocs({
-    specs: [
-      { name: 'public', spec: 'docs/openapi/public.yaml', prefix: '/api/public' },
-      { name: 'admin', spec: 'docs/openapi/admin.yaml', prefix: '/api/admin' },
-    ],
+    specs: [{ name: 'api', spec: 'docs/openapi/api.yaml', prefix: '/api' }],
   }),
 })
 ```
@@ -34,7 +29,7 @@ export default defineConfig({
 import { h } from 'vue'
 import DefaultTheme from 'vitepress/theme'
 import { enhanceAppWithOpenApi, OperationJumper } from 'vitepress-openapi-docs'
-import specs from 'virtual:vitepress-openapi-docs/specs'
+import specs, { defaults, prefixes } from 'virtual:vitepress-openapi-docs/specs'
 import changelogs from 'virtual:vitepress-openapi-docs/changelogs'
 import 'vue-api-playground/styles'
 import 'vitepress-openapi-docs/styles'
@@ -47,23 +42,34 @@ export default {
     })
   },
   enhanceApp({ app }) {
-    enhanceAppWithOpenApi({ app, specs, changelogs })
+    enhanceAppWithOpenApi({ app, specs, changelogs, defaults, prefixes })
   },
 }
 ```
 
+`changelogs`, `defaults`, and `prefixes` are optional - omit them if you don't use `<OpenApiChangelog>`, custom defaults, or multi-spec prefixes.
+
 ## Use in markdown
 
 ```md
-<OpenApiEndpoint id="public.users.list" />
+<OpenApiEndpoint id="api.users.list" />
 
-<OpenApiSpec name="public" />
+<OpenApiSpec name="api" />
 
-<OpenApiSchema name="User" spec-name="public" />
+<OpenApiSchema name="User" spec-name="api" />
 
-<OpenApiChangelog name="public" />
+<OpenApiChangelog name="api" />
 ```
 
 Per-operation, per-schema, and per-spec-changelog pages are auto-generated. Hand-written landing pages sit alongside at the same URL prefix.
 
-See the repo README for the full feature list and the guide for theming and multi-API usage.
+## Requirements
+
+- Node.js >= 18
+- Vue >= 3.3
+- VitePress >= 1.0
+- vue-api-playground >= 2.5
+
+## License
+
+MIT
