@@ -19,6 +19,7 @@
     "test": "vitest",
     "test:run": "npm run test:run --workspaces --if-present",
     "size": "npm run --workspace packages/core size",
+    "check:facts": "node scripts/check-facts.mjs",
     "test:a11y": "playwright test"
   },
   "devDependencies": {

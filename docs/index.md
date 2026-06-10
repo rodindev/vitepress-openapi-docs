@@ -22,7 +22,7 @@ A real Petstore endpoint rendered inline - click Send request, get a response:
 
 <OpenApiEndpoint id="petstore.getPetById" :show="['summary', 'params', 'try']" />
 
-This site documents two APIs: [Petstore](/api/petstore/) (19 ops) and a [Mock API](/api/mock/) (107 ops). Each has its own sidebar and search index.
+This site documents two APIs: [Petstore](/api/petstore/) ({{ $facts.petstoreOps }} ops) and a [Mock API](/api/mock/) ({{ $facts.mockOps }} ops). Each has its own sidebar and search index.
 
 ## Install
 
@@ -38,4 +38,4 @@ Or [add to an existing VitePress site](/guide/existing-site).
 - **Inline composition** — endpoints render as Vue components in light DOM. Weave them into tutorials, drop them between paragraphs, theme them with VitePress CSS variables.
 - **Multiple APIs** — array of specs, each with its own sidebar, URL prefix, and search index.
 - **Auth and SDK snippets** - bearer / basic / API key / OAuth2 with session persistence. curl / fetch / Python snippets with syntax highlighting, refreshed live as credentials change.
-- **< 14 KB client bundle** - peer dependencies (Vue, VitePress, vue-api-playground) excluded.
+- **< {{ $facts.bundleBudget }} client bundle** - peer dependencies (Vue, VitePress, vue-api-playground) excluded.
