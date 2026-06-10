@@ -1,10 +1,17 @@
 import { marked } from 'marked'
 import DOMPurify from 'dompurify'
-import { JSDOM } from 'jsdom'
 import { dereference, validate } from '@scalar/openapi-parser'
 import { generateExample } from '../runtime/example'
 
-const purify = DOMPurify(new JSDOM('').window)
+let purify: ReturnType<typeof DOMPurify> | undefined
+
+async function getPurify(): Promise<ReturnType<typeof DOMPurify>> {
+  if (!purify) {
+    const { JSDOM } = await import('jsdom')
+    purify = DOMPurify(new JSDOM('').window)
+  }
+  return purify
+}
 import {
   ParseError,
   type HttpMethod,
@@ -185,7 +192,7 @@ export async function parseSpec(
     title: info.title ?? options.name,
     version: info.version ?? '0.0.0',
     description: info.description,
-    descriptionHtml: info.description ? renderMarkdown(info.description) : undefined,
+    descriptionHtml: info.description ? await renderMarkdown(info.description) : undefined,
     servers: extractServers(spec.servers),
     operations,
     componentSchemas,
@@ -555,9 +562,9 @@ function resolveOperationRefs(op: ParsedOperation, schemas: Record<string, unkno
   }
 }
 
-function renderMarkdown(src: string): string {
+async function renderMarkdown(src: string): Promise<string> {
   const html = marked.parse(src, { async: false }) as string
-  return purify.sanitize(html)
+  return (await getPurify()).sanitize(html)
 }
 
 function readPropertyList(objectSchema: unknown): ParsedProperty[] {
