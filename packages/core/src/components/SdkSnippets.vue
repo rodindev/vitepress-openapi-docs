@@ -40,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, useId } from 'vue'
 import type { Snippet, SnippetLanguage, SnippetToken } from 'vue-api-playground'
 import { escapeHtml } from '../highlight/escape'
 
@@ -55,7 +55,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const active = ref<SnippetLanguage>(props.snippets[0]?.language ?? 'curl')
-const uid = Math.random().toString(36).slice(2, 8)
+const uid = useId()
 const activeSnippet = computed(() => props.snippets.find((s) => s.language === active.value))
 
 function renderTokens(tokens: SnippetToken[]): string {

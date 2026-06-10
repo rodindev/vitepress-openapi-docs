@@ -2,6 +2,7 @@ import { marked } from 'marked'
 import DOMPurify from 'dompurify'
 import { dereference, validate } from '@scalar/openapi-parser'
 import { generateExample } from '../runtime/example'
+import { jsonMedia } from './content-type'
 
 let purify: ReturnType<typeof DOMPurify> | undefined
 
@@ -155,7 +156,7 @@ export async function parseSpec(
   for (const op of operations) {
     if (op.requestBody) {
       op.requestBody.jsonFields = orderedBodyFields(
-        op.requestBody.content['application/json']?.schema,
+        jsonMedia(op.requestBody.content)?.schema,
         refNames
       )
     }
@@ -306,7 +307,7 @@ function extractServers(value: unknown): string[] {
     if (server.variables) {
       for (const [name, variable] of Object.entries(server.variables)) {
         if (variable && typeof variable.default === 'string') {
-          url = url.replace(`{${name}}`, variable.default)
+          url = url.split(`{${name}}`).join(variable.default)
         }
       }
     }

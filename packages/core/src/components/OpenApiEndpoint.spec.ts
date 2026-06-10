@@ -265,6 +265,26 @@ describe('OpenApiEndpoint', () => {
     expect(link.text()).toBe('User')
   })
 
+  it('cross-links the response schema from non-200 2xx and default statuses', () => {
+    const wrapper = mount(OpenApiEndpoint, {
+      props: {
+        id: 'inline',
+        operation: {
+          ...usersList,
+          responseSchemaRefs: {
+            '204': {},
+            '2XX': { 'application/json': { name: 'User' } },
+            default: { 'application/json': { name: 'Error' } },
+          },
+        },
+        servers: ['https://api.example.com'],
+      },
+    })
+    const link = wrapper.find('.vod-endpoint__returns a.vod-endpoint__type-link')
+    expect(link.exists()).toBe(true)
+    expect(link.text()).toBe('User')
+  })
+
   it('cross-links to the request body schema when present', () => {
     const wrapper = mount(OpenApiEndpoint, {
       props: { id: 'public.users.create' },

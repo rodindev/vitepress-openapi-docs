@@ -298,13 +298,23 @@ interface TypeLink {
 
 const responseTypeLink = computed<TypeLink | undefined>(() => {
   const responseRefs = op.value.responseSchemaRefs ?? {}
-  const successStatus = ['200', '201', '202'].find((s) => responseRefs[s])
+  const successStatus = Object.keys(responseRefs)
+    .filter((s) => isSuccessStatus(s))
+    .sort()
+    .find((s) => Object.keys(responseRefs[s]!).length > 0)
   if (!successStatus) return undefined
   const refs = responseRefs[successStatus]!
   const first = refs['application/json'] ?? Object.values(refs)[0]
   if (!first) return undefined
   return { label: first.name, href: routes.schemaUrl(resolvedSpecName.value, first.name) }
 })
+
+function isSuccessStatus(status: string): boolean {
+  if (status === '204') return false
+  if (status === 'default') return true
+  if (/^2\d\d$/.test(status)) return true
+  return status.toUpperCase() === '2XX'
+}
 
 const hasResponseExamples = computed(() =>
   op.value.responses.some((r) => r.content && Object.keys(r.content).length > 0)
