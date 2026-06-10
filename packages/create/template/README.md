@@ -11,8 +11,8 @@ The scaffold ships with a snapshot of our full-featured mock spec at `docs/opena
 
 ## Layout
 
-- `docs/.vitepress/config.ts` — VitePress + the OpenAPI plugin
-- `docs/.vitepress/theme/index.ts` — registers the OpenAPI components
-- `docs/openapi/mock.json` — your OpenAPI spec (swap in your own)
-- `docs/api/mock/index.md` — landing page that renders the whole spec
-- `docs/index.md` — your home page
+- `docs/.vitepress/config.ts`: VitePress + the OpenAPI plugin
+- `docs/.vitepress/theme/index.ts`: registers the OpenAPI components
+- `docs/openapi/mock.json`: your OpenAPI spec (swap in your own)
+- `docs/api/mock/index.md`: landing page that renders the whole spec
+- `docs/index.md`: your home page

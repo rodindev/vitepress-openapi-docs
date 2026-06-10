@@ -73,7 +73,7 @@ title: API Reference
 <OpenApiSpec name="api" />
 ```
 
-`<OpenApiSpec>` renders every operation from the spec in a single scrollable page — a good default for the landing. You can also hand-write prose around individual `<OpenApiEndpoint>` embeds instead; see [Composing endpoints](/guide/composing-endpoints).
+`<OpenApiSpec>` renders every operation from the spec in a single scrollable page, a good default for the landing. You can also hand-write prose around individual `<OpenApiEndpoint>` embeds instead; see [Composing endpoints](/guide/composing-endpoints).
 
 ::: tip
 The scaffolder (`npm create vitepress-openapi-docs@latest`) creates this file automatically. This step only applies when integrating into an existing site.

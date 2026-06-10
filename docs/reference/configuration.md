@@ -63,7 +63,7 @@ openApiDocs({
 | -------------- | ------------------------------------------------------------------ | ----------------------------------- |
 | `methodColors` | `Partial<Record<'get'\|'post'\|'put'\|'patch'\|'delete', string>>` | Override HTTP method badge colours. |
 
-For full theming, use CSS variables — see [Theming](/guide/theming).
+For full theming, use CSS variables (see [Theming](/guide/theming)).
 
 ### `defaults`
 
@@ -83,9 +83,9 @@ openApiDocs({
 | Field              | Type                                                                                                     | Default     | Description                                                                                                                 |
 | ------------------ | -------------------------------------------------------------------------------------------------------- | ----------- | --------------------------------------------------------------------------------------------------------------------------- |
 | `show`             | `('summary' \| 'description' \| 'params' \| 'request' \| 'response' \| 'auth' \| 'snippets' \| 'try')[]` | all         | Sections to render.                                                                                                         |
-| `auth`             | `'none' \| 'bearer' \| 'apikey' \| 'basic' \| 'oauth2'`                                                  | —           | Default auth scheme.                                                                                                        |
-| `server`           | `string`                                                                                                 | —           | Default server URL override.                                                                                                |
-| `apiKeyHeaderName` | `string`                                                                                                 | —           | Default header name for `apikey` schemes.                                                                                   |
+| `auth`             | `'none' \| 'bearer' \| 'apikey' \| 'basic' \| 'oauth2'`                                                  | auto        | Default auth scheme.                                                                                                        |
+| `server`           | `string`                                                                                                 | auto        | Default server URL override.                                                                                                |
+| `apiKeyHeaderName` | `string`                                                                                                 | auto        | Default header name for `apikey` schemes.                                                                                   |
 | `bodyInputs`       | `boolean`                                                                                                | `false`     | Render request body properties as individual inputs instead of a JSON textarea.                                             |
 | `layout`           | `'columns' \| 'stacked'`                                                                                 | `'columns'` | Default card layout. `columns` renders the Try-It panel as a sticky aside; `stacked` keeps everything in one vertical card. |
 

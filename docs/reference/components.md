@@ -4,7 +4,7 @@ description: Props, events, and types for every component in vitepress-openapi-d
 
 # Components
 
-All components are globally registered by `enhanceAppWithOpenApi()` — use them directly in any markdown file. See [Composing endpoints](/guide/composing-endpoints) for usage patterns.
+All components are globally registered by `enhanceAppWithOpenApi()`; use them directly in any markdown file. See [Composing endpoints](/guide/composing-endpoints) for usage patterns.
 
 ## `<OpenApiEndpoint>`
 
@@ -19,7 +19,7 @@ Renders one operation inline with prose.
 | Prop               | Type                                                    | Default         | Description                                                                                                                                              |
 | ------------------ | ------------------------------------------------------- | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `id`               | `string`                                                | (required)      | `{specName}.{operationId}` for multi-spec, or bare `{operationId}` with one spec.                                                                        |
-| `operation`        | `ParsedOperation`                                       | —               | Pass a parsed operation directly to bypass the registry. Pair with `specName` to resolve auth and schema links; without it the spec reports as `inline`. |
+| `operation`        | `ParsedOperation`                                       | none            | Pass a parsed operation directly to bypass the registry. Pair with `specName` to resolve auth and schema links; without it the spec reports as `inline`. |
 | `servers`          | `string[]`                                              | `[]`            | Server URL list to draw from when `operation` is supplied directly.                                                                                      |
 | `auth`             | `'none' \| 'bearer' \| 'apikey' \| 'basic' \| 'oauth2'` | auto from spec  | Override the auth scheme.                                                                                                                                |
 | `server`           | `string`                                                | first from spec | Single-server URL override.                                                                                                                              |
@@ -31,7 +31,7 @@ Renders one operation inline with prose.
 
 **Section names:** `summary`, `description`, `params`, `request`, `response`, `auth`, `snippets`, `try`.
 
-**Layout note:** In `columns` (default) the aside lives inside the endpoint container. On pages where VitePress renders a right-side TOC (`aside` frontmatter is not `false`), the aside stacks below the card instead — set `aside: false` in the page's frontmatter so the endpoint aside has room. Viewports at 1279px and below automatically fall back to the `stacked` layout regardless of the `layout` setting.
+**Layout note:** In `columns` (default) the aside lives inside the endpoint container. On pages where VitePress renders a right-side TOC (`aside` frontmatter is not `false`), the aside stacks below the card instead, so set `aside: false` in the page's frontmatter to give the endpoint aside room. Viewports at 1279px and below automatically fall back to the `stacked` layout regardless of the `layout` setting.
 
 **Stacked layout collapsing:** In `stacked`, Parameters and Response examples are wrapped in `<details>` collapsed by default. Code examples and Authentication are `<details>` in the Try-It panel in both layouts (in `columns` they sit in the aside). The Try-It panel itself stays open as the primary call to action.
 
@@ -53,11 +53,11 @@ Renders every operation in a spec, grouped by tag.
 <OpenApiSpec name="public" />
 ```
 
-| Prop          | Type                     | Default | Description                                                                                 |
-| ------------- | ------------------------ | ------- | ------------------------------------------------------------------------------------------- |
-| `name`        | `string`                 | —       | Spec name from your config.                                                                 |
-| `show-header` | `boolean`                | `true`  | Render the spec title and description block.                                                |
-| `layout`      | `'columns' \| 'stacked'` | inherit | Card layout forwarded to every rendered endpoint. Defaults to the plugin `defaults.layout`. |
+| Prop          | Type                     | Default    | Description                                                                                 |
+| ------------- | ------------------------ | ---------- | ------------------------------------------------------------------------------------------- |
+| `name`        | `string`                 | (required) | Spec name from your config.                                                                 |
+| `show-header` | `boolean`                | `true`     | Render the spec title and description block.                                                |
+| `layout`      | `'columns' \| 'stacked'` | inherit    | Card layout forwarded to every rendered endpoint. Defaults to the plugin `defaults.layout`. |
 
 ## `<OpenApiSchema>`
 
@@ -94,7 +94,7 @@ The changelog needs real git history. Add `fetch-depth: 0` to your CI checkout s
 
 ## `<AuthControls>`
 
-Auth input for a single spec. Normally rendered by `<OpenApiEndpoint>` — use standalone when building custom layouts.
+Auth input for a single spec. Normally rendered by `<OpenApiEndpoint>`; use standalone when building custom layouts.
 
 ```md
 <AuthControls spec-name="public" scheme="bearer" />
@@ -184,7 +184,7 @@ interface SnippetRequest {
 
 ### `useAuthState()`
 
-Reactive auth state for a spec (advanced — for custom layouts):
+Reactive auth state for a spec (advanced, for custom layouts):
 
 ```ts
 import { useAuthState, readStoredCredential } from 'vitepress-openapi-docs'

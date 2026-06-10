@@ -4,7 +4,7 @@ description: Embed interactive API endpoints inline with your markdown prose.
 
 # Composing endpoints
 
-The plugin registers components globally — use them directly in any markdown file.
+The plugin registers components globally; use them directly in any markdown file.
 
 ## Inline endpoints
 
@@ -22,7 +22,7 @@ Use the token on subsequent calls:
 <OpenApiEndpoint id="api.users.list" />
 ```
 
-The endpoint renders natively in the page — light DOM, Vue components, VitePress routing.
+The endpoint renders natively in the page: light DOM, Vue components, VitePress routing.
 
 ## The `id` format
 
@@ -79,13 +79,13 @@ Render a component schema with property table, required badges, and clickable `$
 
 ## Changelog
 
-Show a git-history-driven spec diff — added, removed, and renamed operations per commit:
+Show a git-history-driven spec diff of added, removed, and renamed operations per commit:
 
 ```md
 <OpenApiChangelog name="public" />
 ```
 
-The changelog needs at least two commits touching the spec file. In CI, set `fetch-depth: 0` — shallow clones have no history. Remote URL specs don't support changelog.
+The changelog needs at least two commits touching the spec file. In CI, set `fetch-depth: 0` (shallow clones have no history). Remote URL specs don't support changelog.
 
 ## Webhooks
 
@@ -122,8 +122,8 @@ See [Components reference](/reference/components#searchtrigger) for props.
 
 For each spec, the plugin generates:
 
-- `/{prefix}/{operationId}` — one page per operation
-- `/schemas/{specName}/{typeName}` — one page per named component schema
-- `/changelog/{specName}` — spec change history
+- `/{prefix}/{operationId}` for one page per operation
+- `/schemas/{specName}/{typeName}` for one page per named component schema
+- `/changelog/{specName}` for spec change history
 
-Hand-written landing pages (`/{prefix}/index.md`) coexist — the generator only writes to `docs/_openapi/`.
+Hand-written landing pages (`/{prefix}/index.md`) coexist; the generator only writes to `docs/_openapi/`.

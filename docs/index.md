@@ -2,7 +2,7 @@
 layout: home
 title: VitePress OpenAPI Docs
 titleTemplate: Interactive OpenAPI docs for VitePress
-description: Drop interactive OpenAPI 3.x endpoints anywhere in your markdown. Vue-native VitePress plugin — no shadow DOM, no iframes. Multi-API, SDK snippets, auth, git-driven changelog.
+description: Drop interactive OpenAPI 3.x endpoints anywhere in your markdown. Vue-native VitePress plugin with no shadow DOM and no iframes. Multi-API, SDK snippets, auth, git-driven changelog.
 
 hero:
   text: VitePress OpenAPI Docs
@@ -35,7 +35,7 @@ Or [add to an existing VitePress site](/guide/existing-site).
 
 ## What you get
 
-- **Inline composition** — endpoints render as Vue components in light DOM. Weave them into tutorials, drop them between paragraphs, theme them with VitePress CSS variables.
-- **Multiple APIs** — array of specs, each with its own sidebar, URL prefix, and search index.
+- **Inline composition** - endpoints render as Vue components in light DOM. Weave them into tutorials, drop them between paragraphs, theme them with VitePress CSS variables.
+- **Multiple APIs** - array of specs, each with its own sidebar, URL prefix, and search index.
 - **Auth and SDK snippets** - bearer / basic / API key / OAuth2 with session persistence. curl / fetch / Python snippets with syntax highlighting, refreshed live as credentials change.
 - **< {{ $facts.bundleBudget }} client bundle** - peer dependencies (Vue, VitePress, vue-api-playground) excluded.
