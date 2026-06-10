@@ -23,6 +23,8 @@ jobs:
       - run: npm run format:check
       - run: npm run test:run
       - run: npm run build
+      - run: npx publint packages/core && npx publint packages/create
+      - run: npm pack --dry-run --workspace packages/core --workspace packages/create
       - run: npm run --workspace packages/core size
 
   a11y:
