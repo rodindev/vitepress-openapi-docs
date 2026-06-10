@@ -55,6 +55,7 @@ import EndpointPlayground from './EndpointPlayground.vue'
 import { useAuthState, type AuthScheme } from '../runtime/auth'
 import { buildSnippets } from '../snippets/index'
 import { generateJsonBody } from '../runtime/example'
+import { jsonMedia } from '../parser/content-type'
 import type { ParsedOAuth2Flow, ParsedOperation } from '../parser/types'
 
 const PLAYGROUND_PARAMS_LIMIT = 3
@@ -167,7 +168,7 @@ const requestContentType = computed<PlaygroundContentType | undefined>(() => {
 })
 
 const exampleBody = computed<string | undefined>(() => {
-  const jsonSchema = props.op.requestBody?.content['application/json']?.schema
+  const jsonSchema = jsonMedia(props.op.requestBody?.content)?.schema
   return jsonSchema ? generateJsonBody(jsonSchema) : undefined
 })
 

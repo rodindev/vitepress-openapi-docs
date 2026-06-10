@@ -30,6 +30,7 @@ import { computed } from 'vue'
 import { generateJsonBody } from '../runtime/example'
 import { escapeHtml } from '../highlight/escape'
 import { highlightJson } from '../highlight/json'
+import { isJsonContentType } from '../parser/content-type'
 import type { ParsedResponse } from '../parser/types'
 
 interface Props {
@@ -59,11 +60,14 @@ const entries = computed<Entry[]>(() => {
     const media = response.content[contentType]!
     let body: string | undefined
     let derived = false
+    const named = firstNamedExample((media as { examples?: unknown }).examples)
     if (media.example !== undefined) {
       body = stringify(media.example)
     } else if (Array.isArray((media as { examples?: unknown }).examples)) {
       const examples = (media as { examples?: unknown[] }).examples!
       if (examples.length > 0) body = stringify(examples[0])
+    } else if (named) {
+      body = stringify(named)
     } else {
       body = generateJsonBody(media.schema)
       if (body !== undefined) derived = true
@@ -80,6 +84,15 @@ const entries = computed<Entry[]>(() => {
   }
   return panels
 })
+
+function firstNamedExample(examples: unknown): unknown {
+  if (!examples || typeof examples !== 'object' || Array.isArray(examples)) return undefined
+  const first = Object.values(examples as Record<string, unknown>)[0]
+  if (first && typeof first === 'object' && 'value' in first) {
+    return (first as { value: unknown }).value
+  }
+  return undefined
+}
 
 function stringify(value: unknown): string {
   if (typeof value === 'string') return value
@@ -98,10 +111,6 @@ function stripMarkdown(text: string): string {
     .replace(/_(.+?)_/g, '$1')
     .replace(/`(.+?)`/g, '$1')
     .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-}
-
-function isJsonContentType(ct: string): boolean {
-  return ct === 'application/json' || ct === 'text/json' || ct.endsWith('+json')
 }
 
 function renderBody(entry: Entry): string {
