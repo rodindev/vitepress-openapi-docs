@@ -1,6 +1,6 @@
 import type { Plugin } from 'vite'
 import type { ParsedSpec } from '../parser/types'
-import type { OpenApiDocsDefaults } from '../config/types'
+import type { OpenApiDocsConfig, OpenApiDocsDefaults } from '../config/types'
 
 export const VIRTUAL_SPECS_ID = 'virtual:vitepress-openapi-docs/specs'
 const RESOLVED_ID = `\0${VIRTUAL_SPECS_ID}`
@@ -14,12 +14,14 @@ const RESOLVED_ID = `\0${VIRTUAL_SPECS_ID}`
 export function specsVirtualModule(
   specs: ParsedSpec[],
   defaults?: OpenApiDocsDefaults,
-  prefixes?: Record<string, string>
+  prefixes?: Record<string, string>,
+  theme?: OpenApiDocsConfig['theme']
 ): Plugin {
   const payload =
     `export default ${JSON.stringify(specs)}\n` +
     `export const defaults = ${JSON.stringify(defaults ?? {})}\n` +
-    `export const prefixes = ${JSON.stringify(prefixes ?? {})}\n`
+    `export const prefixes = ${JSON.stringify(prefixes ?? {})}\n` +
+    `export const theme = ${JSON.stringify(theme ?? {})}\n`
   return {
     name: 'vitepress-openapi-docs:specs',
     enforce: 'pre',
