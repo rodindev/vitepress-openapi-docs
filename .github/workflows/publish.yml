@@ -74,19 +74,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-          registry-url: 'https://registry.npmjs.org'
           cache: 'npm'
+      - run: npm install -g npm@11
       - run: npm ci
       - run: npm run --workspace packages/core build
       - run: npm run --workspace packages/create build
       - name: Publish vitepress-openapi-docs
         run: npm publish --workspace packages/core --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Publish create-vitepress-openapi-docs
         run: npm publish --workspace packages/create --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Extract changelog for this version
         id: changelog
         run: |
