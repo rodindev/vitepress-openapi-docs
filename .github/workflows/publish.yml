@@ -78,6 +78,10 @@ jobs:
       - run: npm install -g npm@latest
       - run: npm --version && node --version
       - run: test -n "${ACTIONS_ID_TOKEN_REQUEST_URL:-}" && echo "id-token url present" || echo "id-token url MISSING"
+      - name: Dump OIDC claims
+        run: |
+          TOKEN=$(curl -sS -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=npm%3Aregistry.npmjs.org" | jq -r .value)
+          python3 -c "import base64,json,sys; p=sys.argv[1].split('.')[1]; p+='='*(-len(p)%4); d=json.loads(base64.urlsafe_b64decode(p)); print(json.dumps({k:d.get(k) for k in ('aud','sub','repository','repository_owner','repository_visibility','workflow','workflow_ref','job_workflow_ref','event_name','ref','environment')}, indent=2))" "$TOKEN"
       - run: npm ci
       - run: npm run --workspace packages/core build
       - run: npm run --workspace packages/create build
