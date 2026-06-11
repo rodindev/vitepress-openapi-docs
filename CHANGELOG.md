@@ -2,6 +2,22 @@
 
 All notable changes to `vitepress-openapi-docs` and `create-vitepress-openapi-docs`.
 
+## 1.7.1
+
+### Fixed
+
+- Basic auth credentials are base64-encoded in Try-It requests and SDK snippets (RFC 7617). Stored values are unchanged; encoding happens at the request and snippet boundary. Snippets without an entered credential show a readable `Basic <BASE64(USERNAME:PASSWORD)>` placeholder.
+- API key schemes with `in: cookie` render a `Cookie:` header in snippets instead of a header named after the cookie.
+- Operations rendered through `<OpenApiSpec>` resolve their spec: the auth panel appears when the spec defines security schemes, schema links point at real `/schemas/<spec>/...` pages, and credentials are stored per spec instead of under a shared `inline` key. `<OpenApiEndpoint>` accepts a `spec-name` prop alongside `operation`.
+- Scaffolded projects include a `.gitignore` again. npm strips dotfiles from tarballs, so the template ships `_gitignore` and the scaffolder renames it on copy.
+
+### Changed
+
+- jsdom loads lazily inside the parser instead of at module import.
+- Published packages include README and LICENSE: the npm README for `vitepress-openapi-docs` was rewritten for 1.x, `create-vitepress-openapi-docs` got one.
+- CI verifies published artifacts with publint and `npm pack --dry-run`.
+- Deprecated `@types/dompurify` removed (dompurify ships its own types).
+
 ## 1.7.0
 
 ### Changed
