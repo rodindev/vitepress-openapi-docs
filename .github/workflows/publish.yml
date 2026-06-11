@@ -77,11 +77,12 @@ jobs:
           cache: 'npm'
       - run: npm install -g npm@latest
       - run: npm --version && node --version
+      - run: test -n "${ACTIONS_ID_TOKEN_REQUEST_URL:-}" && echo "id-token url present" || echo "id-token url MISSING"
       - run: npm ci
       - run: npm run --workspace packages/core build
       - run: npm run --workspace packages/create build
       - name: Publish vitepress-openapi-docs
-        run: npm publish --access public
+        run: npm publish --access public --loglevel http
         working-directory: packages/core
       - name: Publish create-vitepress-openapi-docs
         run: npm publish --access public
