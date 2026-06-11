@@ -75,14 +75,15 @@ jobs:
         with:
           node-version: '22'
           cache: 'npm'
-      - run: npm install -g npm@11
+      - run: npm install -g npm@latest
+      - run: npm --version && node --version
       - run: npm ci
       - run: npm run --workspace packages/core build
       - run: npm run --workspace packages/create build
       - name: Publish vitepress-openapi-docs
-        run: npm publish --workspace packages/core --provenance --access public
+        run: npm publish --workspace packages/core --access public
       - name: Publish create-vitepress-openapi-docs
-        run: npm publish --workspace packages/create --provenance --access public
+        run: npm publish --workspace packages/create --access public
       - name: Extract changelog for this version
         id: changelog
         run: |
