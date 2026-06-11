@@ -6,6 +6,13 @@
 
 A Vue-native VitePress plugin that composes OpenAPI endpoints inline with your markdown prose and generates the rest of the site around them: per-operation and per-schema pages, a tag-grouped sidebar, a git-driven changelog, Cmd+K search, and multi-API support.
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset=".github/readme/endpoint-dark.png">
+  <img src=".github/readme/endpoint-light.png" alt="An endpoint rendered inline in a VitePress page: parameters table, linked response type, response examples, and a Try-It panel" width="100%">
+</picture>
+
+This page is the [live demo](https://rodindev.github.io/vitepress-openapi-docs/api/mock/), backed by a real mock server.
+
 ## Why this exists
 
 Swagger UI, Scalar, RapiDoc, Stoplight Elements all render API docs inside a web component or iframe. They work, but the output is a standalone widget: you can't put a paragraph between two endpoints, and you can't style it with your VitePress CSS variables.
