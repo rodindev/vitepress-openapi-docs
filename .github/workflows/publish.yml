@@ -81,9 +81,11 @@ jobs:
       - run: npm run --workspace packages/core build
       - run: npm run --workspace packages/create build
       - name: Publish vitepress-openapi-docs
-        run: npm publish --workspace packages/core --access public
+        run: npm publish --access public
+        working-directory: packages/core
       - name: Publish create-vitepress-openapi-docs
-        run: npm publish --workspace packages/create --access public
+        run: npm publish --access public
+        working-directory: packages/create
       - name: Extract changelog for this version
         id: changelog
         run: |
