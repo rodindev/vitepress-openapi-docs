@@ -7,7 +7,7 @@ npm install
 npm run dev
 ```
 
-The scaffold ships with a snapshot of our full-featured mock spec at `docs/openapi/mock.json` (OpenAPI 3.1, 105 operations, 34 webhooks, bearer auth). Replace it with your own OpenAPI 3.x file when you're ready, then restart the dev server so the spec re-parses.
+The scaffold ships with a snapshot of our full-featured mock spec at `docs/openapi/mock.json` (OpenAPI 3.1, 107 operations, 34 webhooks, bearer auth). Replace it with your own OpenAPI 3.x file when you're ready, then restart the dev server so the spec re-parses.
 
 ## Layout
 
