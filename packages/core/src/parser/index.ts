@@ -96,10 +96,9 @@ export async function parseSpec(
   const rawPaths = (rawSpec.paths ?? {}) as Record<string, Record<string, unknown>>
   const specLevelSecurity = readSecurity(spec.security)
   const specComponents = (spec.components ?? {}) as Record<string, unknown>
-  const componentParams = ((specComponents.parameters ?? {}) as Record<string, unknown>) ?? {}
-  const componentResponses = ((specComponents.responses ?? {}) as Record<string, unknown>) ?? {}
-  const componentRequestBodies =
-    ((specComponents.requestBodies ?? {}) as Record<string, unknown>) ?? {}
+  const componentParams = (specComponents.parameters ?? {}) as Record<string, unknown>
+  const componentResponses = (specComponents.responses ?? {}) as Record<string, unknown>
+  const componentRequestBodies = (specComponents.requestBodies ?? {}) as Record<string, unknown>
 
   const operations: ParsedOperation[] = []
   const paths = (spec.paths ?? {}) as Record<string, Record<string, unknown>>
@@ -137,7 +136,7 @@ export async function parseSpec(
     string,
     Record<string, unknown>
   >
-  const rawWebhooks = ((rawSpec.webhooks ?? {}) as Record<string, Record<string, unknown>>) ?? {}
+  const rawWebhooks = (rawSpec.webhooks ?? {}) as Record<string, Record<string, unknown>>
   for (const [webhookName, pathItem] of Object.entries(webhooks)) {
     if (!pathItem || typeof pathItem !== 'object') continue
     const pathLevelParams = readParameters(
@@ -169,7 +168,7 @@ export async function parseSpec(
 
   const info = (spec.info ?? {}) as { title?: string; version?: string; description?: string }
   const components = (spec.components ?? {}) as Record<string, unknown>
-  const rawSchemas = ((components.schemas ?? {}) as Record<string, unknown>) ?? {}
+  const rawSchemas = (components.schemas ?? {}) as Record<string, unknown>
 
   for (const op of operations) {
     resolveOperationRefs(op, rawSchemas)
