@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { defineComponent, h, nextTick } from 'vue'
 import { mount } from '@vue/test-utils'
-import { readStoredCredential, useAuthState, type AuthState } from './auth'
+import { readStoredCredential, useAuthState, authStoresCache, type AuthState } from './auth'
 
 function withAuth(specName: string, callback: (state: AuthState) => void) {
   const Harness = defineComponent({
@@ -17,10 +17,12 @@ function withAuth(specName: string, callback: (state: AuthState) => void) {
 describe('useAuthState', () => {
   beforeEach(() => {
     sessionStorage.clear()
+    authStoresCache.clear()
   })
 
   afterEach(() => {
     sessionStorage.clear()
+    authStoresCache.clear()
   })
 
   it('starts with no credential when storage is empty', async () => {
@@ -116,5 +118,21 @@ describe('useAuthState', () => {
     })
     await nextTick()
     expect(secondState?.credential.value?.value).toBe('KEEP_ME')
+  })
+
+  it('shares reactive credential state across multiple active hook instances', async () => {
+    let state1: AuthState | undefined
+    let state2: AuthState | undefined
+    withAuth('shared-spec', (s) => {
+      state1 = s
+    })
+    withAuth('shared-spec', (s) => {
+      state2 = s
+    })
+
+    state1?.set({ scheme: 'bearer', value: 'UPDATED_TOKEN' })
+    await nextTick()
+
+    expect(state2?.credential.value?.value).toBe('UPDATED_TOKEN')
   })
 })

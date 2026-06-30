@@ -39,6 +39,7 @@
         class="vod-auth__input"
         autocomplete="off"
         spellcheck="false"
+        @input="commit"
         @blur="commit"
         @keydown.enter.prevent="commit"
       />

@@ -2,10 +2,27 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { nextTick } from 'vue'
 import AuthControls from './AuthControls.vue'
+import { authStoresCache } from '../runtime/auth'
 
 describe('AuthControls', () => {
-  beforeEach(() => sessionStorage.clear())
-  afterEach(() => sessionStorage.clear())
+  beforeEach(() => {
+    sessionStorage.clear()
+    authStoresCache.clear()
+  })
+  afterEach(() => {
+    sessionStorage.clear()
+    authStoresCache.clear()
+  })
+
+  it('persists the entered credential to sessionStorage immediately on input', async () => {
+    const wrapper = mount(AuthControls, { props: { specName: 'public', scheme: 'bearer' } })
+    const input = wrapper.find('input')
+    await input.setValue('SECRET_TOKEN')
+    expect(JSON.parse(sessionStorage.getItem('vod:auth:public')!)).toMatchObject({
+      scheme: 'bearer',
+      value: 'SECRET_TOKEN',
+    })
+  })
 
   it('persists the entered credential to sessionStorage on blur', async () => {
     const wrapper = mount(AuthControls, { props: { specName: 'public', scheme: 'bearer' } })
