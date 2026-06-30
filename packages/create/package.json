@@ -37,10 +37,10 @@
     "prepack": "npm run build"
   },
   "devDependencies": {
-    "@types/node": "^25.6.0",
+    "@types/node": "^25.9.3",
     "typescript": "^6.0.0"
   },
   "dependencies": {
-    "@clack/prompts": "^1.2.0"
+    "@clack/prompts": "^1.5.1"
   }
 }
