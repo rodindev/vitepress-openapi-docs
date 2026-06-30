@@ -30,6 +30,11 @@ describe('fuzzyScore', () => {
   it('is case-insensitive', () => {
     expect(fuzzyScore('GetPetById', 'petbyid')).toBeGreaterThan(0)
   })
+
+  it('keeps a positive score for substring hits past index 1000', () => {
+    const haystack = `${'x'.repeat(2000)}needle`
+    expect(fuzzyScore(haystack, 'needle')).toBeGreaterThan(0)
+  })
 })
 
 describe('rankByFuzzy', () => {

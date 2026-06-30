@@ -59,7 +59,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref, toRef, watch } from 'vue'
 import { useAuthState, type AuthScheme } from '../runtime/auth'
 import type { ParsedOAuth2Flow } from '../parser/types'
 
@@ -77,7 +77,7 @@ interface Props {
 }
 
 const props = defineProps<Props>()
-const state = useAuthState(props.specName)
+const state = useAuthState(toRef(props, 'specName'))
 
 const storedValue = computed(() => state.credential.value?.value ?? '')
 const draft = ref(storedValue.value)

@@ -1,8 +1,9 @@
 import { mkdtemp, readFile, readdir } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { join, resolve, sep } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { generatePages } from './page-generator'
+import { parseSpec } from '../parser/index'
 import type { ParsedOperation, ParsedSpec } from '../parser/types'
 
 const op = (id: string, summary?: string): ParsedOperation => ({
@@ -88,6 +89,30 @@ describe('generatePages', () => {
     expect(body).toContain('title: ')
     // The title must be JSON-quoted to survive YAML parsing
     expect(body).toMatch(/title: ".*Products.*beta.*important.*v2.*"/)
+  })
+
+  it('keeps a malicious operationId inside the output directory', async () => {
+    const parsed = await parseSpec(
+      {
+        openapi: '3.1.0',
+        info: { title: 'T', version: '1' },
+        paths: {
+          '/evil': {
+            get: { operationId: '../../../tmp/evil', responses: { '200': { description: 'ok' } } },
+          },
+        },
+      },
+      { name: 'public' }
+    )
+    const out = await mkdtemp(join(tmpdir(), 'vod-gen-'))
+    const pages = await generatePages([parsed], {
+      outDir: out,
+      prefixes: { public: '/api/public' },
+    })
+    const page = pages.find((p) => !p.url.startsWith('/changelog/'))!
+    const resolved = resolve(out, page.file)
+    expect(resolved.startsWith(out + sep)).toBe(true)
+    expect(page.file).not.toContain('..')
   })
 
   it('wipes the output directory before regenerating', async () => {

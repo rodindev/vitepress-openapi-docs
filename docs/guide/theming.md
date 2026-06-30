@@ -4,7 +4,7 @@ description: Customize the look of vitepress-openapi-docs with CSS variables.
 
 # Theming
 
-`vitepress-openapi-docs` themes through a three-layer CSS variable cascade. Override at any level — lower layers stay as fallbacks.
+`vitepress-openapi-docs` themes through a three-layer CSS variable cascade. Override at any level; lower layers stay as fallbacks.
 
 ## The cascade
 
@@ -16,10 +16,12 @@ description: Customize the look of vitepress-openapi-docs with CSS variables.
 
 Each layer falls back to the next. Override whichever layer you want; everything below stays as a default.
 
-- **`--vod-*`** — the public surface. Override these to restyle the plugin's UI.
-- **`--vap-*`** — shipped by `vue-api-playground`. Inherited so both packages stay in sync.
-- **`--vp-c-*`** — VitePress's standard tokens. Most sites already theme through these.
+- **`--vod-*`** - the public surface. Override these to restyle the plugin's UI.
+- **`--vap-*`** - shipped by `vue-api-playground`. Inherited so both packages stay in sync.
+- **`--vp-c-*`** - VitePress's standard tokens. Most sites already theme through these.
 - The hex fallback is only reached outside a VitePress host.
+
+Not every token chains. The method badge `-bg` / `-text` tokens (`--vod-method-get-bg`, `--vod-method-delete-text`, and the rest) are flat hex by design: each light and dark pair is tuned for AA contrast, so they do not fall through `--vap-*` or `--vp-c-*`. Override the pair directly if you need to retint a badge.
 
 ## Common overrides
 
@@ -27,14 +29,14 @@ Drop these into a stylesheet imported after the plugin styles in your [theme set
 
 ```css
 :root {
-  /* Method accents — borders, tab indicators, text highlights */
+  /* Method accents: borders, tab indicators, text highlights */
   --vod-method-get: #2563eb;
   --vod-method-post: #16a34a;
   --vod-method-put: #d97706;
   --vod-method-patch: #8b5cf6;
   --vod-method-delete: #dc2626;
 
-  /* Method badges — the pill-shaped labels (e.g. GET, POST) */
+  /* Method badges: the pill-shaped labels (e.g. GET, POST) */
   --vod-method-get-bg: #dcfce7;
   --vod-method-get-text: #166534;
   --vod-method-post-bg: #dbeafe;

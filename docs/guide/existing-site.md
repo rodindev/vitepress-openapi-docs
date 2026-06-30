@@ -24,7 +24,7 @@ export default defineConfig({
 })
 ```
 
-The `spec` path is relative to the project root. Remote URLs (e.g. `https://api.example.com/openapi.json`) are also supported — fetched at build time and cached.
+The `spec` path is relative to the project root. Remote URLs (e.g. `https://api.example.com/openapi.json`) are also supported, fetched at build time.
 
 See [Configuration reference](/reference/configuration) for all available fields.
 
@@ -73,7 +73,7 @@ title: API Reference
 <OpenApiSpec name="api" />
 ```
 
-`<OpenApiSpec>` renders every operation from the spec in a single scrollable page — a good default for the landing. You can also hand-write prose around individual `<OpenApiEndpoint>` embeds instead; see [Composing endpoints](/guide/composing-endpoints).
+`<OpenApiSpec>` renders every operation from the spec in a single scrollable page, a good default for the landing. You can also hand-write prose around individual `<OpenApiEndpoint>` embeds instead; see [Composing endpoints](/guide/composing-endpoints).
 
 ::: tip
 The scaffolder (`npm create vitepress-openapi-docs@latest`) creates this file automatically. This step only applies when integrating into an existing site.
@@ -107,7 +107,7 @@ Or use a triple-slash directive in your theme file:
 
 ## Requirements
 
-- **Node.js** >= 18
-- **Vue** >= 3.3
-- **VitePress** >= 1.0
-- **vue-api-playground** >= 2.4 (peer dependency)
+- **Node.js** >= {{ $facts.node }}
+- **Vue** >= {{ $facts.vue }}
+- **VitePress** >= {{ $facts.vitepress }}
+- **vue-api-playground** >= {{ $facts.vueApiPlayground }} (peer dependency)

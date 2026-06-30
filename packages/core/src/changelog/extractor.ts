@@ -32,8 +32,8 @@ export async function extractChangelog(options: ExtractChangelogOptions): Promis
     const previous = commits[i + 1]!
     try {
       const [newContent, oldContent] = await Promise.all([
-        showAt(current.hash, options.specPath, cwd),
-        showAt(previous.hash, options.specPath, cwd),
+        showAt(current.hash, current.path, cwd),
+        showAt(previous.hash, previous.path, cwd),
       ])
       const [newSpec, oldSpec] = await Promise.all([
         parseSpec(newContent, { name: options.specName }),
@@ -62,23 +62,48 @@ async function listCommits(
   specPath: string,
   cwd: string,
   max: number
-): Promise<{ hash: string; date: string; subject: string }[]> {
+): Promise<{ hash: string; date: string; subject: string; path: string }[]> {
   try {
     const { stdout } = await run(
       'git',
-      ['log', `-n${max}`, '--follow', '--format=%H%x1f%aI%x1f%s', '--', specPath],
+      [
+        'log',
+        `-n${max}`,
+        '--follow',
+        '--name-status',
+        '--format=%x1e%H%x1f%aI%x1f%s',
+        '--',
+        specPath,
+      ],
       { cwd, maxBuffer: 16 * 1024 * 1024 }
     )
-    const commits: { hash: string; date: string; subject: string }[] = []
-    for (const line of stdout.split('\n')) {
-      if (!line) continue
-      const [hash, date, subject] = line.split('\x1f')
-      if (hash && date && subject !== undefined) commits.push({ hash, date, subject })
+    const commits: { hash: string; date: string; subject: string; path: string }[] = []
+    for (const record of stdout.split('\x1e')) {
+      if (!record.trim()) continue
+      const lines = record.split('\n').filter((l) => l.length > 0)
+      const [hash, date, subject] = (lines[0] ?? '').split('\x1f')
+      if (!hash || !date || subject === undefined) continue
+      const path = pathFromNameStatus(lines.slice(1)) ?? specPath
+      commits.push({ hash, date, subject, path })
     }
     return commits
   } catch {
     return []
   }
+}
+
+function pathFromNameStatus(lines: string[]): string | undefined {
+  for (const line of lines) {
+    const fields = line.split('\t')
+    const status = fields[0] ?? ''
+    if (status.startsWith('R') || status.startsWith('C')) {
+      // Rename/copy rows are R<score>\t<old>\t<new>
+      if (fields[2]) return fields[2]
+    } else if (fields[1]) {
+      return fields[1]
+    }
+  }
+  return undefined
 }
 
 async function showAt(hash: string, specPath: string, cwd: string): Promise<string> {
@@ -117,12 +142,20 @@ function diffOperations(oldSpec: ParsedSpec, newSpec: ParsedSpec): OperationChan
   const seenOld = new Set<string>()
   const seenNew = new Set<string>()
 
-  // Direct id matches: compare summary/description
+  // Direct id matches: compare route, summary, description
   for (const [id, newOp] of newById) {
     const oldOp = oldById.get(id)
     if (!oldOp) continue
     seenOld.add(id)
     seenNew.add(id)
+    if (routeKey(oldOp) !== routeKey(newOp)) {
+      changes.push({
+        kind: 'route',
+        operationId: id,
+        before: routeKey(oldOp),
+        after: routeKey(newOp),
+      })
+    }
     if ((oldOp.summary ?? '') !== (newOp.summary ?? '')) {
       changes.push({
         kind: 'summary',
@@ -151,12 +184,13 @@ function diffOperations(oldSpec: ParsedSpec, newSpec: ParsedSpec): OperationChan
     changes.push({ kind: 'renamed', operationId: id, previousOperationId: oldOp.id })
   }
 
-  // Anything remaining in `newById` is added
+  // Anything remaining in `newById` is added, unless its route maps to an
+  // unconsumed old op (that pairing is left to the rename loop above).
   for (const [id] of newById) {
     if (seenNew.has(id)) continue
-    // Also skip if the route is unchanged (defensive)
     const newOp = newById.get(id)!
-    if (oldByRoute.has(routeKey(newOp))) continue
+    const oldAtRoute = oldByRoute.get(routeKey(newOp))
+    if (oldAtRoute && !seenOld.has(oldAtRoute.id)) continue
     changes.push({ kind: 'added', operationId: id })
     seenNew.add(id)
   }
@@ -165,7 +199,8 @@ function diffOperations(oldSpec: ParsedSpec, newSpec: ParsedSpec): OperationChan
   for (const [id] of oldById) {
     if (seenOld.has(id)) continue
     const oldOp = oldById.get(id)!
-    if (newByRoute.has(routeKey(oldOp))) continue
+    const newAtRoute = newByRoute.get(routeKey(oldOp))
+    if (newAtRoute && !seenNew.has(newAtRoute.id)) continue
     changes.push({ kind: 'removed', operationId: id })
     seenOld.add(id)
   }

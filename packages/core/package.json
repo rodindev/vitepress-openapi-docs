@@ -1,6 +1,6 @@
 {
   "name": "vitepress-openapi-docs",
-  "version": "1.7.1",
+  "version": "1.8.0",
   "type": "module",
   "description": "Interactive OpenAPI documentation for VitePress. Lightweight, Vue-native, composable in markdown.",
   "license": "MIT",
@@ -30,7 +30,7 @@
     "dist"
   ],
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "keywords": [
     "vitepress",
@@ -81,19 +81,19 @@
   ],
   "peerDependencies": {
     "vitepress": "^1.0.0",
-    "vue": "^3.3.0",
+    "vue": "^3.5.0",
     "vue-api-playground": "^2.5.0"
   },
   "dependencies": {
     "@scalar/openapi-parser": "^0.25.8",
-    "dompurify": "^3.4.0",
+    "dompurify": "^3.4.11",
     "jsdom": "^29.0.0",
     "marked": "^18.0.0"
   },
   "devDependencies": {
     "@size-limit/preset-small-lib": "^12.1.0",
     "@types/jsdom": "^28.0.1",
-    "@types/node": "^25.6.0",
+    "@types/node": "^25.9.3",
     "size-limit": "^12.1.0"
   }
 }

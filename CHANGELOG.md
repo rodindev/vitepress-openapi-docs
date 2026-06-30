@@ -2,6 +2,34 @@
 
 All notable changes to `vitepress-openapi-docs` and `create-vitepress-openapi-docs`.
 
+## 1.8.0
+
+### Added
+
+- Spec `label` config overrides the OpenAPI `info.title` for the sidebar group header.
+- `theme.methodColors` config recolors HTTP method badges through `--vod-method-*` custom properties.
+- `SearchTrigger` is registered globally alongside the other components.
+
+### Fixed
+
+- The parser now works from the fully dereferenced spec: parameters with `$ref` schemas keep their type labels, path-item `$ref`s no longer drop operations, and `allOf` models render their merged field tables. Schema `$ref`s render as clickable type links (`Pet`, `Pet[]`) instead of bare `object`.
+- The git-history changelog follows spec-file renames, so history before a rename is no longer dropped, and it reports method or path changes on operations whose id stays the same.
+- Authored media-type `examples` (the named-object form) render instead of being replaced by a schema-derived example. `application/*+json` and parametrized JSON content types are recognized for request bodies.
+- SDK snippet tab ids are stable across SSR hydration (`useId` instead of `Math.random`).
+- Cmd+K fuzzy search keeps matches found deep in long descriptions.
+- Server URL variables substitute every occurrence, not just the first.
+
+### Security
+
+- Operation ids and schema names from the spec are sanitized before they become on-disk page paths, so a hostile `operationId` can no longer write outside the output directory. Colliding ids get a numeric suffix and a build warning instead of silently overwriting each other.
+- The embed scanner no longer crashes the build on a dangling symlink and detects multi-line `<OpenApiEndpoint>` tags.
+
+### Changed
+
+- Vue peer requirement is now `>= 3.5` (components use `useId` for stable ids).
+- Node engines require `>= 20`.
+- Internal: the create CLI is split into prompts, generators, and scaffolder modules, and the scaffolder test suite no longer runs a real `npm install`.
+
 ## 1.7.1
 
 ### Fixed

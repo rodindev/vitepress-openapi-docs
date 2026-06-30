@@ -10,7 +10,7 @@
     "clean": "rm -rf node_modules/.vite docs/.vitepress/cache"
   },
   "dependencies": {
-    "vitepress-openapi-docs": "^1.7.1",
+    "vitepress-openapi-docs": "^1.8.0",
     "vue-api-playground": "^2.5.0"
   },
   "devDependencies": {

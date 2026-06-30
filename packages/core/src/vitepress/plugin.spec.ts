@@ -92,6 +92,32 @@ describe('openApiDocs (integration)', () => {
     expect(config.rewrites['_openapi/api/hooks/userCreated.md']).toBe('api/hooks/userCreated.md')
   })
 
+  it('wraps a labelled spec sidebar under its configured label', async () => {
+    const srcDir = await setupFixture()
+    const config = (await openApiDocs(
+      {
+        specs: [
+          { name: 'public', spec: join(srcDir, 'openapi/public.yaml'), prefix: '/api/public' },
+          {
+            name: 'hooks',
+            spec: join(srcDir, 'openapi/webhooks.yaml'),
+            prefix: '/api/hooks',
+            label: 'Webhooks API',
+          },
+        ],
+      },
+      { srcDir }
+    )) as {
+      themeConfig: {
+        sidebar: Record<string, { text: string; items: { link?: string }[] }[]>
+      }
+    }
+    const sidebar = config.themeConfig.sidebar
+    expect(sidebar['/api/hooks/']![0]?.text).toBe('Webhooks API')
+    // unlabelled specs keep the flat tag-group layout
+    expect(sidebar['/api/public/']![0]?.items[0]?.link).toBe('/api/public/users.list')
+  })
+
   it('throws when a hand-written markdown page references an unknown operation id', async () => {
     const srcDir = await setupFixture()
     await writeFile(

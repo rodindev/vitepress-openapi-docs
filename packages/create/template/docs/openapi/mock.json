@@ -4,17 +4,11 @@
     "title": "Mock API",
     "summary": "Full-featured mock REST API for testing, prototyping, and frontend development",
     "description": "## Overview\n\nZero-dependency, in-memory REST API with **11 interconnected resources**, authentication, webhooks, real-time events, and comprehensive query capabilities.\n\n## Features\n\n- **Full CRUD** on all resources with proper HTTP semantics\n- **Filtering** by any field with operators: `_gte`, `_lte`, `_gt`, `_lt`, `_ne`, `_like`\n- **Full-text search** via `?q=` across all fields\n- **Sorting**: `?_sort=field1,field2&_order=desc,asc`\n- **Pagination** with `Link` headers (page or slice-based)\n- **Relations**: `?_expand=user` (parent) and `?_embed=comments` (children)\n- **Field selection**: `?_fields=id,name,email`\n- **Authentication** with Bearer tokens (any password works)\n- **Webhooks** with event subscriptions and delivery history\n- **SSE streaming** for real-time events\n- **Batch operations** for multiple requests in one call\n- **Testing aids**: `?_error=500`, `?_delay=2000`, `/status/:code`, `/echo`\n- **ETag** conditional requests\n- **Rate limiting**: 120 req/60s per IP",
-    "version": "2.0.0",
-    "contact": {
-      "name": "Ilya Rodin",
-      "url": "https://rodin.dev",
-      "email": "hello@rodin.dev"
-    },
+    "version": "2.0.1",
     "license": {
       "name": "MIT",
       "identifier": "MIT"
-    },
-    "termsOfService": "https://rodin.dev"
+    }
   },
   "jsonSchemaDialect": "https://json-schema.org/draft/2020-12/schema",
   "externalDocs": {
@@ -253,6 +247,41 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/UserInput"
+              },
+              "examples": {
+                "minimal": {
+                  "summary": "Minimal (required only)",
+                  "value": {
+                    "firstName": "Jane",
+                    "lastName": "Doe",
+                    "email": "jane.doe@example.com"
+                  }
+                },
+                "full": {
+                  "summary": "Full profile",
+                  "value": {
+                    "firstName": "Alex",
+                    "lastName": "Morgan",
+                    "email": "alex.morgan@example.com",
+                    "username": "amorgan",
+                    "phone": "+1-555-123-4567",
+                    "role": "editor",
+                    "age": 32,
+                    "bio": "Full-stack dev. Caffeine-powered.",
+                    "isActive": true,
+                    "website": "https://morgan.dev"
+                  }
+                },
+                "admin": {
+                  "summary": "Admin user",
+                  "value": {
+                    "firstName": "Sam",
+                    "lastName": "Admin",
+                    "email": "sam.admin@example.com",
+                    "role": "admin",
+                    "isActive": true
+                  }
+                }
               }
             }
           }
@@ -378,6 +407,41 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/UserInput"
+              },
+              "examples": {
+                "minimal": {
+                  "summary": "Minimal (required only)",
+                  "value": {
+                    "firstName": "Jane",
+                    "lastName": "Doe",
+                    "email": "jane.doe@example.com"
+                  }
+                },
+                "full": {
+                  "summary": "Full profile",
+                  "value": {
+                    "firstName": "Alex",
+                    "lastName": "Morgan",
+                    "email": "alex.morgan@example.com",
+                    "username": "amorgan",
+                    "phone": "+1-555-123-4567",
+                    "role": "editor",
+                    "age": 32,
+                    "bio": "Full-stack dev. Caffeine-powered.",
+                    "isActive": true,
+                    "website": "https://morgan.dev"
+                  }
+                },
+                "admin": {
+                  "summary": "Admin user",
+                  "value": {
+                    "firstName": "Sam",
+                    "lastName": "Admin",
+                    "email": "sam.admin@example.com",
+                    "role": "admin",
+                    "isActive": true
+                  }
+                }
               }
             }
           }
@@ -425,7 +489,8 @@
               }
             }
           }
-        }
+        },
+        "deprecated": true
       },
       "patch": {
         "operationId": "updateUser",
@@ -440,6 +505,26 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/UserInput"
+              },
+              "examples": {
+                "deactivate": {
+                  "summary": "Deactivate account",
+                  "value": {
+                    "isActive": false
+                  }
+                },
+                "promote": {
+                  "summary": "Promote to admin",
+                  "value": {
+                    "role": "admin"
+                  }
+                },
+                "updateBio": {
+                  "summary": "Update bio",
+                  "value": {
+                    "bio": "Back to shipping."
+                  }
+                }
               }
             }
           }
@@ -633,6 +718,40 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/PostInput"
+              },
+              "examples": {
+                "draft": {
+                  "summary": "New draft",
+                  "value": {
+                    "userId": 1,
+                    "title": "TypeScript tips I learned the hard way",
+                    "body": "First, never use `any`…",
+                    "excerpt": "Ten hard-won lessons from the trenches.",
+                    "tags": [
+                      "typescript",
+                      "engineering"
+                    ],
+                    "status": "draft"
+                  }
+                },
+                "published": {
+                  "summary": "Published with metadata",
+                  "value": {
+                    "userId": 1,
+                    "title": "Shipping a mock API in 500 lines",
+                    "body": "Zero dependencies, full REST semantics…",
+                    "excerpt": "How to build a fake backend that teaches real habits.",
+                    "tags": [
+                      "node",
+                      "api",
+                      "mock"
+                    ],
+                    "status": "published",
+                    "featured": true,
+                    "coverImage": "https://picsum.photos/1200/600?random=1",
+                    "readingTime": 7
+                  }
+                }
               }
             }
           }
@@ -758,6 +877,40 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/PostInput"
+              },
+              "examples": {
+                "draft": {
+                  "summary": "New draft",
+                  "value": {
+                    "userId": 1,
+                    "title": "TypeScript tips I learned the hard way",
+                    "body": "First, never use `any`…",
+                    "excerpt": "Ten hard-won lessons from the trenches.",
+                    "tags": [
+                      "typescript",
+                      "engineering"
+                    ],
+                    "status": "draft"
+                  }
+                },
+                "published": {
+                  "summary": "Published with metadata",
+                  "value": {
+                    "userId": 1,
+                    "title": "Shipping a mock API in 500 lines",
+                    "body": "Zero dependencies, full REST semantics…",
+                    "excerpt": "How to build a fake backend that teaches real habits.",
+                    "tags": [
+                      "node",
+                      "api",
+                      "mock"
+                    ],
+                    "status": "published",
+                    "featured": true,
+                    "coverImage": "https://picsum.photos/1200/600?random=1",
+                    "readingTime": 7
+                  }
+                }
               }
             }
           }
@@ -805,7 +958,8 @@
               }
             }
           }
-        }
+        },
+        "deprecated": true
       },
       "patch": {
         "operationId": "updatePost",
@@ -820,6 +974,26 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/PostInput"
+              },
+              "examples": {
+                "publish": {
+                  "summary": "Publish draft",
+                  "value": {
+                    "status": "published"
+                  }
+                },
+                "feature": {
+                  "summary": "Feature it",
+                  "value": {
+                    "featured": true
+                  }
+                },
+                "archive": {
+                  "summary": "Archive",
+                  "value": {
+                    "status": "archived"
+                  }
+                }
               }
             }
           }
@@ -1013,6 +1187,25 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/CommentInput"
+              },
+              "examples": {
+                "basic": {
+                  "summary": "Plain comment",
+                  "value": {
+                    "postId": 1,
+                    "userId": 2,
+                    "body": "Great write-up — saved me an hour of debugging."
+                  }
+                },
+                "reply": {
+                  "summary": "Reply with likes pre-set",
+                  "value": {
+                    "postId": 1,
+                    "userId": 3,
+                    "body": "Agreed. The `_like` operator alone is worth it.",
+                    "likes": 5
+                  }
+                }
               }
             }
           }
@@ -1138,6 +1331,25 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/CommentInput"
+              },
+              "examples": {
+                "basic": {
+                  "summary": "Plain comment",
+                  "value": {
+                    "postId": 1,
+                    "userId": 2,
+                    "body": "Great write-up — saved me an hour of debugging."
+                  }
+                },
+                "reply": {
+                  "summary": "Reply with likes pre-set",
+                  "value": {
+                    "postId": 1,
+                    "userId": 3,
+                    "body": "Agreed. The `_like` operator alone is worth it.",
+                    "likes": 5
+                  }
+                }
               }
             }
           }
@@ -1200,6 +1412,20 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/CommentInput"
+              },
+              "examples": {
+                "edit": {
+                  "summary": "Edit body",
+                  "value": {
+                    "body": "Edited: actually the _like operator is the killer feature."
+                  }
+                },
+                "upvote": {
+                  "summary": "Bump likes",
+                  "value": {
+                    "likes": 10
+                  }
+                }
               }
             }
           }
@@ -1393,6 +1619,37 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/TodoInput"
+              },
+              "examples": {
+                "quick": {
+                  "summary": "Quick task",
+                  "value": {
+                    "userId": 1,
+                    "title": "Reply to launch-day emails"
+                  }
+                },
+                "scheduled": {
+                  "summary": "Scheduled with priority",
+                  "value": {
+                    "userId": 1,
+                    "title": "Prepare Q3 roadmap deck",
+                    "priority": "high",
+                    "dueDate": "2026-07-01T17:00:00.000Z",
+                    "tags": [
+                      "planning",
+                      "quarterly"
+                    ]
+                  }
+                },
+                "done": {
+                  "summary": "Completed already",
+                  "value": {
+                    "userId": 1,
+                    "title": "Deploy v2.1.0",
+                    "priority": "medium",
+                    "completed": true
+                  }
+                }
               }
             }
           }
@@ -1518,6 +1775,37 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/TodoInput"
+              },
+              "examples": {
+                "quick": {
+                  "summary": "Quick task",
+                  "value": {
+                    "userId": 1,
+                    "title": "Reply to launch-day emails"
+                  }
+                },
+                "scheduled": {
+                  "summary": "Scheduled with priority",
+                  "value": {
+                    "userId": 1,
+                    "title": "Prepare Q3 roadmap deck",
+                    "priority": "high",
+                    "dueDate": "2026-07-01T17:00:00.000Z",
+                    "tags": [
+                      "planning",
+                      "quarterly"
+                    ]
+                  }
+                },
+                "done": {
+                  "summary": "Completed already",
+                  "value": {
+                    "userId": 1,
+                    "title": "Deploy v2.1.0",
+                    "priority": "medium",
+                    "completed": true
+                  }
+                }
               }
             }
           }
@@ -1580,6 +1868,26 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/TodoInput"
+              },
+              "examples": {
+                "complete": {
+                  "summary": "Mark done",
+                  "value": {
+                    "completed": true
+                  }
+                },
+                "reprioritize": {
+                  "summary": "Bump priority",
+                  "value": {
+                    "priority": "critical"
+                  }
+                },
+                "reschedule": {
+                  "summary": "Push due date",
+                  "value": {
+                    "dueDate": "2026-09-01T17:00:00.000Z"
+                  }
+                }
               }
             }
           }
@@ -1773,6 +2081,25 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/AlbumInput"
+              },
+              "examples": {
+                "basic": {
+                  "summary": "Simple album",
+                  "value": {
+                    "userId": 1,
+                    "title": "Summer 2026"
+                  }
+                },
+                "rich": {
+                  "summary": "Rich album with cover",
+                  "value": {
+                    "userId": 1,
+                    "title": "Iceland road trip",
+                    "description": "Ten days chasing waterfalls and sheep.",
+                    "coverImage": "https://picsum.photos/800/600?random=42",
+                    "isPublic": true
+                  }
+                }
               }
             }
           }
@@ -1898,6 +2225,25 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/AlbumInput"
+              },
+              "examples": {
+                "basic": {
+                  "summary": "Simple album",
+                  "value": {
+                    "userId": 1,
+                    "title": "Summer 2026"
+                  }
+                },
+                "rich": {
+                  "summary": "Rich album with cover",
+                  "value": {
+                    "userId": 1,
+                    "title": "Iceland road trip",
+                    "description": "Ten days chasing waterfalls and sheep.",
+                    "coverImage": "https://picsum.photos/800/600?random=42",
+                    "isPublic": true
+                  }
+                }
               }
             }
           }
@@ -1960,6 +2306,20 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/AlbumInput"
+              },
+              "examples": {
+                "makePrivate": {
+                  "summary": "Make private",
+                  "value": {
+                    "isPublic": false
+                  }
+                },
+                "rename": {
+                  "summary": "Rename",
+                  "value": {
+                    "title": "Iceland 2026 — final cut"
+                  }
+                }
               }
             }
           }
@@ -2153,6 +2513,21 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/PhotoInput"
+              },
+              "examples": {
+                "single": {
+                  "summary": "One photo",
+                  "value": {
+                    "albumId": 1,
+                    "title": "Sunset at Vík",
+                    "url": "https://picsum.photos/1600/1067?random=1",
+                    "thumbnailUrl": "https://picsum.photos/150/150?random=1",
+                    "width": 1600,
+                    "height": 1067,
+                    "format": "jpeg",
+                    "size": 284532
+                  }
+                }
               }
             }
           }
@@ -2278,6 +2653,21 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/PhotoInput"
+              },
+              "examples": {
+                "single": {
+                  "summary": "One photo",
+                  "value": {
+                    "albumId": 1,
+                    "title": "Sunset at Vík",
+                    "url": "https://picsum.photos/1600/1067?random=1",
+                    "thumbnailUrl": "https://picsum.photos/150/150?random=1",
+                    "width": 1600,
+                    "height": 1067,
+                    "format": "jpeg",
+                    "size": 284532
+                  }
+                }
               }
             }
           }
@@ -2340,6 +2730,14 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/PhotoInput"
+              },
+              "examples": {
+                "retitle": {
+                  "summary": "Rename photo",
+                  "value": {
+                    "title": "Vík í Mýrdal — golden hour"
+                  }
+                }
               }
             }
           }
@@ -2533,6 +2931,24 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/CategoryInput"
+              },
+              "examples": {
+                "minimal": {
+                  "summary": "Minimal",
+                  "value": {
+                    "name": "Electronics",
+                    "slug": "electronics"
+                  }
+                },
+                "full": {
+                  "summary": "With description and image",
+                  "value": {
+                    "name": "Outdoor gear",
+                    "slug": "outdoor-gear",
+                    "description": "Tents, packs, stoves, everything that holds up in the rain.",
+                    "image": "https://picsum.photos/800/400?random=7"
+                  }
+                }
               }
             }
           }
@@ -2658,6 +3074,24 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/CategoryInput"
+              },
+              "examples": {
+                "minimal": {
+                  "summary": "Minimal",
+                  "value": {
+                    "name": "Electronics",
+                    "slug": "electronics"
+                  }
+                },
+                "full": {
+                  "summary": "With description and image",
+                  "value": {
+                    "name": "Outdoor gear",
+                    "slug": "outdoor-gear",
+                    "description": "Tents, packs, stoves, everything that holds up in the rain.",
+                    "image": "https://picsum.photos/800/400?random=7"
+                  }
+                }
               }
             }
           }
@@ -2720,6 +3154,20 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/CategoryInput"
+              },
+              "examples": {
+                "rename": {
+                  "summary": "Rename category",
+                  "value": {
+                    "name": "Consumer electronics"
+                  }
+                },
+                "rebrand": {
+                  "summary": "Update image",
+                  "value": {
+                    "image": "https://picsum.photos/800/400?random=17"
+                  }
+                }
               }
             }
           }
@@ -2913,6 +3361,39 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/ProductInput"
+              },
+              "examples": {
+                "minimal": {
+                  "summary": "Minimal product",
+                  "value": {
+                    "categoryId": 1,
+                    "name": "Wireless earbuds",
+                    "price": 79.99,
+                    "sku": "SKU-01001",
+                    "stock": 100
+                  }
+                },
+                "sale": {
+                  "summary": "On sale, featured",
+                  "value": {
+                    "categoryId": 1,
+                    "name": "Ultra-light backpack",
+                    "description": "28 L, waterproof, 650 g.",
+                    "price": 89,
+                    "originalPrice": 120,
+                    "currency": "USD",
+                    "sku": "SKU-02042",
+                    "stock": 40,
+                    "rating": 4.8,
+                    "reviewCount": 312,
+                    "isFeatured": true,
+                    "tags": [
+                      "backpack",
+                      "outdoor",
+                      "sale"
+                    ]
+                  }
+                }
               }
             }
           }
@@ -3038,6 +3519,39 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/ProductInput"
+              },
+              "examples": {
+                "minimal": {
+                  "summary": "Minimal product",
+                  "value": {
+                    "categoryId": 1,
+                    "name": "Wireless earbuds",
+                    "price": 79.99,
+                    "sku": "SKU-01001",
+                    "stock": 100
+                  }
+                },
+                "sale": {
+                  "summary": "On sale, featured",
+                  "value": {
+                    "categoryId": 1,
+                    "name": "Ultra-light backpack",
+                    "description": "28 L, waterproof, 650 g.",
+                    "price": 89,
+                    "originalPrice": 120,
+                    "currency": "USD",
+                    "sku": "SKU-02042",
+                    "stock": 40,
+                    "rating": 4.8,
+                    "reviewCount": 312,
+                    "isFeatured": true,
+                    "tags": [
+                      "backpack",
+                      "outdoor",
+                      "sale"
+                    ]
+                  }
+                }
               }
             }
           }
@@ -3100,6 +3614,26 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/ProductInput"
+              },
+              "examples": {
+                "markdown": {
+                  "summary": "Drop the price",
+                  "value": {
+                    "price": 59.99
+                  }
+                },
+                "restock": {
+                  "summary": "Restock inventory",
+                  "value": {
+                    "stock": 500
+                  }
+                },
+                "feature": {
+                  "summary": "Feature product",
+                  "value": {
+                    "isFeatured": true
+                  }
+                }
               }
             }
           }
@@ -3293,6 +3827,39 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/OrderInput"
+              },
+              "examples": {
+                "twoItems": {
+                  "summary": "Two-item order",
+                  "value": {
+                    "userId": 1,
+                    "items": [
+                      {
+                        "productId": 1,
+                        "quantity": 2,
+                        "price": 79.99
+                      },
+                      {
+                        "productId": 2,
+                        "quantity": 1,
+                        "price": 89
+                      }
+                    ],
+                    "subtotal": 248.98,
+                    "tax": 19.92,
+                    "shipping": 0,
+                    "total": 268.9,
+                    "currency": "USD",
+                    "paymentMethod": "credit_card",
+                    "shippingAddress": {
+                      "street": "123 Main St",
+                      "city": "Austin",
+                      "state": "TX",
+                      "zip": "78701",
+                      "country": "US"
+                    }
+                  }
+                }
               }
             }
           }
@@ -3418,6 +3985,39 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/OrderInput"
+              },
+              "examples": {
+                "twoItems": {
+                  "summary": "Two-item order",
+                  "value": {
+                    "userId": 1,
+                    "items": [
+                      {
+                        "productId": 1,
+                        "quantity": 2,
+                        "price": 79.99
+                      },
+                      {
+                        "productId": 2,
+                        "quantity": 1,
+                        "price": 89
+                      }
+                    ],
+                    "subtotal": 248.98,
+                    "tax": 19.92,
+                    "shipping": 0,
+                    "total": 268.9,
+                    "currency": "USD",
+                    "paymentMethod": "credit_card",
+                    "shippingAddress": {
+                      "street": "123 Main St",
+                      "city": "Austin",
+                      "state": "TX",
+                      "zip": "78701",
+                      "country": "US"
+                    }
+                  }
+                }
               }
             }
           }
@@ -3480,6 +4080,27 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/OrderInput"
+              },
+              "examples": {
+                "ship": {
+                  "summary": "Mark shipped",
+                  "value": {
+                    "status": "shipped",
+                    "trackingNumber": "1Z999AA10123456784"
+                  }
+                },
+                "deliver": {
+                  "summary": "Mark delivered",
+                  "value": {
+                    "status": "delivered"
+                  }
+                },
+                "cancel": {
+                  "summary": "Cancel order",
+                  "value": {
+                    "status": "cancelled"
+                  }
+                }
               }
             }
           }
@@ -3673,6 +4294,32 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/ReviewInput"
+              },
+              "examples": {
+                "positive": {
+                  "summary": "Five-star review",
+                  "value": {
+                    "productId": 1,
+                    "userId": 1,
+                    "rating": 5,
+                    "title": "Better than I expected",
+                    "body": "Quality is on par with gear twice the price. Would buy again.",
+                    "isVerified": true,
+                    "helpful": 12
+                  }
+                },
+                "critical": {
+                  "summary": "Two-star review",
+                  "value": {
+                    "productId": 1,
+                    "userId": 2,
+                    "rating": 2,
+                    "title": "Nice idea, weak execution",
+                    "body": "Stitching frayed after two weeks. Returning.",
+                    "isVerified": true,
+                    "helpful": 3
+                  }
+                }
               }
             }
           }
@@ -3798,6 +4445,32 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/ReviewInput"
+              },
+              "examples": {
+                "positive": {
+                  "summary": "Five-star review",
+                  "value": {
+                    "productId": 1,
+                    "userId": 1,
+                    "rating": 5,
+                    "title": "Better than I expected",
+                    "body": "Quality is on par with gear twice the price. Would buy again.",
+                    "isVerified": true,
+                    "helpful": 12
+                  }
+                },
+                "critical": {
+                  "summary": "Two-star review",
+                  "value": {
+                    "productId": 1,
+                    "userId": 2,
+                    "rating": 2,
+                    "title": "Nice idea, weak execution",
+                    "body": "Stitching frayed after two weeks. Returning.",
+                    "isVerified": true,
+                    "helpful": 3
+                  }
+                }
               }
             }
           }
@@ -3860,6 +4533,20 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/ReviewInput"
+              },
+              "examples": {
+                "upvote": {
+                  "summary": "Mark more helpful",
+                  "value": {
+                    "helpful": 42
+                  }
+                },
+                "verify": {
+                  "summary": "Mark verified",
+                  "value": {
+                    "isVerified": true
+                  }
+                }
               }
             }
           }
@@ -4053,6 +4740,38 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/NotificationInput"
+              },
+              "examples": {
+                "info": {
+                  "summary": "Info notification",
+                  "value": {
+                    "userId": 1,
+                    "type": "info",
+                    "title": "New feature available",
+                    "message": "Batch operations are now live — run up to 20 writes in one call.",
+                    "link": "/guide/batch"
+                  }
+                },
+                "success": {
+                  "summary": "Success notification",
+                  "value": {
+                    "userId": 1,
+                    "type": "success",
+                    "title": "Payment received",
+                    "message": "Your order #4217 is confirmed.",
+                    "link": "/orders/4217"
+                  }
+                },
+                "error": {
+                  "summary": "Error notification",
+                  "value": {
+                    "userId": 1,
+                    "type": "error",
+                    "title": "Deploy failed",
+                    "message": "CI failed on step: build. Click to view logs.",
+                    "link": "https://ci.example.com/runs/982"
+                  }
+                }
               }
             }
           }
@@ -4178,6 +4897,38 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/NotificationInput"
+              },
+              "examples": {
+                "info": {
+                  "summary": "Info notification",
+                  "value": {
+                    "userId": 1,
+                    "type": "info",
+                    "title": "New feature available",
+                    "message": "Batch operations are now live — run up to 20 writes in one call.",
+                    "link": "/guide/batch"
+                  }
+                },
+                "success": {
+                  "summary": "Success notification",
+                  "value": {
+                    "userId": 1,
+                    "type": "success",
+                    "title": "Payment received",
+                    "message": "Your order #4217 is confirmed.",
+                    "link": "/orders/4217"
+                  }
+                },
+                "error": {
+                  "summary": "Error notification",
+                  "value": {
+                    "userId": 1,
+                    "type": "error",
+                    "title": "Deploy failed",
+                    "message": "CI failed on step: build. Click to view logs.",
+                    "link": "https://ci.example.com/runs/982"
+                  }
+                }
               }
             }
           }
@@ -4240,6 +4991,20 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/NotificationInput"
+              },
+              "examples": {
+                "markRead": {
+                  "summary": "Mark as read",
+                  "value": {
+                    "read": true
+                  }
+                },
+                "retitle": {
+                  "summary": "Update title",
+                  "value": {
+                    "title": "Action required"
+                  }
+                }
               }
             }
           }
@@ -5200,6 +5965,27 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/AuthCredentials"
+              },
+              "examples": {
+                "basic": {
+                  "summary": "Minimal signup",
+                  "value": {
+                    "email": "new.user@example.com",
+                    "password": "correcthorsebatterystaple",
+                    "firstName": "New",
+                    "lastName": "User"
+                  }
+                },
+                "withUsername": {
+                  "summary": "With username",
+                  "value": {
+                    "email": "new.user@example.com",
+                    "password": "correcthorsebatterystaple",
+                    "firstName": "New",
+                    "lastName": "User",
+                    "username": "newuser"
+                  }
+                }
               }
             }
           }
@@ -5232,7 +6018,7 @@
         "tags": [
           "auth"
         ],
-        "description": "Authenticate with email/password. **Mock: any password works.** Token valid 1 hour.",
+        "description": "Authenticate with email/password. **Mock: any password works for any seeded email.** The demo account `demo@example.com` is always present and carries admin role — use it for docs Try-It. Token valid 1 hour.",
         "requestBody": {
           "required": true,
           "content": {
@@ -5241,7 +6027,7 @@
                 "$ref": "#/components/schemas/AuthCredentials"
               },
               "example": {
-                "email": "james.smith@example.com",
+                "email": "demo@example.com",
                 "password": "any"
               }
             }
@@ -5357,6 +6143,36 @@
         "security": [
           {
             "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/auth/basic-demo": {
+      "get": {
+        "operationId": "basicAuthDemo",
+        "summary": "HTTP Basic demo",
+        "tags": [
+          "auth"
+        ],
+        "description": "Demonstrates HTTP Basic — intentionally present so API docs generators can render the Basic auth block. Any credentials accepted. Echoes the username back so you can confirm the header reached the server.",
+        "responses": {
+          "200": {
+            "description": "Authenticated with Basic",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicDemoResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "basicAuth": []
           }
         ]
       }
@@ -5507,6 +6323,29 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/WebhookInput"
+              },
+              "examples": {
+                "pause": {
+                  "summary": "Pause deliveries",
+                  "value": {
+                    "isActive": false
+                  }
+                },
+                "retarget": {
+                  "summary": "Change target URL",
+                  "value": {
+                    "url": "https://new.example.com/hooks/mock"
+                  }
+                },
+                "resubscribe": {
+                  "summary": "Narrow events",
+                  "value": {
+                    "events": [
+                      "orders.created",
+                      "orders.updated"
+                    ]
+                  }
+                }
               }
             }
           }
@@ -5680,12 +6519,24 @@
         "tags": [
           "utils"
         ],
+        "description": "Mirror the request body, query, and headers back — handy when you want to see exactly what your client is sending.",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
                 "additionalProperties": true
+              },
+              "example": {
+                "ping": "pong",
+                "nested": {
+                  "works": true
+                },
+                "array": [
+                  1,
+                  2,
+                  3
+                ]
               }
             }
           }
@@ -5921,7 +6772,7 @@
         "tags": [
           "utils"
         ],
-        "description": "Simulates upload — no actual file storage.",
+        "description": "Simulates upload — no actual file storage. Accepts raw binary, multipart form, or JSON with a filename hint. Returns a fake CDN URL so your frontend can wire the full happy path without real object storage.",
         "requestBody": {
           "content": {
             "application/octet-stream": {
@@ -5949,6 +6800,9 @@
                     "type": "string"
                   }
                 }
+              },
+              "example": {
+                "filename": "document.pdf"
               }
             }
           }
@@ -6155,6 +7009,39 @@
         },
         "security": []
       }
+    },
+    "/admin/report": {
+      "get": {
+        "operationId": "getAdminReport",
+        "summary": "Admin aggregate report",
+        "tags": [
+          "database"
+        ],
+        "description": "Read-only snapshot of record counts, active webhooks, and token count. Accepts either Bearer or Basic — the auth block in docs should show both alternatives.",
+        "responses": {
+          "200": {
+            "description": "Report payload",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminReport"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "basicAuth": []
+          }
+        ]
+      }
     }
   },
   "webhooks": {
@@ -6180,34 +7067,34 @@
                 "resourceId": 1,
                 "data": {
                   "id": 1,
-                  "firstName": "Emily",
-                  "lastName": "Hernandez",
-                  "email": "emily.hernandez@mock.dev",
-                  "username": "emilyhernandez550",
-                  "avatar": "https://i.pravatar.cc/150?u=1",
-                  "phone": "+1-801-124-5328",
+                  "firstName": "Demo",
+                  "lastName": "User",
+                  "email": "demo@example.com",
+                  "username": "demo",
+                  "avatar": "https://i.pravatar.cc/150?u=demo",
+                  "phone": "+1-555-000-0001",
                   "address": {
-                    "street": "8567 Jefferson Dr",
-                    "city": "Fresno",
-                    "state": "KY",
-                    "zipCode": "37490",
-                    "country": "AU",
+                    "street": "1 Demo Way",
+                    "city": "Austin",
+                    "state": "TX",
+                    "zipCode": "78701",
+                    "country": "US",
                     "geo": {
-                      "lat": -81.94149,
-                      "lng": 81.999216
+                      "lat": 30.2672,
+                      "lng": -97.7431
                     }
                   },
                   "company": {
-                    "name": "Cyberdyne Systems",
-                    "catchPhrase": "Streamline operations"
+                    "name": "Demo Corp",
+                    "catchPhrase": "Seeded for docs and testing."
                   },
-                  "website": "https://emilyhernandez.com",
+                  "website": "https://example.com/demo",
                   "role": "admin",
-                  "age": 65,
-                  "bio": "Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra.",
+                  "age": 30,
+                  "bio": "Seeded demo account. Log in with any password.",
                   "isActive": true,
-                  "createdAt": "2022-05-29T11:27:51.291Z",
-                  "updatedAt": "2026-08-23T17:13:33.168Z"
+                  "createdAt": "2024-01-01T00:00:00.000Z",
+                  "updatedAt": "2026-04-21T00:00:00.000Z"
                 }
               }
             }
@@ -6245,34 +7132,34 @@
                 "resourceId": 1,
                 "data": {
                   "id": 1,
-                  "firstName": "Emily",
-                  "lastName": "Hernandez",
-                  "email": "emily.hernandez@mock.dev",
-                  "username": "emilyhernandez550",
-                  "avatar": "https://i.pravatar.cc/150?u=1",
-                  "phone": "+1-801-124-5328",
+                  "firstName": "Demo",
+                  "lastName": "User",
+                  "email": "demo@example.com",
+                  "username": "demo",
+                  "avatar": "https://i.pravatar.cc/150?u=demo",
+                  "phone": "+1-555-000-0001",
                   "address": {
-                    "street": "8567 Jefferson Dr",
-                    "city": "Fresno",
-                    "state": "KY",
-                    "zipCode": "37490",
-                    "country": "AU",
+                    "street": "1 Demo Way",
+                    "city": "Austin",
+                    "state": "TX",
+                    "zipCode": "78701",
+                    "country": "US",
                     "geo": {
-                      "lat": -81.94149,
-                      "lng": 81.999216
+                      "lat": 30.2672,
+                      "lng": -97.7431
                     }
                   },
                   "company": {
-                    "name": "Cyberdyne Systems",
-                    "catchPhrase": "Streamline operations"
+                    "name": "Demo Corp",
+                    "catchPhrase": "Seeded for docs and testing."
                   },
-                  "website": "https://emilyhernandez.com",
+                  "website": "https://example.com/demo",
                   "role": "admin",
-                  "age": 65,
-                  "bio": "Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra.",
+                  "age": 30,
+                  "bio": "Seeded demo account. Log in with any password.",
                   "isActive": true,
-                  "createdAt": "2022-05-29T11:27:51.291Z",
-                  "updatedAt": "2026-08-23T17:13:33.168Z"
+                  "createdAt": "2024-01-01T00:00:00.000Z",
+                  "updatedAt": "2026-04-21T00:00:00.000Z"
                 }
               }
             }
@@ -6310,34 +7197,34 @@
                 "resourceId": 1,
                 "data": {
                   "id": 1,
-                  "firstName": "Emily",
-                  "lastName": "Hernandez",
-                  "email": "emily.hernandez@mock.dev",
-                  "username": "emilyhernandez550",
-                  "avatar": "https://i.pravatar.cc/150?u=1",
-                  "phone": "+1-801-124-5328",
+                  "firstName": "Demo",
+                  "lastName": "User",
+                  "email": "demo@example.com",
+                  "username": "demo",
+                  "avatar": "https://i.pravatar.cc/150?u=demo",
+                  "phone": "+1-555-000-0001",
                   "address": {
-                    "street": "8567 Jefferson Dr",
-                    "city": "Fresno",
-                    "state": "KY",
-                    "zipCode": "37490",
-                    "country": "AU",
+                    "street": "1 Demo Way",
+                    "city": "Austin",
+                    "state": "TX",
+                    "zipCode": "78701",
+                    "country": "US",
                     "geo": {
-                      "lat": -81.94149,
-                      "lng": 81.999216
+                      "lat": 30.2672,
+                      "lng": -97.7431
                     }
                   },
                   "company": {
-                    "name": "Cyberdyne Systems",
-                    "catchPhrase": "Streamline operations"
+                    "name": "Demo Corp",
+                    "catchPhrase": "Seeded for docs and testing."
                   },
-                  "website": "https://emilyhernandez.com",
+                  "website": "https://example.com/demo",
                   "role": "admin",
-                  "age": 65,
-                  "bio": "Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra.",
+                  "age": 30,
+                  "bio": "Seeded demo account. Log in with any password.",
                   "isActive": true,
-                  "createdAt": "2022-05-29T11:27:51.291Z",
-                  "updatedAt": "2026-08-23T17:13:33.168Z"
+                  "createdAt": "2024-01-01T00:00:00.000Z",
+                  "updatedAt": "2026-04-21T00:00:00.000Z"
                 }
               }
             }
@@ -6375,22 +7262,22 @@
                 "resourceId": 1,
                 "data": {
                   "id": 1,
-                  "userId": 39,
-                  "title": "Building Scalable Node.js Applications",
-                  "slug": "serverless-architecture-overview",
-                  "body": "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n\nUt enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\n\nPhasellus ultrices nulla quis nibh. Quisque a lectus. Donec consectetuer ligula vulputate sem tristique cursus.\n\nFusce commodo aliquam arcu. Nam commodo suscipit quam. Quisque id odio.",
-                  "excerpt": "Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae....",
+                  "userId": 1,
+                  "title": "Performance Optimization Tips",
+                  "slug": "web-security-fundamentals",
+                  "body": "Fusce commodo aliquam arcu. Nam commodo suscipit quam. Quisque id odio.\n\nCurabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra.",
+                  "excerpt": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliq...",
                   "tags": [
-                    "react"
+                    "ux"
                   ],
-                  "status": "archived",
-                  "views": 1087,
-                  "likes": 170,
+                  "status": "published",
+                  "views": 16848,
+                  "likes": 28,
                   "featured": false,
                   "coverImage": "https://picsum.photos/seed/1/800/400",
-                  "readingTime": 14,
-                  "createdAt": "2025-08-21T09:58:31.155Z",
-                  "updatedAt": "2025-08-21T09:58:31.155Z"
+                  "readingTime": 7,
+                  "createdAt": "2026-01-21T19:36:04.116Z",
+                  "updatedAt": "2026-01-21T19:36:04.116Z"
                 }
               }
             }
@@ -6428,22 +7315,22 @@
                 "resourceId": 1,
                 "data": {
                   "id": 1,
-                  "userId": 39,
-                  "title": "Building Scalable Node.js Applications",
-                  "slug": "serverless-architecture-overview",
-                  "body": "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n\nUt enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\n\nPhasellus ultrices nulla quis nibh. Quisque a lectus. Donec consectetuer ligula vulputate sem tristique cursus.\n\nFusce commodo aliquam arcu. Nam commodo suscipit quam. Quisque id odio.",
-                  "excerpt": "Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae....",
+                  "userId": 1,
+                  "title": "Performance Optimization Tips",
+                  "slug": "web-security-fundamentals",
+                  "body": "Fusce commodo aliquam arcu. Nam commodo suscipit quam. Quisque id odio.\n\nCurabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra.",
+                  "excerpt": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliq...",
                   "tags": [
-                    "react"
+                    "ux"
                   ],
-                  "status": "archived",
-                  "views": 1087,
-                  "likes": 170,
+                  "status": "published",
+                  "views": 16848,
+                  "likes": 28,
                   "featured": false,
                   "coverImage": "https://picsum.photos/seed/1/800/400",
-                  "readingTime": 14,
-                  "createdAt": "2025-08-21T09:58:31.155Z",
-                  "updatedAt": "2025-08-21T09:58:31.155Z"
+                  "readingTime": 7,
+                  "createdAt": "2026-01-21T19:36:04.116Z",
+                  "updatedAt": "2026-01-21T19:36:04.116Z"
                 }
               }
             }
@@ -6481,22 +7368,22 @@
                 "resourceId": 1,
                 "data": {
                   "id": 1,
-                  "userId": 39,
-                  "title": "Building Scalable Node.js Applications",
-                  "slug": "serverless-architecture-overview",
-                  "body": "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n\nUt enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\n\nPhasellus ultrices nulla quis nibh. Quisque a lectus. Donec consectetuer ligula vulputate sem tristique cursus.\n\nFusce commodo aliquam arcu. Nam commodo suscipit quam. Quisque id odio.",
-                  "excerpt": "Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae....",
+                  "userId": 1,
+                  "title": "Performance Optimization Tips",
+                  "slug": "web-security-fundamentals",
+                  "body": "Fusce commodo aliquam arcu. Nam commodo suscipit quam. Quisque id odio.\n\nCurabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra.",
+                  "excerpt": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliq...",
                   "tags": [
-                    "react"
+                    "ux"
                   ],
-                  "status": "archived",
-                  "views": 1087,
-                  "likes": 170,
+                  "status": "published",
+                  "views": 16848,
+                  "likes": 28,
                   "featured": false,
                   "coverImage": "https://picsum.photos/seed/1/800/400",
-                  "readingTime": 14,
-                  "createdAt": "2025-08-21T09:58:31.155Z",
-                  "updatedAt": "2025-08-21T09:58:31.155Z"
+                  "readingTime": 7,
+                  "createdAt": "2026-01-21T19:36:04.116Z",
+                  "updatedAt": "2026-01-21T19:36:04.116Z"
                 }
               }
             }
@@ -6534,11 +7421,11 @@
                 "resourceId": 1,
                 "data": {
                   "id": 1,
-                  "postId": 106,
-                  "userId": 13,
-                  "body": "This is exactly what I needed. Bookmarked for future reference.",
-                  "likes": 21,
-                  "createdAt": "2024-05-03T17:33:28.015Z"
+                  "postId": 1,
+                  "userId": 1,
+                  "body": "How does this compare to the approach described in the official docs?",
+                  "likes": 16,
+                  "createdAt": "2023-04-28T06:59:47.906Z"
                 }
               }
             }
@@ -6576,11 +7463,11 @@
                 "resourceId": 1,
                 "data": {
                   "id": 1,
-                  "postId": 106,
-                  "userId": 13,
-                  "body": "This is exactly what I needed. Bookmarked for future reference.",
-                  "likes": 21,
-                  "createdAt": "2024-05-03T17:33:28.015Z"
+                  "postId": 1,
+                  "userId": 1,
+                  "body": "How does this compare to the approach described in the official docs?",
+                  "likes": 16,
+                  "createdAt": "2023-04-28T06:59:47.906Z"
                 }
               }
             }
@@ -6618,11 +7505,11 @@
                 "resourceId": 1,
                 "data": {
                   "id": 1,
-                  "postId": 106,
-                  "userId": 13,
-                  "body": "This is exactly what I needed. Bookmarked for future reference.",
-                  "likes": 21,
-                  "createdAt": "2024-05-03T17:33:28.015Z"
+                  "postId": 1,
+                  "userId": 1,
+                  "body": "How does this compare to the approach described in the official docs?",
+                  "likes": 16,
+                  "createdAt": "2023-04-28T06:59:47.906Z"
                 }
               }
             }
@@ -6660,16 +7547,13 @@
                 "resourceId": 1,
                 "data": {
                   "id": 1,
-                  "userId": 9,
-                  "title": "Fix CORS issues",
-                  "completed": false,
-                  "priority": "high",
+                  "userId": 1,
+                  "title": "Configure monitoring",
+                  "completed": true,
+                  "priority": "low",
                   "dueDate": null,
-                  "tags": [
-                    "kubernetes",
-                    "javascript"
-                  ],
-                  "createdAt": "2024-12-12T09:34:26.582Z"
+                  "tags": [],
+                  "createdAt": "2024-01-25T00:38:32.919Z"
                 }
               }
             }
@@ -6707,16 +7591,13 @@
                 "resourceId": 1,
                 "data": {
                   "id": 1,
-                  "userId": 9,
-                  "title": "Fix CORS issues",
-                  "completed": false,
-                  "priority": "high",
+                  "userId": 1,
+                  "title": "Configure monitoring",
+                  "completed": true,
+                  "priority": "low",
                   "dueDate": null,
-                  "tags": [
-                    "kubernetes",
-                    "javascript"
-                  ],
-                  "createdAt": "2024-12-12T09:34:26.582Z"
+                  "tags": [],
+                  "createdAt": "2024-01-25T00:38:32.919Z"
                 }
               }
             }
@@ -6754,16 +7635,13 @@
                 "resourceId": 1,
                 "data": {
                   "id": 1,
-                  "userId": 9,
-                  "title": "Fix CORS issues",
-                  "completed": false,
-                  "priority": "high",
+                  "userId": 1,
+                  "title": "Configure monitoring",
+                  "completed": true,
+                  "priority": "low",
                   "dueDate": null,
-                  "tags": [
-                    "kubernetes",
-                    "javascript"
-                  ],
-                  "createdAt": "2024-12-12T09:34:26.582Z"
+                  "tags": [],
+                  "createdAt": "2024-01-25T00:38:32.919Z"
                 }
               }
             }
@@ -6801,13 +7679,13 @@
                 "resourceId": 1,
                 "data": {
                   "id": 1,
-                  "userId": 44,
-                  "title": "Street Art",
-                  "description": "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+                  "userId": 1,
+                  "title": "Abstract",
+                  "description": "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
                   "coverImage": "https://picsum.photos/seed/album1/600/400",
-                  "photoCount": 6,
+                  "photoCount": 39,
                   "isPublic": true,
-                  "createdAt": "2026-05-20T22:19:15.048Z"
+                  "createdAt": "2024-07-02T09:01:49.954Z"
                 }
               }
             }
@@ -6845,13 +7723,13 @@
                 "resourceId": 1,
                 "data": {
                   "id": 1,
-                  "userId": 44,
-                  "title": "Street Art",
-                  "description": "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+                  "userId": 1,
+                  "title": "Abstract",
+                  "description": "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
                   "coverImage": "https://picsum.photos/seed/album1/600/400",
-                  "photoCount": 6,
+                  "photoCount": 39,
                   "isPublic": true,
-                  "createdAt": "2026-05-20T22:19:15.048Z"
+                  "createdAt": "2024-07-02T09:01:49.954Z"
                 }
               }
             }
@@ -6889,13 +7767,13 @@
                 "resourceId": 1,
                 "data": {
                   "id": 1,
-                  "userId": 44,
-                  "title": "Street Art",
-                  "description": "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+                  "userId": 1,
+                  "title": "Abstract",
+                  "description": "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
                   "coverImage": "https://picsum.photos/seed/album1/600/400",
-                  "photoCount": 6,
+                  "photoCount": 39,
                   "isPublic": true,
-                  "createdAt": "2026-05-20T22:19:15.048Z"
+                  "createdAt": "2024-07-02T09:01:49.954Z"
                 }
               }
             }
@@ -6933,15 +7811,15 @@
                 "resourceId": 1,
                 "data": {
                   "id": 1,
-                  "albumId": 28,
+                  "albumId": 1,
                   "title": "Photo 1",
-                  "url": "https://picsum.photos/seed/1/800/1080",
+                  "url": "https://picsum.photos/seed/1/800/960",
                   "thumbnailUrl": "https://picsum.photos/seed/1/150/150",
                   "width": 800,
-                  "height": 1080,
-                  "size": 1145061,
-                  "format": "png",
-                  "createdAt": "2023-06-24T17:49:54.100Z"
+                  "height": 960,
+                  "size": 4803273,
+                  "format": "jpeg",
+                  "createdAt": "2026-07-24T20:47:13.121Z"
                 }
               }
             }
@@ -6979,15 +7857,15 @@
                 "resourceId": 1,
                 "data": {
                   "id": 1,
-                  "albumId": 28,
+                  "albumId": 1,
                   "title": "Photo 1",
-                  "url": "https://picsum.photos/seed/1/800/1080",
+                  "url": "https://picsum.photos/seed/1/800/960",
                   "thumbnailUrl": "https://picsum.photos/seed/1/150/150",
                   "width": 800,
-                  "height": 1080,
-                  "size": 1145061,
-                  "format": "png",
-                  "createdAt": "2023-06-24T17:49:54.100Z"
+                  "height": 960,
+                  "size": 4803273,
+                  "format": "jpeg",
+                  "createdAt": "2026-07-24T20:47:13.121Z"
                 }
               }
             }
@@ -7025,15 +7903,15 @@
                 "resourceId": 1,
                 "data": {
                   "id": 1,
-                  "albumId": 28,
+                  "albumId": 1,
                   "title": "Photo 1",
-                  "url": "https://picsum.photos/seed/1/800/1080",
+                  "url": "https://picsum.photos/seed/1/800/960",
                   "thumbnailUrl": "https://picsum.photos/seed/1/150/150",
                   "width": 800,
-                  "height": 1080,
-                  "size": 1145061,
-                  "format": "png",
-                  "createdAt": "2023-06-24T17:49:54.100Z"
+                  "height": 960,
+                  "size": 4803273,
+                  "format": "jpeg",
+                  "createdAt": "2026-07-24T20:47:13.121Z"
                 }
               }
             }
@@ -7075,8 +7953,8 @@
                   "slug": "electronics",
                   "description": "Gadgets, devices, and electronic accessories",
                   "image": "https://picsum.photos/seed/cat1/300/200",
-                  "productCount": 4,
-                  "createdAt": "2023-02-04T06:44:45.810Z"
+                  "productCount": 5,
+                  "createdAt": "2022-01-06T04:19:58.076Z"
                 }
               }
             }
@@ -7118,8 +7996,8 @@
                   "slug": "electronics",
                   "description": "Gadgets, devices, and electronic accessories",
                   "image": "https://picsum.photos/seed/cat1/300/200",
-                  "productCount": 4,
-                  "createdAt": "2023-02-04T06:44:45.810Z"
+                  "productCount": 5,
+                  "createdAt": "2022-01-06T04:19:58.076Z"
                 }
               }
             }
@@ -7161,8 +8039,8 @@
                   "slug": "electronics",
                   "description": "Gadgets, devices, and electronic accessories",
                   "image": "https://picsum.photos/seed/cat1/300/200",
-                  "productCount": 4,
-                  "createdAt": "2023-02-04T06:44:45.810Z"
+                  "productCount": 5,
+                  "createdAt": "2022-01-06T04:19:58.076Z"
                 }
               }
             }
@@ -7200,16 +8078,16 @@
                 "resourceId": 1,
                 "data": {
                   "id": 1,
-                  "categoryId": 3,
-                  "name": "Cable Organizer",
-                  "description": "Versatile solution that adapts to your workflow.",
-                  "price": 357.22,
-                  "originalPrice": null,
+                  "categoryId": 4,
+                  "name": "Desk Lamp",
+                  "description": "Ultra-fast connectivity with rock-solid reliability.",
+                  "price": 161.28,
+                  "originalPrice": 231.38,
                   "currency": "USD",
-                  "stock": 496,
+                  "stock": 257,
                   "sku": "SKU-00001",
-                  "rating": 2.2,
-                  "reviewCount": 42,
+                  "rating": 4.4,
+                  "reviewCount": 188,
                   "image": "https://picsum.photos/seed/prod1/400/400",
                   "images": [
                     "https://picsum.photos/seed/prod1-0/400/400",
@@ -7218,20 +8096,19 @@
                     "https://picsum.photos/seed/prod1-3/400/400",
                     "https://picsum.photos/seed/prod1-4/400/400"
                   ],
-                  "weight": 3.15,
+                  "weight": 9.19,
                   "dimensions": {
-                    "width": 37.6,
-                    "height": 22.6,
-                    "depth": 29.9
+                    "width": 33.4,
+                    "height": 40,
+                    "depth": 14.6
                   },
                   "isAvailable": true,
                   "isFeatured": false,
                   "tags": [
-                    "aws",
-                    "javascript"
+                    "backend"
                   ],
-                  "createdAt": "2026-03-25T11:46:41.231Z",
-                  "updatedAt": "2026-09-07T02:26:19.919Z"
+                  "createdAt": "2024-05-30T01:37:26.059Z",
+                  "updatedAt": "2026-12-15T02:55:19.943Z"
                 }
               }
             }
@@ -7269,16 +8146,16 @@
                 "resourceId": 1,
                 "data": {
                   "id": 1,
-                  "categoryId": 3,
-                  "name": "Cable Organizer",
-                  "description": "Versatile solution that adapts to your workflow.",
-                  "price": 357.22,
-                  "originalPrice": null,
+                  "categoryId": 4,
+                  "name": "Desk Lamp",
+                  "description": "Ultra-fast connectivity with rock-solid reliability.",
+                  "price": 161.28,
+                  "originalPrice": 231.38,
                   "currency": "USD",
-                  "stock": 496,
+                  "stock": 257,
                   "sku": "SKU-00001",
-                  "rating": 2.2,
-                  "reviewCount": 42,
+                  "rating": 4.4,
+                  "reviewCount": 188,
                   "image": "https://picsum.photos/seed/prod1/400/400",
                   "images": [
                     "https://picsum.photos/seed/prod1-0/400/400",
@@ -7287,20 +8164,19 @@
                     "https://picsum.photos/seed/prod1-3/400/400",
                     "https://picsum.photos/seed/prod1-4/400/400"
                   ],
-                  "weight": 3.15,
+                  "weight": 9.19,
                   "dimensions": {
-                    "width": 37.6,
-                    "height": 22.6,
-                    "depth": 29.9
+                    "width": 33.4,
+                    "height": 40,
+                    "depth": 14.6
                   },
                   "isAvailable": true,
                   "isFeatured": false,
                   "tags": [
-                    "aws",
-                    "javascript"
+                    "backend"
                   ],
-                  "createdAt": "2026-03-25T11:46:41.231Z",
-                  "updatedAt": "2026-09-07T02:26:19.919Z"
+                  "createdAt": "2024-05-30T01:37:26.059Z",
+                  "updatedAt": "2026-12-15T02:55:19.943Z"
                 }
               }
             }
@@ -7338,16 +8214,16 @@
                 "resourceId": 1,
                 "data": {
                   "id": 1,
-                  "categoryId": 3,
-                  "name": "Cable Organizer",
-                  "description": "Versatile solution that adapts to your workflow.",
-                  "price": 357.22,
-                  "originalPrice": null,
+                  "categoryId": 4,
+                  "name": "Desk Lamp",
+                  "description": "Ultra-fast connectivity with rock-solid reliability.",
+                  "price": 161.28,
+                  "originalPrice": 231.38,
                   "currency": "USD",
-                  "stock": 496,
+                  "stock": 257,
                   "sku": "SKU-00001",
-                  "rating": 2.2,
-                  "reviewCount": 42,
+                  "rating": 4.4,
+                  "reviewCount": 188,
                   "image": "https://picsum.photos/seed/prod1/400/400",
                   "images": [
                     "https://picsum.photos/seed/prod1-0/400/400",
@@ -7356,20 +8232,19 @@
                     "https://picsum.photos/seed/prod1-3/400/400",
                     "https://picsum.photos/seed/prod1-4/400/400"
                   ],
-                  "weight": 3.15,
+                  "weight": 9.19,
                   "dimensions": {
-                    "width": 37.6,
-                    "height": 22.6,
-                    "depth": 29.9
+                    "width": 33.4,
+                    "height": 40,
+                    "depth": 14.6
                   },
                   "isAvailable": true,
                   "isFeatured": false,
                   "tags": [
-                    "aws",
-                    "javascript"
+                    "backend"
                   ],
-                  "createdAt": "2026-03-25T11:46:41.231Z",
-                  "updatedAt": "2026-09-07T02:26:19.919Z"
+                  "createdAt": "2024-05-30T01:37:26.059Z",
+                  "updatedAt": "2026-12-15T02:55:19.943Z"
                 }
               }
             }
@@ -7407,42 +8282,37 @@
                 "resourceId": 1,
                 "data": {
                   "id": 1,
-                  "userId": 32,
+                  "userId": 1,
                   "items": [
                     {
-                      "productId": 43,
-                      "quantity": 1,
-                      "price": 417.79
-                    },
-                    {
-                      "productId": 46,
-                      "quantity": 1,
-                      "price": 468.34
-                    },
-                    {
-                      "productId": 8,
+                      "productId": 37,
                       "quantity": 2,
-                      "price": 46.65
+                      "price": 416.97
+                    },
+                    {
+                      "productId": 16,
+                      "quantity": 2,
+                      "price": 478.87
                     }
                   ],
-                  "subtotal": 979.43,
-                  "tax": 78.35,
+                  "subtotal": 1791.68,
+                  "tax": 143.33,
                   "shipping": 0,
-                  "total": 1057.78,
+                  "total": 1935.01,
                   "currency": "USD",
-                  "status": "delivered",
-                  "paymentMethod": "apple_pay",
+                  "status": "pending",
+                  "paymentMethod": "credit_card",
                   "shippingAddress": {
-                    "street": "2706 Jackson Blvd",
-                    "city": "Denver",
-                    "state": "MD",
-                    "zipCode": "46796",
+                    "street": "6620 Maple Dr",
+                    "city": "Fort Worth",
+                    "state": "MI",
+                    "zipCode": "16372",
                     "country": "US"
                   },
-                  "trackingNumber": null,
+                  "trackingNumber": "TRK442765071",
                   "notes": null,
-                  "createdAt": "2025-11-19T20:52:51.841Z",
-                  "updatedAt": "2026-12-14T20:23:16.306Z"
+                  "createdAt": "2026-04-19T12:16:46.226Z",
+                  "updatedAt": "2025-01-30T04:10:54.855Z"
                 }
               }
             }
@@ -7480,42 +8350,37 @@
                 "resourceId": 1,
                 "data": {
                   "id": 1,
-                  "userId": 32,
+                  "userId": 1,
                   "items": [
                     {
-                      "productId": 43,
-                      "quantity": 1,
-                      "price": 417.79
-                    },
-                    {
-                      "productId": 46,
-                      "quantity": 1,
-                      "price": 468.34
-                    },
-                    {
-                      "productId": 8,
+                      "productId": 37,
                       "quantity": 2,
-                      "price": 46.65
+                      "price": 416.97
+                    },
+                    {
+                      "productId": 16,
+                      "quantity": 2,
+                      "price": 478.87
                     }
                   ],
-                  "subtotal": 979.43,
-                  "tax": 78.35,
+                  "subtotal": 1791.68,
+                  "tax": 143.33,
                   "shipping": 0,
-                  "total": 1057.78,
+                  "total": 1935.01,
                   "currency": "USD",
-                  "status": "delivered",
-                  "paymentMethod": "apple_pay",
+                  "status": "pending",
+                  "paymentMethod": "credit_card",
                   "shippingAddress": {
-                    "street": "2706 Jackson Blvd",
-                    "city": "Denver",
-                    "state": "MD",
-                    "zipCode": "46796",
+                    "street": "6620 Maple Dr",
+                    "city": "Fort Worth",
+                    "state": "MI",
+                    "zipCode": "16372",
                     "country": "US"
                   },
-                  "trackingNumber": null,
+                  "trackingNumber": "TRK442765071",
                   "notes": null,
-                  "createdAt": "2025-11-19T20:52:51.841Z",
-                  "updatedAt": "2026-12-14T20:23:16.306Z"
+                  "createdAt": "2026-04-19T12:16:46.226Z",
+                  "updatedAt": "2025-01-30T04:10:54.855Z"
                 }
               }
             }
@@ -7553,42 +8418,37 @@
                 "resourceId": 1,
                 "data": {
                   "id": 1,
-                  "userId": 32,
+                  "userId": 1,
                   "items": [
                     {
-                      "productId": 43,
-                      "quantity": 1,
-                      "price": 417.79
-                    },
-                    {
-                      "productId": 46,
-                      "quantity": 1,
-                      "price": 468.34
-                    },
-                    {
-                      "productId": 8,
+                      "productId": 37,
                       "quantity": 2,
-                      "price": 46.65
+                      "price": 416.97
+                    },
+                    {
+                      "productId": 16,
+                      "quantity": 2,
+                      "price": 478.87
                     }
                   ],
-                  "subtotal": 979.43,
-                  "tax": 78.35,
+                  "subtotal": 1791.68,
+                  "tax": 143.33,
                   "shipping": 0,
-                  "total": 1057.78,
+                  "total": 1935.01,
                   "currency": "USD",
-                  "status": "delivered",
-                  "paymentMethod": "apple_pay",
+                  "status": "pending",
+                  "paymentMethod": "credit_card",
                   "shippingAddress": {
-                    "street": "2706 Jackson Blvd",
-                    "city": "Denver",
-                    "state": "MD",
-                    "zipCode": "46796",
+                    "street": "6620 Maple Dr",
+                    "city": "Fort Worth",
+                    "state": "MI",
+                    "zipCode": "16372",
                     "country": "US"
                   },
-                  "trackingNumber": null,
+                  "trackingNumber": "TRK442765071",
                   "notes": null,
-                  "createdAt": "2025-11-19T20:52:51.841Z",
-                  "updatedAt": "2026-12-14T20:23:16.306Z"
+                  "createdAt": "2026-04-19T12:16:46.226Z",
+                  "updatedAt": "2025-01-30T04:10:54.855Z"
                 }
               }
             }
@@ -7626,14 +8486,14 @@
                 "resourceId": 1,
                 "data": {
                   "id": 1,
-                  "productId": 50,
-                  "userId": 48,
-                  "rating": 2,
+                  "productId": 1,
+                  "userId": 1,
+                  "rating": 4,
                   "title": "Works as advertised",
                   "body": "Great article! Really helped me understand the concept better.",
                   "isVerified": true,
-                  "helpful": 5,
-                  "createdAt": "2025-08-14T23:50:39.905Z"
+                  "helpful": 1,
+                  "createdAt": "2025-08-29T18:25:55.906Z"
                 }
               }
             }
@@ -7671,14 +8531,14 @@
                 "resourceId": 1,
                 "data": {
                   "id": 1,
-                  "productId": 50,
-                  "userId": 48,
-                  "rating": 2,
+                  "productId": 1,
+                  "userId": 1,
+                  "rating": 4,
                   "title": "Works as advertised",
                   "body": "Great article! Really helped me understand the concept better.",
                   "isVerified": true,
-                  "helpful": 5,
-                  "createdAt": "2025-08-14T23:50:39.905Z"
+                  "helpful": 1,
+                  "createdAt": "2025-08-29T18:25:55.906Z"
                 }
               }
             }
@@ -7716,14 +8576,14 @@
                 "resourceId": 1,
                 "data": {
                   "id": 1,
-                  "productId": 50,
-                  "userId": 48,
-                  "rating": 2,
+                  "productId": 1,
+                  "userId": 1,
+                  "rating": 4,
                   "title": "Works as advertised",
                   "body": "Great article! Really helped me understand the concept better.",
                   "isVerified": true,
-                  "helpful": 5,
-                  "createdAt": "2025-08-14T23:50:39.905Z"
+                  "helpful": 1,
+                  "createdAt": "2025-08-29T18:25:55.906Z"
                 }
               }
             }
@@ -7761,13 +8621,13 @@
                 "resourceId": 1,
                 "data": {
                   "id": 1,
-                  "userId": 11,
-                  "type": "info",
-                  "title": "Info notification",
-                  "message": "Payment received for your order.",
-                  "read": false,
+                  "userId": 1,
+                  "type": "error",
+                  "title": "Error notification",
+                  "message": "New follower on your profile.",
+                  "read": true,
                   "link": null,
-                  "createdAt": "2026-04-14T22:44:23.813Z"
+                  "createdAt": "2026-03-23T15:22:15.402Z"
                 }
               }
             }
@@ -7805,13 +8665,13 @@
                 "resourceId": 1,
                 "data": {
                   "id": 1,
-                  "userId": 11,
-                  "type": "info",
-                  "title": "Info notification",
-                  "message": "Payment received for your order.",
-                  "read": false,
+                  "userId": 1,
+                  "type": "error",
+                  "title": "Error notification",
+                  "message": "New follower on your profile.",
+                  "read": true,
                   "link": null,
-                  "createdAt": "2026-04-14T22:44:23.813Z"
+                  "createdAt": "2026-03-23T15:22:15.402Z"
                 }
               }
             }
@@ -7849,13 +8709,13 @@
                 "resourceId": 1,
                 "data": {
                   "id": 1,
-                  "userId": 11,
-                  "type": "info",
-                  "title": "Info notification",
-                  "message": "Payment received for your order.",
-                  "read": false,
+                  "userId": 1,
+                  "type": "error",
+                  "title": "Error notification",
+                  "message": "New follower on your profile.",
+                  "read": true,
                   "link": null,
-                  "createdAt": "2026-04-14T22:44:23.813Z"
+                  "createdAt": "2026-03-23T15:22:15.402Z"
                 }
               }
             }
@@ -7924,62 +8784,62 @@
               "James",
               "Mary"
             ],
-            "example": "Emily"
+            "example": "Demo"
           },
           "lastName": {
             "type": "string",
             "description": "Last name",
             "minLength": 1,
             "maxLength": 50,
-            "example": "Hernandez"
+            "example": "User"
           },
           "email": {
             "type": "string",
             "format": "email",
             "description": "Email address (unique per user)",
-            "example": "emily.hernandez@mock.dev"
+            "example": "demo@example.com"
           },
           "username": {
             "type": "string",
             "description": "Unique username",
             "minLength": 3,
             "maxLength": 30,
-            "example": "emilyhernandez550"
+            "example": "demo"
           },
           "avatar": {
             "type": "string",
             "format": "uri",
             "description": "Profile picture URL",
-            "example": "https://i.pravatar.cc/150?u=1"
+            "example": "https://i.pravatar.cc/150?u=demo"
           },
           "phone": {
             "type": "string",
             "description": "Phone in international format",
             "pattern": "^\\+\\d{1,3}-\\d{3}-\\d{3}-\\d{4}$",
-            "example": "+1-801-124-5328"
+            "example": "+1-555-000-0001"
           },
           "address": {
             "type": "object",
             "properties": {
               "street": {
                 "type": "string",
-                "example": "8567 Jefferson Dr"
+                "example": "1 Demo Way"
               },
               "city": {
                 "type": "string",
-                "example": "Fresno"
+                "example": "Austin"
               },
               "state": {
                 "type": "string",
-                "example": "KY"
+                "example": "TX"
               },
               "zipCode": {
                 "type": "string",
-                "example": "37490"
+                "example": "78701"
               },
               "country": {
                 "type": "string",
-                "example": "AU"
+                "example": "US"
               },
               "geo": {
                 "type": "object",
@@ -7987,30 +8847,30 @@
                   "lat": {
                     "type": "number",
                     "format": "double",
-                    "example": -81.94149
+                    "example": 30.2672
                   },
                   "lng": {
                     "type": "number",
                     "format": "double",
-                    "example": 81.999216
+                    "example": -97.7431
                   }
                 },
                 "example": {
-                  "lat": -81.94149,
-                  "lng": 81.999216
+                  "lat": 30.2672,
+                  "lng": -97.7431
                 }
               }
             },
             "description": "Physical mailing address",
             "example": {
-              "street": "8567 Jefferson Dr",
-              "city": "Fresno",
-              "state": "KY",
-              "zipCode": "37490",
-              "country": "AU",
+              "street": "1 Demo Way",
+              "city": "Austin",
+              "state": "TX",
+              "zipCode": "78701",
+              "country": "US",
               "geo": {
-                "lat": -81.94149,
-                "lng": 81.999216
+                "lat": 30.2672,
+                "lng": -97.7431
               }
             }
           },
@@ -8019,24 +8879,24 @@
             "properties": {
               "name": {
                 "type": "string",
-                "example": "Cyberdyne Systems"
+                "example": "Demo Corp"
               },
               "catchPhrase": {
                 "type": "string",
-                "example": "Streamline operations"
+                "example": "Seeded for docs and testing."
               }
             },
             "description": "Employment information",
             "example": {
-              "name": "Cyberdyne Systems",
-              "catchPhrase": "Streamline operations"
+              "name": "Demo Corp",
+              "catchPhrase": "Seeded for docs and testing."
             }
           },
           "website": {
             "type": "string",
             "format": "uri",
             "description": "Personal website URL",
-            "example": "https://emilyhernandez.com"
+            "example": "https://example.com/demo"
           },
           "role": {
             "type": "string",
@@ -8057,12 +8917,12 @@
             "description": "Age in years",
             "minimum": 0,
             "maximum": 150,
-            "example": 65
+            "example": 30
           },
           "bio": {
             "type": "string",
             "description": "Short biography",
-            "example": "Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra."
+            "example": "Seeded demo account. Log in with any password."
           },
           "isActive": {
             "type": "boolean",
@@ -8074,14 +8934,45 @@
             "type": "string",
             "format": "date-time",
             "readOnly": true,
-            "example": "2022-05-29T11:27:51.291Z"
+            "example": "2024-01-01T00:00:00.000Z"
           },
           "updatedAt": {
             "type": "string",
             "format": "date-time",
             "readOnly": true,
-            "example": "2026-08-23T17:13:33.168Z"
+            "example": "2026-04-21T00:00:00.000Z"
           }
+        },
+        "example": {
+          "id": 1,
+          "firstName": "Demo",
+          "lastName": "User",
+          "email": "demo@example.com",
+          "username": "demo",
+          "avatar": "https://i.pravatar.cc/150?u=demo",
+          "phone": "+1-555-000-0001",
+          "address": {
+            "street": "1 Demo Way",
+            "city": "Austin",
+            "state": "TX",
+            "zipCode": "78701",
+            "country": "US",
+            "geo": {
+              "lat": 30.2672,
+              "lng": -97.7431
+            }
+          },
+          "company": {
+            "name": "Demo Corp",
+            "catchPhrase": "Seeded for docs and testing."
+          },
+          "website": "https://example.com/demo",
+          "role": "admin",
+          "age": 30,
+          "bio": "Seeded demo account. Log in with any password.",
+          "isActive": true,
+          "createdAt": "2024-01-01T00:00:00.000Z",
+          "updatedAt": "2026-04-21T00:00:00.000Z"
         }
       },
       "UserInput": {
@@ -8101,57 +8992,63 @@
             "examples": [
               "James",
               "Mary"
-            ]
+            ],
+            "example": "Demo"
           },
           "lastName": {
             "type": "string",
             "description": "Last name",
             "minLength": 1,
-            "maxLength": 50
+            "maxLength": 50,
+            "example": "User"
           },
           "email": {
             "type": "string",
             "format": "email",
-            "description": "Email address (unique per user)"
+            "description": "Email address (unique per user)",
+            "example": "demo@example.com"
           },
           "username": {
             "type": "string",
             "description": "Unique username",
             "minLength": 3,
-            "maxLength": 30
+            "maxLength": 30,
+            "example": "demo"
           },
           "avatar": {
             "type": "string",
             "format": "uri",
-            "description": "Profile picture URL"
+            "description": "Profile picture URL",
+            "example": "https://i.pravatar.cc/150?u=demo"
           },
           "phone": {
             "type": "string",
             "description": "Phone in international format",
-            "pattern": "^\\+\\d{1,3}-\\d{3}-\\d{3}-\\d{4}$"
+            "pattern": "^\\+\\d{1,3}-\\d{3}-\\d{3}-\\d{4}$",
+            "example": "+1-555-000-0001"
           },
           "address": {
             "type": "object",
             "properties": {
               "street": {
                 "type": "string",
-                "example": "8567 Jefferson Dr"
+                "example": "1 Demo Way"
               },
               "city": {
                 "type": "string",
-                "example": "Fresno"
+                "example": "Austin"
               },
               "state": {
                 "type": "string",
-                "example": "KY"
+                "example": "TX"
               },
               "zipCode": {
                 "type": "string",
-                "example": "37490"
+                "example": "78701"
               },
               "country": {
                 "type": "string",
-                "example": "AU"
+                "example": "US"
               },
               "geo": {
                 "type": "object",
@@ -8159,40 +9056,56 @@
                   "lat": {
                     "type": "number",
                     "format": "double",
-                    "example": -81.94149
+                    "example": 30.2672
                   },
                   "lng": {
                     "type": "number",
                     "format": "double",
-                    "example": 81.999216
+                    "example": -97.7431
                   }
                 },
                 "example": {
-                  "lat": -81.94149,
-                  "lng": 81.999216
+                  "lat": 30.2672,
+                  "lng": -97.7431
                 }
               }
             },
-            "description": "Physical mailing address"
+            "description": "Physical mailing address",
+            "example": {
+              "street": "1 Demo Way",
+              "city": "Austin",
+              "state": "TX",
+              "zipCode": "78701",
+              "country": "US",
+              "geo": {
+                "lat": 30.2672,
+                "lng": -97.7431
+              }
+            }
           },
           "company": {
             "type": "object",
             "properties": {
               "name": {
                 "type": "string",
-                "example": "Cyberdyne Systems"
+                "example": "Demo Corp"
               },
               "catchPhrase": {
                 "type": "string",
-                "example": "Streamline operations"
+                "example": "Seeded for docs and testing."
               }
             },
-            "description": "Employment information"
+            "description": "Employment information",
+            "example": {
+              "name": "Demo Corp",
+              "catchPhrase": "Seeded for docs and testing."
+            }
           },
           "website": {
             "type": "string",
             "format": "uri",
-            "description": "Personal website URL"
+            "description": "Personal website URL",
+            "example": "https://example.com/demo"
           },
           "role": {
             "type": "string",
@@ -8204,24 +9117,33 @@
               "editor",
               "viewer"
             ],
-            "default": "user"
+            "default": "user",
+            "example": "admin"
           },
           "age": {
             "type": "integer",
             "format": "int32",
             "description": "Age in years",
             "minimum": 0,
-            "maximum": 150
+            "maximum": 150,
+            "example": 30
           },
           "bio": {
             "type": "string",
-            "description": "Short biography"
+            "description": "Short biography",
+            "example": "Seeded demo account. Log in with any password."
           },
           "isActive": {
             "type": "boolean",
             "description": "Whether the account is active",
-            "default": true
+            "default": true,
+            "example": true
           }
+        },
+        "example": {
+          "firstName": "Jane",
+          "lastName": "Doe",
+          "email": "jane.doe@example.com"
         }
       },
       "Post": {
@@ -8244,42 +9166,42 @@
             "format": "int32",
             "description": "Author user ID",
             "minimum": 1,
-            "example": 39
+            "example": 1
           },
           "title": {
             "type": "string",
             "description": "Post title",
             "minLength": 1,
             "maxLength": 200,
-            "example": "Building Scalable Node.js Applications"
+            "example": "Performance Optimization Tips"
           },
           "slug": {
             "type": "string",
             "description": "URL-friendly slug",
             "pattern": "^[a-z0-9-]+$",
-            "example": "serverless-architecture-overview"
+            "example": "web-security-fundamentals"
           },
           "body": {
             "type": "string",
             "description": "Full post content in plain text",
-            "example": "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n\nUt enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\n\nPhasellus ultrices nulla quis nibh. Quisque a lectus. Donec consectetuer ligula vulputate sem tristique cursus.\n\nFusce commodo aliquam arcu. Nam commodo suscipit quam. Quisque id odio."
+            "example": "Fusce commodo aliquam arcu. Nam commodo suscipit quam. Quisque id odio.\n\nCurabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra."
           },
           "excerpt": {
             "type": "string",
             "description": "Short preview text",
             "maxLength": 300,
-            "example": "Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae...."
+            "example": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliq..."
           },
           "tags": {
             "type": "array",
             "items": {
               "type": "string",
-              "example": "react"
+              "example": "ux"
             },
             "description": "Categorization tags",
             "uniqueItems": true,
             "example": [
-              "react"
+              "ux"
             ]
           },
           "status": {
@@ -8291,21 +9213,21 @@
               "archived"
             ],
             "default": "draft",
-            "example": "archived"
+            "example": "published"
           },
           "views": {
             "type": "integer",
             "format": "int32",
             "description": "Total view count",
             "minimum": 0,
-            "example": 1087
+            "example": 16848
           },
           "likes": {
             "type": "integer",
             "format": "int32",
             "description": "Total like count",
             "minimum": 0,
-            "example": 170
+            "example": 28
           },
           "featured": {
             "type": "boolean",
@@ -8325,20 +9247,39 @@
             "description": "Estimated reading time in minutes",
             "minimum": 1,
             "maximum": 60,
-            "example": 14
+            "example": 7
           },
           "createdAt": {
             "type": "string",
             "format": "date-time",
             "readOnly": true,
-            "example": "2025-08-21T09:58:31.155Z"
+            "example": "2026-01-21T19:36:04.116Z"
           },
           "updatedAt": {
             "type": "string",
             "format": "date-time",
             "readOnly": true,
-            "example": "2025-08-21T09:58:31.155Z"
+            "example": "2026-01-21T19:36:04.116Z"
           }
+        },
+        "example": {
+          "id": 1,
+          "userId": 1,
+          "title": "Performance Optimization Tips",
+          "slug": "web-security-fundamentals",
+          "body": "Fusce commodo aliquam arcu. Nam commodo suscipit quam. Quisque id odio.\n\nCurabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra.",
+          "excerpt": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliq...",
+          "tags": [
+            "ux"
+          ],
+          "status": "published",
+          "views": 16848,
+          "likes": 28,
+          "featured": false,
+          "coverImage": "https://picsum.photos/seed/1/800/400",
+          "readingTime": 7,
+          "createdAt": "2026-01-21T19:36:04.116Z",
+          "updatedAt": "2026-01-21T19:36:04.116Z"
         }
       },
       "PostInput": {
@@ -8353,36 +9294,44 @@
             "type": "integer",
             "format": "int32",
             "description": "Author user ID",
-            "minimum": 1
+            "minimum": 1,
+            "example": 1
           },
           "title": {
             "type": "string",
             "description": "Post title",
             "minLength": 1,
-            "maxLength": 200
+            "maxLength": 200,
+            "example": "Performance Optimization Tips"
           },
           "slug": {
             "type": "string",
             "description": "URL-friendly slug",
-            "pattern": "^[a-z0-9-]+$"
+            "pattern": "^[a-z0-9-]+$",
+            "example": "web-security-fundamentals"
           },
           "body": {
             "type": "string",
-            "description": "Full post content in plain text"
+            "description": "Full post content in plain text",
+            "example": "Fusce commodo aliquam arcu. Nam commodo suscipit quam. Quisque id odio.\n\nCurabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra."
           },
           "excerpt": {
             "type": "string",
             "description": "Short preview text",
-            "maxLength": 300
+            "maxLength": 300,
+            "example": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliq..."
           },
           "tags": {
             "type": "array",
             "items": {
               "type": "string",
-              "example": "react"
+              "example": "ux"
             },
             "description": "Categorization tags",
-            "uniqueItems": true
+            "uniqueItems": true,
+            "example": [
+              "ux"
+            ]
           },
           "status": {
             "type": "string",
@@ -8392,37 +9341,54 @@
               "published",
               "archived"
             ],
-            "default": "draft"
+            "default": "draft",
+            "example": "published"
           },
           "views": {
             "type": "integer",
             "format": "int32",
             "description": "Total view count",
-            "minimum": 0
+            "minimum": 0,
+            "example": 16848
           },
           "likes": {
             "type": "integer",
             "format": "int32",
             "description": "Total like count",
-            "minimum": 0
+            "minimum": 0,
+            "example": 28
           },
           "featured": {
             "type": "boolean",
             "description": "Whether the post is featured",
-            "default": false
+            "default": false,
+            "example": false
           },
           "coverImage": {
             "type": "string",
             "format": "uri",
-            "description": "Cover image URL"
+            "description": "Cover image URL",
+            "example": "https://picsum.photos/seed/1/800/400"
           },
           "readingTime": {
             "type": "integer",
             "format": "int32",
             "description": "Estimated reading time in minutes",
             "minimum": 1,
-            "maximum": 60
+            "maximum": 60,
+            "example": 7
           }
+        },
+        "example": {
+          "userId": 1,
+          "title": "TypeScript tips I learned the hard way",
+          "body": "First, never use `any`…",
+          "excerpt": "Ten hard-won lessons from the trenches.",
+          "tags": [
+            "typescript",
+            "engineering"
+          ],
+          "status": "draft"
         }
       },
       "Comment": {
@@ -8445,33 +9411,41 @@
             "format": "int32",
             "description": "Parent post ID",
             "minimum": 1,
-            "example": 106
+            "example": 1
           },
           "userId": {
             "type": "integer",
             "format": "int32",
             "description": "Author user ID",
             "minimum": 1,
-            "example": 13
+            "example": 1
           },
           "body": {
             "type": "string",
             "description": "Comment text content",
-            "example": "This is exactly what I needed. Bookmarked for future reference."
+            "example": "How does this compare to the approach described in the official docs?"
           },
           "likes": {
             "type": "integer",
             "format": "int32",
             "description": "Number of likes",
             "minimum": 0,
-            "example": 21
+            "example": 16
           },
           "createdAt": {
             "type": "string",
             "format": "date-time",
             "readOnly": true,
-            "example": "2024-05-03T17:33:28.015Z"
+            "example": "2023-04-28T06:59:47.906Z"
           }
+        },
+        "example": {
+          "id": 1,
+          "postId": 1,
+          "userId": 1,
+          "body": "How does this compare to the approach described in the official docs?",
+          "likes": 16,
+          "createdAt": "2023-04-28T06:59:47.906Z"
         }
       },
       "CommentInput": {
@@ -8486,24 +9460,33 @@
             "type": "integer",
             "format": "int32",
             "description": "Parent post ID",
-            "minimum": 1
+            "minimum": 1,
+            "example": 1
           },
           "userId": {
             "type": "integer",
             "format": "int32",
             "description": "Author user ID",
-            "minimum": 1
+            "minimum": 1,
+            "example": 1
           },
           "body": {
             "type": "string",
-            "description": "Comment text content"
+            "description": "Comment text content",
+            "example": "How does this compare to the approach described in the official docs?"
           },
           "likes": {
             "type": "integer",
             "format": "int32",
             "description": "Number of likes",
-            "minimum": 0
+            "minimum": 0,
+            "example": 16
           }
+        },
+        "example": {
+          "postId": 1,
+          "userId": 2,
+          "body": "Great write-up — saved me an hour of debugging."
         }
       },
       "Todo": {
@@ -8525,20 +9508,20 @@
             "format": "int32",
             "description": "Owner user ID",
             "minimum": 1,
-            "example": 9
+            "example": 1
           },
           "title": {
             "type": "string",
             "description": "Task description",
             "minLength": 1,
             "maxLength": 200,
-            "example": "Fix CORS issues"
+            "example": "Configure monitoring"
           },
           "completed": {
             "type": "boolean",
             "description": "Whether the task is done",
             "default": false,
-            "example": false
+            "example": true
           },
           "priority": {
             "type": "string",
@@ -8550,7 +9533,7 @@
               "critical"
             ],
             "default": "medium",
-            "example": "high"
+            "example": "low"
           },
           "dueDate": {
             "type": [
@@ -8563,23 +9546,27 @@
           },
           "tags": {
             "type": "array",
-            "items": {
-              "type": "string",
-              "example": "kubernetes"
-            },
+            "items": {},
             "description": "Categorization tags",
             "uniqueItems": true,
-            "example": [
-              "kubernetes",
-              "javascript"
-            ]
+            "example": []
           },
           "createdAt": {
             "type": "string",
             "format": "date-time",
             "readOnly": true,
-            "example": "2024-12-12T09:34:26.582Z"
+            "example": "2024-01-25T00:38:32.919Z"
           }
+        },
+        "example": {
+          "id": 1,
+          "userId": 1,
+          "title": "Configure monitoring",
+          "completed": true,
+          "priority": "low",
+          "dueDate": null,
+          "tags": [],
+          "createdAt": "2024-01-25T00:38:32.919Z"
         }
       },
       "TodoInput": {
@@ -8593,18 +9580,21 @@
             "type": "integer",
             "format": "int32",
             "description": "Owner user ID",
-            "minimum": 1
+            "minimum": 1,
+            "example": 1
           },
           "title": {
             "type": "string",
             "description": "Task description",
             "minLength": 1,
-            "maxLength": 200
+            "maxLength": 200,
+            "example": "Configure monitoring"
           },
           "completed": {
             "type": "boolean",
             "description": "Whether the task is done",
-            "default": false
+            "default": false,
+            "example": true
           },
           "priority": {
             "type": "string",
@@ -8615,7 +9605,8 @@
               "high",
               "critical"
             ],
-            "default": "medium"
+            "default": "medium",
+            "example": "low"
           },
           "dueDate": {
             "type": [
@@ -8623,17 +9614,20 @@
               "null"
             ],
             "description": "Due date (null if no deadline)",
-            "format": "date-time"
+            "format": "date-time",
+            "example": null
           },
           "tags": {
             "type": "array",
-            "items": {
-              "type": "string",
-              "example": "kubernetes"
-            },
+            "items": {},
             "description": "Categorization tags",
-            "uniqueItems": true
+            "uniqueItems": true,
+            "example": []
           }
+        },
+        "example": {
+          "userId": 1,
+          "title": "Reply to launch-day emails"
         }
       },
       "Album": {
@@ -8655,18 +9649,18 @@
             "format": "int32",
             "description": "Owner user ID",
             "minimum": 1,
-            "example": 44
+            "example": 1
           },
           "title": {
             "type": "string",
             "description": "Album title",
             "minLength": 1,
-            "example": "Street Art"
+            "example": "Abstract"
           },
           "description": {
             "type": "string",
             "description": "Album description",
-            "example": "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."
+            "example": "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
           },
           "coverImage": {
             "type": "string",
@@ -8679,7 +9673,7 @@
             "format": "int32",
             "description": "Number of photos",
             "minimum": 0,
-            "example": 6
+            "example": 39
           },
           "isPublic": {
             "type": "boolean",
@@ -8691,8 +9685,18 @@
             "type": "string",
             "format": "date-time",
             "readOnly": true,
-            "example": "2026-05-20T22:19:15.048Z"
+            "example": "2024-07-02T09:01:49.954Z"
           }
+        },
+        "example": {
+          "id": 1,
+          "userId": 1,
+          "title": "Abstract",
+          "description": "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+          "coverImage": "https://picsum.photos/seed/album1/600/400",
+          "photoCount": 39,
+          "isPublic": true,
+          "createdAt": "2024-07-02T09:01:49.954Z"
         }
       },
       "AlbumInput": {
@@ -8706,33 +9710,43 @@
             "type": "integer",
             "format": "int32",
             "description": "Owner user ID",
-            "minimum": 1
+            "minimum": 1,
+            "example": 1
           },
           "title": {
             "type": "string",
             "description": "Album title",
-            "minLength": 1
+            "minLength": 1,
+            "example": "Abstract"
           },
           "description": {
             "type": "string",
-            "description": "Album description"
+            "description": "Album description",
+            "example": "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
           },
           "coverImage": {
             "type": "string",
             "format": "uri",
-            "description": "Cover image URL"
+            "description": "Cover image URL",
+            "example": "https://picsum.photos/seed/album1/600/400"
           },
           "photoCount": {
             "type": "integer",
             "format": "int32",
             "description": "Number of photos",
-            "minimum": 0
+            "minimum": 0,
+            "example": 39
           },
           "isPublic": {
             "type": "boolean",
             "description": "Whether publicly visible",
-            "default": true
+            "default": true,
+            "example": true
           }
+        },
+        "example": {
+          "userId": 1,
+          "title": "Summer 2026"
         }
       },
       "Photo": {
@@ -8755,7 +9769,7 @@
             "format": "int32",
             "description": "Parent album ID",
             "minimum": 1,
-            "example": 28
+            "example": 1
           },
           "title": {
             "type": "string",
@@ -8766,7 +9780,7 @@
             "type": "string",
             "format": "uri",
             "description": "Full-size image URL",
-            "example": "https://picsum.photos/seed/1/800/1080"
+            "example": "https://picsum.photos/seed/1/800/960"
           },
           "thumbnailUrl": {
             "type": "string",
@@ -8786,14 +9800,14 @@
             "format": "int32",
             "description": "Image height in pixels",
             "minimum": 1,
-            "example": 1080
+            "example": 960
           },
           "size": {
             "type": "integer",
             "format": "int32",
             "description": "File size in bytes",
             "minimum": 0,
-            "example": 1145061
+            "example": 4803273
           },
           "format": {
             "type": "string",
@@ -8803,14 +9817,26 @@
               "png",
               "webp"
             ],
-            "example": "png"
+            "example": "jpeg"
           },
           "createdAt": {
             "type": "string",
             "format": "date-time",
             "readOnly": true,
-            "example": "2023-06-24T17:49:54.100Z"
+            "example": "2026-07-24T20:47:13.121Z"
           }
+        },
+        "example": {
+          "id": 1,
+          "albumId": 1,
+          "title": "Photo 1",
+          "url": "https://picsum.photos/seed/1/800/960",
+          "thumbnailUrl": "https://picsum.photos/seed/1/150/150",
+          "width": 800,
+          "height": 960,
+          "size": 4803273,
+          "format": "jpeg",
+          "createdAt": "2026-07-24T20:47:13.121Z"
         }
       },
       "PhotoInput": {
@@ -8825,39 +9851,46 @@
             "type": "integer",
             "format": "int32",
             "description": "Parent album ID",
-            "minimum": 1
+            "minimum": 1,
+            "example": 1
           },
           "title": {
             "type": "string",
-            "description": "Photo title or caption"
+            "description": "Photo title or caption",
+            "example": "Photo 1"
           },
           "url": {
             "type": "string",
             "format": "uri",
-            "description": "Full-size image URL"
+            "description": "Full-size image URL",
+            "example": "https://picsum.photos/seed/1/800/960"
           },
           "thumbnailUrl": {
             "type": "string",
             "format": "uri",
-            "description": "Thumbnail URL (150x150)"
+            "description": "Thumbnail URL (150x150)",
+            "example": "https://picsum.photos/seed/1/150/150"
           },
           "width": {
             "type": "integer",
             "format": "int32",
             "description": "Image width in pixels",
-            "minimum": 1
+            "minimum": 1,
+            "example": 800
           },
           "height": {
             "type": "integer",
             "format": "int32",
             "description": "Image height in pixels",
-            "minimum": 1
+            "minimum": 1,
+            "example": 960
           },
           "size": {
             "type": "integer",
             "format": "int32",
             "description": "File size in bytes",
-            "minimum": 0
+            "minimum": 0,
+            "example": 4803273
           },
           "format": {
             "type": "string",
@@ -8866,8 +9899,19 @@
               "jpeg",
               "png",
               "webp"
-            ]
+            ],
+            "example": "jpeg"
           }
+        },
+        "example": {
+          "albumId": 1,
+          "title": "Sunset at Vík",
+          "url": "https://picsum.photos/1600/1067?random=1",
+          "thumbnailUrl": "https://picsum.photos/150/150?random=1",
+          "width": 1600,
+          "height": 1067,
+          "format": "jpeg",
+          "size": 284532
         }
       },
       "Category": {
@@ -8913,14 +9957,23 @@
             "format": "int32",
             "description": "Products in this category",
             "minimum": 0,
-            "example": 4
+            "example": 5
           },
           "createdAt": {
             "type": "string",
             "format": "date-time",
             "readOnly": true,
-            "example": "2023-02-04T06:44:45.810Z"
+            "example": "2022-01-06T04:19:58.076Z"
           }
+        },
+        "example": {
+          "id": 1,
+          "name": "Electronics",
+          "slug": "electronics",
+          "description": "Gadgets, devices, and electronic accessories",
+          "image": "https://picsum.photos/seed/cat1/300/200",
+          "productCount": 5,
+          "createdAt": "2022-01-06T04:19:58.076Z"
         }
       },
       "CategoryInput": {
@@ -8934,28 +9987,37 @@
           "name": {
             "type": "string",
             "description": "Category display name",
-            "minLength": 1
+            "minLength": 1,
+            "example": "Electronics"
           },
           "slug": {
             "type": "string",
             "description": "URL-friendly slug",
-            "pattern": "^[a-z0-9-]+$"
+            "pattern": "^[a-z0-9-]+$",
+            "example": "electronics"
           },
           "description": {
             "type": "string",
-            "description": "Category description"
+            "description": "Category description",
+            "example": "Gadgets, devices, and electronic accessories"
           },
           "image": {
             "type": "string",
             "format": "uri",
-            "description": "Category image URL"
+            "description": "Category image URL",
+            "example": "https://picsum.photos/seed/cat1/300/200"
           },
           "productCount": {
             "type": "integer",
             "format": "int32",
             "description": "Products in this category",
-            "minimum": 0
+            "minimum": 0,
+            "example": 5
           }
+        },
+        "example": {
+          "name": "Electronics",
+          "slug": "electronics"
         }
       },
       "Product": {
@@ -8978,34 +10040,32 @@
             "format": "int32",
             "description": "Parent category ID",
             "minimum": 1,
-            "example": 3
+            "example": 4
           },
           "name": {
             "type": "string",
             "description": "Product name",
             "minLength": 1,
             "maxLength": 200,
-            "example": "Cable Organizer"
+            "example": "Desk Lamp"
           },
           "description": {
             "type": "string",
             "description": "Product description",
-            "example": "Versatile solution that adapts to your workflow."
+            "example": "Ultra-fast connectivity with rock-solid reliability."
           },
           "price": {
             "type": "number",
             "format": "double",
             "description": "Current price in USD",
             "minimum": 0,
-            "example": 357.22
+            "example": 161.28
           },
           "originalPrice": {
-            "type": [
-              "string",
-              "null"
-            ],
+            "type": "number",
+            "format": "double",
             "description": "Original price before discount (null if none)",
-            "example": null
+            "example": 231.38
           },
           "currency": {
             "type": "string",
@@ -9021,7 +10081,7 @@
             "format": "int32",
             "description": "Available inventory count",
             "minimum": 0,
-            "example": 496
+            "example": 257
           },
           "sku": {
             "type": "string",
@@ -9035,14 +10095,14 @@
             "description": "Average customer rating",
             "minimum": 1,
             "maximum": 5,
-            "example": 2.2
+            "example": 4.4
           },
           "reviewCount": {
             "type": "integer",
             "format": "int32",
             "description": "Total reviews",
             "minimum": 0,
-            "example": 42
+            "example": 188
           },
           "image": {
             "type": "string",
@@ -9071,7 +10131,7 @@
             "format": "double",
             "description": "Weight in kg",
             "minimum": 0,
-            "example": 3.15
+            "example": 9.19
           },
           "dimensions": {
             "type": "object",
@@ -9079,24 +10139,24 @@
               "width": {
                 "type": "number",
                 "format": "double",
-                "example": 37.6
+                "example": 33.4
               },
               "height": {
-                "type": "number",
-                "format": "double",
-                "example": 22.6
+                "type": "integer",
+                "format": "int32",
+                "example": 40
               },
               "depth": {
                 "type": "number",
                 "format": "double",
-                "example": 29.9
+                "example": 14.6
               }
             },
             "description": "Dimensions in cm",
             "example": {
-              "width": 37.6,
-              "height": 22.6,
-              "depth": 29.9
+              "width": 33.4,
+              "height": 40,
+              "depth": 14.6
             }
           },
           "isAvailable": {
@@ -9115,27 +10175,60 @@
             "type": "array",
             "items": {
               "type": "string",
-              "example": "aws"
+              "example": "backend"
             },
             "description": "Search and filter tags",
             "uniqueItems": true,
             "example": [
-              "aws",
-              "javascript"
+              "backend"
             ]
           },
           "createdAt": {
             "type": "string",
             "format": "date-time",
             "readOnly": true,
-            "example": "2026-03-25T11:46:41.231Z"
+            "example": "2024-05-30T01:37:26.059Z"
           },
           "updatedAt": {
             "type": "string",
             "format": "date-time",
             "readOnly": true,
-            "example": "2026-09-07T02:26:19.919Z"
+            "example": "2026-12-15T02:55:19.943Z"
           }
+        },
+        "example": {
+          "id": 1,
+          "categoryId": 4,
+          "name": "Desk Lamp",
+          "description": "Ultra-fast connectivity with rock-solid reliability.",
+          "price": 161.28,
+          "originalPrice": 231.38,
+          "currency": "USD",
+          "stock": 257,
+          "sku": "SKU-00001",
+          "rating": 4.4,
+          "reviewCount": 188,
+          "image": "https://picsum.photos/seed/prod1/400/400",
+          "images": [
+            "https://picsum.photos/seed/prod1-0/400/400",
+            "https://picsum.photos/seed/prod1-1/400/400",
+            "https://picsum.photos/seed/prod1-2/400/400",
+            "https://picsum.photos/seed/prod1-3/400/400",
+            "https://picsum.photos/seed/prod1-4/400/400"
+          ],
+          "weight": 9.19,
+          "dimensions": {
+            "width": 33.4,
+            "height": 40,
+            "depth": 14.6
+          },
+          "isAvailable": true,
+          "isFeatured": false,
+          "tags": [
+            "backend"
+          ],
+          "createdAt": "2024-05-30T01:37:26.059Z",
+          "updatedAt": "2026-12-15T02:55:19.943Z"
         }
       },
       "ProductInput": {
@@ -9150,30 +10243,33 @@
             "type": "integer",
             "format": "int32",
             "description": "Parent category ID",
-            "minimum": 1
+            "minimum": 1,
+            "example": 4
           },
           "name": {
             "type": "string",
             "description": "Product name",
             "minLength": 1,
-            "maxLength": 200
+            "maxLength": 200,
+            "example": "Desk Lamp"
           },
           "description": {
             "type": "string",
-            "description": "Product description"
+            "description": "Product description",
+            "example": "Ultra-fast connectivity with rock-solid reliability."
           },
           "price": {
             "type": "number",
             "format": "double",
             "description": "Current price in USD",
-            "minimum": 0
+            "minimum": 0,
+            "example": 161.28
           },
           "originalPrice": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Original price before discount (null if none)"
+            "type": "number",
+            "format": "double",
+            "description": "Original price before discount (null if none)",
+            "example": 231.38
           },
           "currency": {
             "type": "string",
@@ -9181,36 +10277,42 @@
             "enum": [
               "USD"
             ],
-            "default": "USD"
+            "default": "USD",
+            "example": "USD"
           },
           "stock": {
             "type": "integer",
             "format": "int32",
             "description": "Available inventory count",
-            "minimum": 0
+            "minimum": 0,
+            "example": 257
           },
           "sku": {
             "type": "string",
             "description": "Stock keeping unit",
-            "pattern": "^SKU-\\d{5}$"
+            "pattern": "^SKU-\\d{5}$",
+            "example": "SKU-00001"
           },
           "rating": {
             "type": "number",
             "format": "double",
             "description": "Average customer rating",
             "minimum": 1,
-            "maximum": 5
+            "maximum": 5,
+            "example": 4.4
           },
           "reviewCount": {
             "type": "integer",
             "format": "int32",
             "description": "Total reviews",
-            "minimum": 0
+            "minimum": 0,
+            "example": 188
           },
           "image": {
             "type": "string",
             "format": "uri",
-            "description": "Primary image URL"
+            "description": "Primary image URL",
+            "example": "https://picsum.photos/seed/prod1/400/400"
           },
           "images": {
             "type": "array",
@@ -9219,13 +10321,21 @@
               "example": "https://picsum.photos/seed/prod1-0/400/400"
             },
             "description": "Image gallery URLs",
-            "minItems": 1
+            "minItems": 1,
+            "example": [
+              "https://picsum.photos/seed/prod1-0/400/400",
+              "https://picsum.photos/seed/prod1-1/400/400",
+              "https://picsum.photos/seed/prod1-2/400/400",
+              "https://picsum.photos/seed/prod1-3/400/400",
+              "https://picsum.photos/seed/prod1-4/400/400"
+            ]
           },
           "weight": {
             "type": "number",
             "format": "double",
             "description": "Weight in kg",
-            "minimum": 0
+            "minimum": 0,
+            "example": 9.19
           },
           "dimensions": {
             "type": "object",
@@ -9233,40 +10343,57 @@
               "width": {
                 "type": "number",
                 "format": "double",
-                "example": 37.6
+                "example": 33.4
               },
               "height": {
-                "type": "number",
-                "format": "double",
-                "example": 22.6
+                "type": "integer",
+                "format": "int32",
+                "example": 40
               },
               "depth": {
                 "type": "number",
                 "format": "double",
-                "example": 29.9
+                "example": 14.6
               }
             },
-            "description": "Dimensions in cm"
+            "description": "Dimensions in cm",
+            "example": {
+              "width": 33.4,
+              "height": 40,
+              "depth": 14.6
+            }
           },
           "isAvailable": {
             "type": "boolean",
             "description": "Can be purchased",
-            "default": true
+            "default": true,
+            "example": true
           },
           "isFeatured": {
             "type": "boolean",
             "description": "Editorially featured",
-            "default": false
+            "default": false,
+            "example": false
           },
           "tags": {
             "type": "array",
             "items": {
               "type": "string",
-              "example": "aws"
+              "example": "backend"
             },
             "description": "Search and filter tags",
-            "uniqueItems": true
+            "uniqueItems": true,
+            "example": [
+              "backend"
+            ]
           }
+        },
+        "example": {
+          "categoryId": 1,
+          "name": "Wireless earbuds",
+          "price": 79.99,
+          "sku": "SKU-01001",
+          "stock": 100
         }
       },
       "Order": {
@@ -9289,7 +10416,7 @@
             "format": "int32",
             "description": "Customer user ID",
             "minimum": 1,
-            "example": 32
+            "example": 1
           },
           "items": {
             "type": "array",
@@ -9299,17 +10426,17 @@
                 "productId": {
                   "type": "integer",
                   "format": "int32",
-                  "example": 43
+                  "example": 37
                 },
                 "quantity": {
                   "type": "integer",
                   "format": "int32",
-                  "example": 1
+                  "example": 2
                 },
                 "price": {
                   "type": "number",
                   "format": "double",
-                  "example": 417.79
+                  "example": 416.97
                 }
               }
             },
@@ -9317,19 +10444,14 @@
             "minItems": 1,
             "example": [
               {
-                "productId": 43,
-                "quantity": 1,
-                "price": 417.79
-              },
-              {
-                "productId": 46,
-                "quantity": 1,
-                "price": 468.34
-              },
-              {
-                "productId": 8,
+                "productId": 37,
                 "quantity": 2,
-                "price": 46.65
+                "price": 416.97
+              },
+              {
+                "productId": 16,
+                "quantity": 2,
+                "price": 478.87
               }
             ]
           },
@@ -9338,14 +10460,14 @@
             "format": "double",
             "description": "Items total before tax/shipping",
             "minimum": 0,
-            "example": 979.43
+            "example": 1791.68
           },
           "tax": {
             "type": "number",
             "format": "double",
             "description": "Tax amount",
             "minimum": 0,
-            "example": 78.35
+            "example": 143.33
           },
           "shipping": {
             "type": "integer",
@@ -9359,7 +10481,7 @@
             "format": "double",
             "description": "Grand total",
             "minimum": 0,
-            "example": 1057.78
+            "example": 1935.01
           },
           "currency": {
             "type": "string",
@@ -9381,7 +10503,7 @@
               "refunded"
             ],
             "default": "pending",
-            "example": "delivered"
+            "example": "pending"
           },
           "paymentMethod": {
             "type": "string",
@@ -9393,26 +10515,26 @@
               "apple_pay",
               "google_pay"
             ],
-            "example": "apple_pay"
+            "example": "credit_card"
           },
           "shippingAddress": {
             "type": "object",
             "properties": {
               "street": {
                 "type": "string",
-                "example": "2706 Jackson Blvd"
+                "example": "6620 Maple Dr"
               },
               "city": {
                 "type": "string",
-                "example": "Denver"
+                "example": "Fort Worth"
               },
               "state": {
                 "type": "string",
-                "example": "MD"
+                "example": "MI"
               },
               "zipCode": {
                 "type": "string",
-                "example": "46796"
+                "example": "16372"
               },
               "country": {
                 "type": "string",
@@ -9421,20 +10543,17 @@
             },
             "description": "Delivery address",
             "example": {
-              "street": "2706 Jackson Blvd",
-              "city": "Denver",
-              "state": "MD",
-              "zipCode": "46796",
+              "street": "6620 Maple Dr",
+              "city": "Fort Worth",
+              "state": "MI",
+              "zipCode": "16372",
               "country": "US"
             }
           },
           "trackingNumber": {
-            "type": [
-              "string",
-              "null"
-            ],
+            "type": "string",
             "description": "Tracking number (null if not shipped)",
-            "example": null
+            "example": "TRK442765071"
           },
           "notes": {
             "type": [
@@ -9448,14 +10567,48 @@
             "type": "string",
             "format": "date-time",
             "readOnly": true,
-            "example": "2025-11-19T20:52:51.841Z"
+            "example": "2026-04-19T12:16:46.226Z"
           },
           "updatedAt": {
             "type": "string",
             "format": "date-time",
             "readOnly": true,
-            "example": "2026-12-14T20:23:16.306Z"
+            "example": "2025-01-30T04:10:54.855Z"
           }
+        },
+        "example": {
+          "id": 1,
+          "userId": 1,
+          "items": [
+            {
+              "productId": 37,
+              "quantity": 2,
+              "price": 416.97
+            },
+            {
+              "productId": 16,
+              "quantity": 2,
+              "price": 478.87
+            }
+          ],
+          "subtotal": 1791.68,
+          "tax": 143.33,
+          "shipping": 0,
+          "total": 1935.01,
+          "currency": "USD",
+          "status": "pending",
+          "paymentMethod": "credit_card",
+          "shippingAddress": {
+            "street": "6620 Maple Dr",
+            "city": "Fort Worth",
+            "state": "MI",
+            "zipCode": "16372",
+            "country": "US"
+          },
+          "trackingNumber": "TRK442765071",
+          "notes": null,
+          "createdAt": "2026-04-19T12:16:46.226Z",
+          "updatedAt": "2025-01-30T04:10:54.855Z"
         }
       },
       "OrderInput": {
@@ -9470,7 +10623,8 @@
             "type": "integer",
             "format": "int32",
             "description": "Customer user ID",
-            "minimum": 1
+            "minimum": 1,
+            "example": 1
           },
           "items": {
             "type": "array",
@@ -9480,53 +10634,70 @@
                 "productId": {
                   "type": "integer",
                   "format": "int32",
-                  "example": 43
+                  "example": 37
                 },
                 "quantity": {
                   "type": "integer",
                   "format": "int32",
-                  "example": 1
+                  "example": 2
                 },
                 "price": {
                   "type": "number",
                   "format": "double",
-                  "example": 417.79
+                  "example": 416.97
                 }
               }
             },
             "description": "Ordered line items",
-            "minItems": 1
+            "minItems": 1,
+            "example": [
+              {
+                "productId": 37,
+                "quantity": 2,
+                "price": 416.97
+              },
+              {
+                "productId": 16,
+                "quantity": 2,
+                "price": 478.87
+              }
+            ]
           },
           "subtotal": {
             "type": "number",
             "format": "double",
             "description": "Items total before tax/shipping",
-            "minimum": 0
+            "minimum": 0,
+            "example": 1791.68
           },
           "tax": {
             "type": "number",
             "format": "double",
             "description": "Tax amount",
-            "minimum": 0
+            "minimum": 0,
+            "example": 143.33
           },
           "shipping": {
             "type": "integer",
             "format": "int32",
             "description": "Shipping cost (free over $100)",
-            "minimum": 0
+            "minimum": 0,
+            "example": 0
           },
           "total": {
             "type": "number",
             "format": "double",
             "description": "Grand total",
-            "minimum": 0
+            "minimum": 0,
+            "example": 1935.01
           },
           "currency": {
             "type": "string",
             "description": "Order currency",
             "enum": [
               "USD"
-            ]
+            ],
+            "example": "USD"
           },
           "status": {
             "type": "string",
@@ -9539,7 +10710,8 @@
               "cancelled",
               "refunded"
             ],
-            "default": "pending"
+            "default": "pending",
+            "example": "pending"
           },
           "paymentMethod": {
             "type": "string",
@@ -9550,47 +10722,82 @@
               "paypal",
               "apple_pay",
               "google_pay"
-            ]
+            ],
+            "example": "credit_card"
           },
           "shippingAddress": {
             "type": "object",
             "properties": {
               "street": {
                 "type": "string",
-                "example": "2706 Jackson Blvd"
+                "example": "6620 Maple Dr"
               },
               "city": {
                 "type": "string",
-                "example": "Denver"
+                "example": "Fort Worth"
               },
               "state": {
                 "type": "string",
-                "example": "MD"
+                "example": "MI"
               },
               "zipCode": {
                 "type": "string",
-                "example": "46796"
+                "example": "16372"
               },
               "country": {
                 "type": "string",
                 "example": "US"
               }
             },
-            "description": "Delivery address"
+            "description": "Delivery address",
+            "example": {
+              "street": "6620 Maple Dr",
+              "city": "Fort Worth",
+              "state": "MI",
+              "zipCode": "16372",
+              "country": "US"
+            }
           },
           "trackingNumber": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Tracking number (null if not shipped)"
+            "type": "string",
+            "description": "Tracking number (null if not shipped)",
+            "example": "TRK442765071"
           },
           "notes": {
             "type": [
               "string",
               "null"
             ],
-            "description": "Customer notes"
+            "description": "Customer notes",
+            "example": null
+          }
+        },
+        "example": {
+          "userId": 1,
+          "items": [
+            {
+              "productId": 1,
+              "quantity": 2,
+              "price": 79.99
+            },
+            {
+              "productId": 2,
+              "quantity": 1,
+              "price": 89
+            }
+          ],
+          "subtotal": 248.98,
+          "tax": 19.92,
+          "shipping": 0,
+          "total": 268.9,
+          "currency": "USD",
+          "paymentMethod": "credit_card",
+          "shippingAddress": {
+            "street": "123 Main St",
+            "city": "Austin",
+            "state": "TX",
+            "zip": "78701",
+            "country": "US"
           }
         }
       },
@@ -9614,14 +10821,14 @@
             "format": "int32",
             "description": "Reviewed product ID",
             "minimum": 1,
-            "example": 50
+            "example": 1
           },
           "userId": {
             "type": "integer",
             "format": "int32",
             "description": "Reviewer user ID",
             "minimum": 1,
-            "example": 48
+            "example": 1
           },
           "rating": {
             "type": "integer",
@@ -9629,7 +10836,7 @@
             "description": "Star rating",
             "minimum": 1,
             "maximum": 5,
-            "example": 2
+            "example": 4
           },
           "title": {
             "type": "string",
@@ -9651,14 +10858,25 @@
             "format": "int32",
             "description": "\"Helpful\" votes",
             "minimum": 0,
-            "example": 5
+            "example": 1
           },
           "createdAt": {
             "type": "string",
             "format": "date-time",
             "readOnly": true,
-            "example": "2025-08-14T23:50:39.905Z"
+            "example": "2025-08-29T18:25:55.906Z"
           }
+        },
+        "example": {
+          "id": 1,
+          "productId": 1,
+          "userId": 1,
+          "rating": 4,
+          "title": "Works as advertised",
+          "body": "Great article! Really helped me understand the concept better.",
+          "isVerified": true,
+          "helpful": 1,
+          "createdAt": "2025-08-29T18:25:55.906Z"
         }
       },
       "ReviewInput": {
@@ -9673,39 +10891,55 @@
             "type": "integer",
             "format": "int32",
             "description": "Reviewed product ID",
-            "minimum": 1
+            "minimum": 1,
+            "example": 1
           },
           "userId": {
             "type": "integer",
             "format": "int32",
             "description": "Reviewer user ID",
-            "minimum": 1
+            "minimum": 1,
+            "example": 1
           },
           "rating": {
             "type": "integer",
             "format": "int32",
             "description": "Star rating",
             "minimum": 1,
-            "maximum": 5
+            "maximum": 5,
+            "example": 4
           },
           "title": {
             "type": "string",
-            "description": "Review headline"
+            "description": "Review headline",
+            "example": "Works as advertised"
           },
           "body": {
             "type": "string",
-            "description": "Full review text"
+            "description": "Full review text",
+            "example": "Great article! Really helped me understand the concept better."
           },
           "isVerified": {
             "type": "boolean",
-            "description": "Verified purchaser"
+            "description": "Verified purchaser",
+            "example": true
           },
           "helpful": {
             "type": "integer",
             "format": "int32",
             "description": "\"Helpful\" votes",
-            "minimum": 0
+            "minimum": 0,
+            "example": 1
           }
+        },
+        "example": {
+          "productId": 1,
+          "userId": 1,
+          "rating": 5,
+          "title": "Better than I expected",
+          "body": "Quality is on par with gear twice the price. Would buy again.",
+          "isVerified": true,
+          "helpful": 12
         }
       },
       "Notification": {
@@ -9729,7 +10963,7 @@
             "format": "int32",
             "description": "Recipient user ID",
             "minimum": 1,
-            "example": 11
+            "example": 1
           },
           "type": {
             "type": "string",
@@ -9741,23 +10975,23 @@
               "error",
               "system"
             ],
-            "example": "info"
+            "example": "error"
           },
           "title": {
             "type": "string",
             "description": "Notification title",
-            "example": "Info notification"
+            "example": "Error notification"
           },
           "message": {
             "type": "string",
             "description": "Notification body text",
-            "example": "Payment received for your order."
+            "example": "New follower on your profile."
           },
           "read": {
             "type": "boolean",
             "description": "Has been read",
             "default": false,
-            "example": false
+            "example": true
           },
           "link": {
             "type": [
@@ -9772,8 +11006,18 @@
             "type": "string",
             "format": "date-time",
             "readOnly": true,
-            "example": "2026-04-14T22:44:23.813Z"
+            "example": "2026-03-23T15:22:15.402Z"
           }
+        },
+        "example": {
+          "id": 1,
+          "userId": 1,
+          "type": "error",
+          "title": "Error notification",
+          "message": "New follower on your profile.",
+          "read": true,
+          "link": null,
+          "createdAt": "2026-03-23T15:22:15.402Z"
         }
       },
       "NotificationInput": {
@@ -9789,7 +11033,8 @@
             "type": "integer",
             "format": "int32",
             "description": "Recipient user ID",
-            "minimum": 1
+            "minimum": 1,
+            "example": 1
           },
           "type": {
             "type": "string",
@@ -9800,20 +11045,24 @@
               "success",
               "error",
               "system"
-            ]
+            ],
+            "example": "error"
           },
           "title": {
             "type": "string",
-            "description": "Notification title"
+            "description": "Notification title",
+            "example": "Error notification"
           },
           "message": {
             "type": "string",
-            "description": "Notification body text"
+            "description": "Notification body text",
+            "example": "New follower on your profile."
           },
           "read": {
             "type": "boolean",
             "description": "Has been read",
-            "default": false
+            "default": false,
+            "example": true
           },
           "link": {
             "type": [
@@ -9821,8 +11070,16 @@
               "null"
             ],
             "description": "Related resource URL",
-            "format": "uri-reference"
+            "format": "uri-reference",
+            "example": null
           }
+        },
+        "example": {
+          "userId": 1,
+          "type": "info",
+          "title": "New feature available",
+          "message": "Batch operations are now live — run up to 20 writes in one call.",
+          "link": "/guide/batch"
         }
       },
       "Webhook": {
@@ -10084,7 +11341,7 @@
             "type": "string",
             "format": "email",
             "description": "User email",
-            "example": "james.smith@example.com"
+            "example": "demo@example.com"
           },
           "password": {
             "type": "string",
@@ -10410,6 +11667,73 @@
             "description": "Number of notifications"
           }
         }
+      },
+      "BasicDemoResponse": {
+        "type": "object",
+        "description": "Response from the HTTP Basic auth demo endpoint",
+        "required": [
+          "authenticated",
+          "scheme"
+        ],
+        "properties": {
+          "authenticated": {
+            "type": "boolean",
+            "example": true
+          },
+          "scheme": {
+            "type": "string",
+            "enum": [
+              "basic"
+            ],
+            "example": "basic"
+          },
+          "user": {
+            "type": "string",
+            "description": "Username supplied in the Basic header",
+            "example": "demo"
+          }
+        }
+      },
+      "AdminReport": {
+        "type": "object",
+        "description": "Read-only aggregate report for administrators",
+        "required": [
+          "generatedAt",
+          "scheme",
+          "totals"
+        ],
+        "properties": {
+          "generatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "scheme": {
+            "type": "string",
+            "enum": [
+              "bearer",
+              "basic"
+            ],
+            "description": "Which auth scheme the caller used"
+          },
+          "totals": {
+            "type": "object",
+            "description": "Record counts per resource",
+            "additionalProperties": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "webhooks": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Active webhook subscriptions"
+          },
+          "activeTokens": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Bearer tokens currently valid"
+          }
+        }
       }
     },
     "parameters": {
@@ -10505,38 +11829,74 @@
       "SearchParam": {
         "name": "q",
         "in": "query",
-        "description": "Full-text search across all string/number/array fields",
+        "description": "Full-text search across all string/number/array fields. Leave blank to list everything.",
         "schema": {
           "type": "string"
         },
-        "example": "javascript"
+        "examples": {
+          "all": {
+            "summary": "List all (no filter)",
+            "value": ""
+          },
+          "javascript": {
+            "summary": "Find records containing \"javascript\"",
+            "value": "javascript"
+          }
+        }
       },
       "FieldsParam": {
         "name": "_fields",
         "in": "query",
-        "description": "Sparse fieldset — comma-separated fields to return",
+        "description": "Sparse fieldset — comma-separated fields to return. Leave blank for the full object.",
         "schema": {
           "type": "string"
         },
-        "example": "id,name,email"
+        "examples": {
+          "full": {
+            "summary": "Full object (all fields)",
+            "value": ""
+          },
+          "slim": {
+            "summary": "id + timestamps only",
+            "value": "id,createdAt,updatedAt"
+          }
+        }
       },
       "ExpandParam": {
         "name": "_expand",
         "in": "query",
-        "description": "Expand parent relations inline (e.g., `user` on posts)",
+        "description": "Expand parent relations inline. Applies only when the resource has a matching parent (e.g. `user` on posts).",
         "schema": {
           "type": "string"
         },
-        "example": "user"
+        "examples": {
+          "none": {
+            "summary": "No expansion",
+            "value": ""
+          },
+          "parent": {
+            "summary": "Expand parent where available",
+            "value": "user"
+          }
+        }
       },
       "EmbedParam": {
         "name": "_embed",
         "in": "query",
-        "description": "Embed child collections (e.g., `comments` on posts)",
+        "description": "Embed child collections. Applies only when the resource has a matching child (e.g. `comments` on posts).",
         "schema": {
           "type": "string"
         },
-        "example": "comments"
+        "examples": {
+          "none": {
+            "summary": "No embed",
+            "value": ""
+          },
+          "comments": {
+            "summary": "Embed comments where available",
+            "value": "comments"
+          }
+        }
       },
       "DelayParam": {
         "name": "_delay",
@@ -10771,6 +12131,11 @@
         "scheme": "bearer",
         "bearerFormat": "hex-token",
         "description": "Obtain via `POST /auth/login`. Include as `Authorization: Bearer <token>`. Expires in 1 hour. Most endpoints work without auth."
+      },
+      "basicAuth": {
+        "type": "http",
+        "scheme": "basic",
+        "description": "HTTP Basic. Mock — any username and password are accepted. Present so docs generators can render the Basic auth block."
       }
     },
     "links": {
@@ -10871,111 +12236,108 @@
         "summary": "Example user",
         "value": {
           "id": 1,
-          "firstName": "Emily",
-          "lastName": "Hernandez",
-          "email": "emily.hernandez@mock.dev",
-          "username": "emilyhernandez550",
-          "avatar": "https://i.pravatar.cc/150?u=1",
-          "phone": "+1-801-124-5328",
+          "firstName": "Demo",
+          "lastName": "User",
+          "email": "demo@example.com",
+          "username": "demo",
+          "avatar": "https://i.pravatar.cc/150?u=demo",
+          "phone": "+1-555-000-0001",
           "address": {
-            "street": "8567 Jefferson Dr",
-            "city": "Fresno",
-            "state": "KY",
-            "zipCode": "37490",
-            "country": "AU",
+            "street": "1 Demo Way",
+            "city": "Austin",
+            "state": "TX",
+            "zipCode": "78701",
+            "country": "US",
             "geo": {
-              "lat": -81.94149,
-              "lng": 81.999216
+              "lat": 30.2672,
+              "lng": -97.7431
             }
           },
           "company": {
-            "name": "Cyberdyne Systems",
-            "catchPhrase": "Streamline operations"
+            "name": "Demo Corp",
+            "catchPhrase": "Seeded for docs and testing."
           },
-          "website": "https://emilyhernandez.com",
+          "website": "https://example.com/demo",
           "role": "admin",
-          "age": 65,
-          "bio": "Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra.",
+          "age": 30,
+          "bio": "Seeded demo account. Log in with any password.",
           "isActive": true,
-          "createdAt": "2022-05-29T11:27:51.291Z",
-          "updatedAt": "2026-08-23T17:13:33.168Z"
+          "createdAt": "2024-01-01T00:00:00.000Z",
+          "updatedAt": "2026-04-21T00:00:00.000Z"
         }
       },
       "PostExample": {
         "summary": "Example post",
         "value": {
           "id": 1,
-          "userId": 39,
-          "title": "Building Scalable Node.js Applications",
-          "slug": "serverless-architecture-overview",
-          "body": "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n\nUt enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\n\nPhasellus ultrices nulla quis nibh. Quisque a lectus. Donec consectetuer ligula vulputate sem tristique cursus.\n\nFusce commodo aliquam arcu. Nam commodo suscipit quam. Quisque id odio.",
-          "excerpt": "Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae....",
+          "userId": 1,
+          "title": "Performance Optimization Tips",
+          "slug": "web-security-fundamentals",
+          "body": "Fusce commodo aliquam arcu. Nam commodo suscipit quam. Quisque id odio.\n\nCurabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra.",
+          "excerpt": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliq...",
           "tags": [
-            "react"
+            "ux"
           ],
-          "status": "archived",
-          "views": 1087,
-          "likes": 170,
+          "status": "published",
+          "views": 16848,
+          "likes": 28,
           "featured": false,
           "coverImage": "https://picsum.photos/seed/1/800/400",
-          "readingTime": 14,
-          "createdAt": "2025-08-21T09:58:31.155Z",
-          "updatedAt": "2025-08-21T09:58:31.155Z"
+          "readingTime": 7,
+          "createdAt": "2026-01-21T19:36:04.116Z",
+          "updatedAt": "2026-01-21T19:36:04.116Z"
         }
       },
       "CommentExample": {
         "summary": "Example comment",
         "value": {
           "id": 1,
-          "postId": 106,
-          "userId": 13,
-          "body": "This is exactly what I needed. Bookmarked for future reference.",
-          "likes": 21,
-          "createdAt": "2024-05-03T17:33:28.015Z"
+          "postId": 1,
+          "userId": 1,
+          "body": "How does this compare to the approach described in the official docs?",
+          "likes": 16,
+          "createdAt": "2023-04-28T06:59:47.906Z"
         }
       },
       "TodoExample": {
         "summary": "Example todo",
         "value": {
           "id": 1,
-          "userId": 9,
-          "title": "Fix CORS issues",
-          "completed": false,
-          "priority": "high",
+          "userId": 1,
+          "title": "Configure monitoring",
+          "completed": true,
+          "priority": "low",
           "dueDate": null,
-          "tags": [
-            "kubernetes",
-            "javascript"
-          ],
-          "createdAt": "2024-12-12T09:34:26.582Z"
+          "tags": [],
+          "createdAt": "2024-01-25T00:38:32.919Z"
         }
       },
       "AlbumExample": {
         "summary": "Example album",
         "value": {
           "id": 1,
-          "userId": 44,
-          "title": "Street Art",
-          "description": "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+          "userId": 1,
+          "title": "Abstract",
+          "description": "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
           "coverImage": "https://picsum.photos/seed/album1/600/400",
-          "photoCount": 6,
+          "photoCount": 39,
           "isPublic": true,
-          "createdAt": "2026-05-20T22:19:15.048Z"
+          "createdAt": "2024-07-02T09:01:49.954Z"
         }
       },
       "PhotoExample": {
         "summary": "Example photo",
         "value": {
           "id": 1,
-          "albumId": 28,
+          "albumId": 1,
           "title": "Photo 1",
-          "url": "https://picsum.photos/seed/1/800/1080",
+          "url": "https://picsum.photos/seed/1/800/960",
           "thumbnailUrl": "https://picsum.photos/seed/1/150/150",
           "width": 800,
-          "height": 1080,
-          "size": 1145061,
-          "format": "png",
-          "createdAt": "2023-06-24T17:49:54.100Z"
+          "height": 960,
+          "size": 4803273,
+          "format": "jpeg",
+          "createdAt": "2026-07-24T20:47:13.121Z"
         }
       },
       "CategoryExample": {
@@ -10986,24 +12348,24 @@
           "slug": "electronics",
           "description": "Gadgets, devices, and electronic accessories",
           "image": "https://picsum.photos/seed/cat1/300/200",
-          "productCount": 4,
-          "createdAt": "2023-02-04T06:44:45.810Z"
+          "productCount": 5,
+          "createdAt": "2022-01-06T04:19:58.076Z"
         }
       },
       "ProductExample": {
         "summary": "Example product",
         "value": {
           "id": 1,
-          "categoryId": 3,
-          "name": "Cable Organizer",
-          "description": "Versatile solution that adapts to your workflow.",
-          "price": 357.22,
-          "originalPrice": null,
+          "categoryId": 4,
+          "name": "Desk Lamp",
+          "description": "Ultra-fast connectivity with rock-solid reliability.",
+          "price": 161.28,
+          "originalPrice": 231.38,
           "currency": "USD",
-          "stock": 496,
+          "stock": 257,
           "sku": "SKU-00001",
-          "rating": 2.2,
-          "reviewCount": 42,
+          "rating": 4.4,
+          "reviewCount": 188,
           "image": "https://picsum.photos/seed/prod1/400/400",
           "images": [
             "https://picsum.photos/seed/prod1-0/400/400",
@@ -11012,89 +12374,83 @@
             "https://picsum.photos/seed/prod1-3/400/400",
             "https://picsum.photos/seed/prod1-4/400/400"
           ],
-          "weight": 3.15,
+          "weight": 9.19,
           "dimensions": {
-            "width": 37.6,
-            "height": 22.6,
-            "depth": 29.9
+            "width": 33.4,
+            "height": 40,
+            "depth": 14.6
           },
           "isAvailable": true,
           "isFeatured": false,
           "tags": [
-            "aws",
-            "javascript"
+            "backend"
           ],
-          "createdAt": "2026-03-25T11:46:41.231Z",
-          "updatedAt": "2026-09-07T02:26:19.919Z"
+          "createdAt": "2024-05-30T01:37:26.059Z",
+          "updatedAt": "2026-12-15T02:55:19.943Z"
         }
       },
       "OrderExample": {
         "summary": "Example order",
         "value": {
           "id": 1,
-          "userId": 32,
+          "userId": 1,
           "items": [
             {
-              "productId": 43,
-              "quantity": 1,
-              "price": 417.79
-            },
-            {
-              "productId": 46,
-              "quantity": 1,
-              "price": 468.34
-            },
-            {
-              "productId": 8,
+              "productId": 37,
               "quantity": 2,
-              "price": 46.65
+              "price": 416.97
+            },
+            {
+              "productId": 16,
+              "quantity": 2,
+              "price": 478.87
             }
           ],
-          "subtotal": 979.43,
-          "tax": 78.35,
+          "subtotal": 1791.68,
+          "tax": 143.33,
           "shipping": 0,
-          "total": 1057.78,
+          "total": 1935.01,
           "currency": "USD",
-          "status": "delivered",
-          "paymentMethod": "apple_pay",
+          "status": "pending",
+          "paymentMethod": "credit_card",
           "shippingAddress": {
-            "street": "2706 Jackson Blvd",
-            "city": "Denver",
-            "state": "MD",
-            "zipCode": "46796",
+            "street": "6620 Maple Dr",
+            "city": "Fort Worth",
+            "state": "MI",
+            "zipCode": "16372",
             "country": "US"
           },
-          "trackingNumber": null,
+          "trackingNumber": "TRK442765071",
           "notes": null,
-          "createdAt": "2025-11-19T20:52:51.841Z",
-          "updatedAt": "2026-12-14T20:23:16.306Z"
+          "createdAt": "2026-04-19T12:16:46.226Z",
+          "updatedAt": "2025-01-30T04:10:54.855Z"
         }
       },
       "ReviewExample": {
         "summary": "Example review",
         "value": {
           "id": 1,
-          "productId": 50,
-          "userId": 48,
-          "rating": 2,
+          "productId": 1,
+          "userId": 1,
+          "rating": 4,
           "title": "Works as advertised",
           "body": "Great article! Really helped me understand the concept better.",
           "isVerified": true,
-          "helpful": 5,
-          "createdAt": "2025-08-14T23:50:39.905Z"
+          "helpful": 1,
+          "createdAt": "2025-08-29T18:25:55.906Z"
         }
       },
       "NotificationExample": {
         "summary": "Example notification",
         "value": {
           "id": 1,
-          "userId": 11,
-          "type": "info",
-          "title": "Info notification",
-          "message": "Payment received for your order.",
-          "read": false,
+          "userId": 1,
+          "type": "error",
+          "title": "Error notification",
+          "message": "New follower on your profile.",
+          "read": true,
           "link": null,
-          "createdAt": "2026-04-14T22:44:23.813Z"
+          "createdAt": "2026-03-23T15:22:15.402Z"
         }
       }
     }

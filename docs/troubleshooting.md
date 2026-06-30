@@ -8,7 +8,7 @@ description: Common issues and solutions when using vitepress-openapi-docs.
 
 ```
 vitepress-openapi-docs: 1 broken <OpenApiEndpoint> embed(s):
-  - guide.md:12 — id="api.nonexistent"
+  - guide.md:12 id="api.nonexistent"
 ```
 
 **Cause:** A markdown page references an `operationId` that doesn't exist in any registered spec.
@@ -33,13 +33,13 @@ extends: await openApiDocs(config, { verbose: true })
 
 Check the console output for operation counts. Common causes:
 
-- Spec path is wrong — check the `spec` field in your config
-- Spec has no `paths` — verify your YAML/JSON has operations defined
-- The spec fails to parse — look for `[vitepress-openapi-docs]` error messages
+- Spec path is wrong: check the `spec` field in your config
+- Spec has no `paths`: verify your YAML/JSON has operations defined
+- The spec fails to parse: look for `[vitepress-openapi-docs]` error messages
 
 ## Empty changelog
 
-`<OpenApiChangelog>` shows "No changes recorded yet."
+`<OpenApiChangelog>` shows "No history yet" with a note that the spec file has fewer than two commits touching it, so there's nothing to diff.
 
 **Cause:** The spec file has fewer than two commits in git history.
 
@@ -71,7 +71,7 @@ Or use a triple-slash directive in your theme file:
 /// <reference types="vitepress-openapi-docs/virtual" />
 ```
 
-See [existing site setup](/guide/existing-site#5-typescript-optional) for details.
+See [existing site setup](/guide/existing-site#6-typescript-optional) for details.
 
 ## CORS errors in Try-It
 
@@ -106,12 +106,12 @@ Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS
 **Fix:** The `spec` path is relative to the project root (where `package.json` is), not the docs directory.
 
 ```ts
-// Correct — relative to project root
+// Correct: relative to project root
 {
   spec: 'docs/openapi/api.yaml'
 }
 
-// Wrong — this looks for docs/docs/openapi/api.yaml
+// Wrong: this looks for docs/docs/openapi/api.yaml
 {
   spec: 'openapi/api.yaml'
 }
@@ -162,6 +162,6 @@ POST/PUT/PATCH endpoints show an empty body textarea.
 
 **Check:**
 
-- `OperationJumper` must be mounted in the `layout-top` slot — see [theme setup](/guide/existing-site#3-theme-setup)
+- `OperationJumper` must be mounted in the `layout-top` slot; see [theme setup](/guide/existing-site#3-theme-setup)
 - The specs virtual module must be imported and passed to `enhanceAppWithOpenApi`
 - Add `SearchTrigger` to `nav-bar-content-after` for a visible trigger button

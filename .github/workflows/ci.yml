@@ -21,6 +21,7 @@ jobs:
       - run: npm run typecheck
       - run: npm run lint:check
       - run: npm run format:check
+      - run: npm run check:facts
       - run: npm run test:run
       - run: npm run build
       - run: npx publint packages/core && npx publint packages/create

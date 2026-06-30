@@ -1,0 +1,32 @@
+openapi: 3.1.0
+info:
+  title: Schema refs
+  version: 1.0.0
+paths:
+  /users:
+    post:
+      operationId: createUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
+          description: created
+components:
+  schemas:
+    Pet:
+      type: object
+      properties:
+        id:
+          type: integer
+    User:
+      type: object
+      properties:
+        pet:
+          $ref: '#/components/schemas/Pet'
+        pets:
+          type: array
+          items:
+            $ref: '#/components/schemas/Pet'

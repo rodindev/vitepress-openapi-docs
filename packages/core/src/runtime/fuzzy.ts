@@ -9,7 +9,7 @@ export function fuzzyScore(haystack: string, needle: string): number {
   const lowerNeedle = needle.toLowerCase()
 
   const directIndex = lowerHay.indexOf(lowerNeedle)
-  if (directIndex >= 0) return 1000 - directIndex
+  if (directIndex >= 0) return Math.max(501, 1000 - directIndex)
 
   let hayIdx = 0
   let needleIdx = 0

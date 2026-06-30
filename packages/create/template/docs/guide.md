@@ -20,7 +20,8 @@ docs/
 
 1. Drop your OpenAPI 3.x file (YAML or JSON) into `docs/openapi/`
 2. Update the spec path in `docs/.vitepress/config.ts`
-3. Update the `prefixes` map in `docs/.vitepress/theme/index.ts`
+
+The sidebar, URL prefixes, and generated pages all follow from the `specs` array in `config.ts`. There's no separate map to keep in sync.
 
 ## Using endpoints in markdown
 
@@ -32,4 +33,4 @@ Write `<OpenApiEndpoint>` anywhere in your markdown:
 <OpenApiEndpoint id="createUser" />
 ```
 
-The endpoint renders inline with your prose. See the [components guide](https://rodindev.github.io/vitepress-openapi-docs/guide/components) for all available components.
+The endpoint renders inline with your prose. See the [components reference](https://rodindev.github.io/vitepress-openapi-docs/reference/components) for all available components.

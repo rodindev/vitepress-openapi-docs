@@ -47,6 +47,20 @@ const multiStatus: ParsedResponse[] = [
   },
 ]
 
+const withNamedExamples: ParsedResponse[] = [
+  {
+    status: '200',
+    description: 'OK',
+    content: {
+      'application/json': {
+        examples: {
+          doggie: { value: { id: 7, name: 'rex' }, summary: 'A dog' },
+        },
+      },
+    } as ParsedResponse['content'],
+  },
+]
+
 describe('ResponseExamples', () => {
   it('renders nothing when no response has content', () => {
     const wrapper = mount(ResponseExamples, {
@@ -59,6 +73,13 @@ describe('ResponseExamples', () => {
     const wrapper = mount(ResponseExamples, { props: { responses: withExample } })
     const code = wrapper.find('.vod-responses__code').text()
     expect(code).toContain('"name": "doggie"')
+    expect(wrapper.find('.vod-responses__derived').exists()).toBe(false)
+  })
+
+  it('renders the named media-type examples object instead of deriving from schema', () => {
+    const wrapper = mount(ResponseExamples, { props: { responses: withNamedExamples } })
+    const code = wrapper.find('.vod-responses__code').text()
+    expect(code).toContain('"name": "rex"')
     expect(wrapper.find('.vod-responses__derived').exists()).toBe(false)
   })
 

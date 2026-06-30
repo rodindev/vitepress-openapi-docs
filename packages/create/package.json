@@ -1,6 +1,6 @@
 {
   "name": "create-vitepress-openapi-docs",
-  "version": "1.7.1",
+  "version": "1.8.0",
   "type": "module",
   "description": "Scaffold an interactive OpenAPI documentation site with VitePress.",
   "license": "MIT",
@@ -13,7 +13,7 @@
     "template"
   ],
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "keywords": [
     "vitepress",
@@ -37,10 +37,10 @@
     "prepack": "npm run build"
   },
   "devDependencies": {
-    "@types/node": "^25.6.0",
+    "@types/node": "^25.9.3",
     "typescript": "^6.0.0"
   },
   "dependencies": {
-    "@clack/prompts": "^1.2.0"
+    "@clack/prompts": "^1.5.1"
   }
 }

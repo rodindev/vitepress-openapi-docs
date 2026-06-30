@@ -86,4 +86,23 @@ describe('buildSidebar', () => {
     const sidebar = buildSidebar([single])
     expect(sidebar.find((g) => g.text === 'Schemas')).toBeUndefined()
   })
+
+  it('wraps a single spec under its label when one is provided', () => {
+    const sidebar = buildSidebar([single], { labels: { public: 'Public API' } })
+    expect(sidebar).toHaveLength(1)
+    expect(sidebar[0]?.text).toBe('Public API')
+    expect(sidebar[0]?.items.some((g) => 'items' in g && g.text === 'users')).toBe(true)
+  })
+
+  it('keeps a flat single-spec sidebar when no label is set', () => {
+    const sidebar = buildSidebar([single])
+    expect(sidebar.some((g) => g.text === 'users')).toBe(true)
+  })
+
+  it('prefers the spec label over the spec title in the multi-spec header', () => {
+    const second: ParsedSpec = { ...single, name: 'admin', title: 'Admin' }
+    const sidebar = buildSidebar([single, second], { labels: { admin: 'Admin API' } })
+    expect(sidebar[0]?.text).toBe('Public')
+    expect(sidebar[1]?.text).toBe('Admin API')
+  })
 })

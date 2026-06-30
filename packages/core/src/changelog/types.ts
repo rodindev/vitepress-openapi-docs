@@ -1,4 +1,4 @@
-export type ChangeKind = 'added' | 'removed' | 'renamed' | 'summary' | 'description'
+export type ChangeKind = 'added' | 'removed' | 'renamed' | 'route' | 'summary' | 'description'
 
 export interface OperationChange {
   kind: ChangeKind

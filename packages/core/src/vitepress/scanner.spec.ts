@@ -1,4 +1,4 @@
-import { mkdtemp, mkdir, writeFile } from 'node:fs/promises'
+import { mkdtemp, mkdir, symlink, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
@@ -112,5 +112,23 @@ describe('scanForBrokenEmbeds', () => {
       'guide.md': ['~~~md', '<OpenApiEndpoint id="this.does.not.exist" />', '~~~'].join('\n'),
     })
     expect(await scanForBrokenEmbeds(dir, [spec])).toEqual([])
+  })
+
+  it('completes the scan when the tree contains a dangling symlink', async () => {
+    const dir = await makeTempDocs({
+      'good.md': '<OpenApiEndpoint id="public.users.list" />',
+    })
+    await symlink(join(dir, 'missing-target'), join(dir, 'dangling.md'))
+    expect(await scanForBrokenEmbeds(dir, [spec])).toEqual([])
+  })
+
+  it('detects a multi-line embed and reports the line it starts on', async () => {
+    const dir = await makeTempDocs({
+      'multiline.md': ['# Heading', '', '<OpenApiEndpoint', '  id="public.missing"', '/>'].join(
+        '\n'
+      ),
+    })
+    const broken = await scanForBrokenEmbeds(dir, [spec])
+    expect(broken).toEqual([{ file: 'multiline.md', line: 3, id: 'public.missing' }])
   })
 })
