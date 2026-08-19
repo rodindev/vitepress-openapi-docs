@@ -85,7 +85,7 @@
     "vue-api-playground": "^2.5.0"
   },
   "dependencies": {
-    "@scalar/openapi-parser": "^0.25.8",
+    "@scalar/openapi-parser": "^0.28.8",
     "dompurify": "^3.4.11",
     "jsdom": "^29.0.0",
     "marked": "^18.0.0"
