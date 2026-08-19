@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { defineComponent, h, nextTick } from 'vue'
 import { mount } from '@vue/test-utils'
-import { readStoredCredential, useAuthState, authStoresCache, type AuthState } from './auth'
+import { readStoredCredential, useAuthState, resetAuthStores, type AuthState } from './auth'
 
 function withAuth(specName: string, callback: (state: AuthState) => void) {
   const Harness = defineComponent({
@@ -16,13 +16,11 @@ function withAuth(specName: string, callback: (state: AuthState) => void) {
 
 describe('useAuthState', () => {
   beforeEach(() => {
-    sessionStorage.clear()
-    authStoresCache.clear()
+    resetAuthStores()
   })
 
   afterEach(() => {
-    sessionStorage.clear()
-    authStoresCache.clear()
+    resetAuthStores()
   })
 
   it('starts with no credential when storage is empty', async () => {
@@ -118,6 +116,20 @@ describe('useAuthState', () => {
     })
     await nextTick()
     expect(secondState?.credential.value?.value).toBe('KEEP_ME')
+  })
+
+  it('rehydrates after resetAuthStores even if the spec was hydrated earlier', async () => {
+    withAuth('public', () => {})
+    await nextTick()
+
+    resetAuthStores()
+    sessionStorage.setItem('vod:auth:public', JSON.stringify({ scheme: 'bearer', value: 'AGAIN' }))
+    let captured: AuthState | undefined
+    withAuth('public', (s) => {
+      captured = s
+    })
+    await nextTick()
+    expect(captured?.credential.value?.value).toBe('AGAIN')
   })
 
   it('shares reactive credential state across multiple active hook instances', async () => {

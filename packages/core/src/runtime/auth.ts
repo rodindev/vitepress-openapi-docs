@@ -23,7 +23,7 @@ export interface AuthState {
 
 const STORAGE_PREFIX = 'vod:auth:'
 
-export const authStoresCache = new Map<string, Ref<AuthCredential | undefined>>()
+const authStoresCache = new Map<string, Ref<AuthCredential | undefined>>()
 const hydratedStores = new Set<string>()
 
 function storageKey(name: string) {
@@ -37,6 +37,13 @@ export function getAuthStore(name: string): Ref<AuthCredential | undefined> {
     authStoresCache.set(name, store)
   }
   return store
+}
+
+/** Test helper: wipe stored credentials, cached stores, and hydration markers. */
+export function resetAuthStores() {
+  if (typeof sessionStorage !== 'undefined') sessionStorage.clear()
+  authStoresCache.clear()
+  hydratedStores.clear()
 }
 
 /** Base64 for `user:pass` values; plain btoa throws on non-Latin1 input. */

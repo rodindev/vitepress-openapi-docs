@@ -2,16 +2,14 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { nextTick } from 'vue'
 import AuthControls from './AuthControls.vue'
-import { authStoresCache } from '../runtime/auth'
+import { resetAuthStores } from '../runtime/auth'
 
 describe('AuthControls', () => {
   beforeEach(() => {
-    sessionStorage.clear()
-    authStoresCache.clear()
+    resetAuthStores()
   })
   afterEach(() => {
-    sessionStorage.clear()
-    authStoresCache.clear()
+    resetAuthStores()
   })
 
   it('persists the entered credential to sessionStorage immediately on input', async () => {

@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { nextTick } from 'vue'
 import EndpointTryPanel from './EndpointTryPanel.vue'
-import { useAuthState, authStoresCache } from '../runtime/auth'
+import { useAuthState, resetAuthStores } from '../runtime/auth'
 import type { ParsedOperation } from '../parser/types'
 import EndpointPlayground from './EndpointPlayground.vue'
 
@@ -25,13 +25,11 @@ const dummyOp: ParsedOperation = {
 
 describe('EndpointTryPanel - Authorization Injection', () => {
   beforeEach(() => {
-    sessionStorage.clear()
-    authStoresCache.clear()
+    resetAuthStores()
   })
 
   afterEach(() => {
-    sessionStorage.clear()
-    authStoresCache.clear()
+    resetAuthStores()
   })
 
   it('injects bearer token correctly', async () => {
