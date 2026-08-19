@@ -123,6 +123,35 @@ describe('EndpointTryPanel - Authorization Injection', () => {
     })
   })
 
+  it('injects non-latin basic credentials without throwing', async () => {
+    const authState = useAuthState('test-spec')
+    authState.set({ scheme: 'basic', value: 'admin:пароль' })
+    await nextTick()
+
+    const wrapper = mount(EndpointTryPanel, {
+      props: {
+        op: dummyOp,
+        specName: 'test-spec',
+        specVersionLabel: 'v1',
+        serverList: ['http://api.example.com'],
+        scheme: 'basic',
+        bodyInputs: false,
+        inline: false,
+        showSnippets: false,
+        showAuth: true,
+        showTry: true,
+      },
+    })
+
+    const playground = wrapper.findComponent(EndpointPlayground)
+    const envelope = { url: 'http://api.example.com/test', init: { headers: {} } }
+    playground.vm.$emit('before-send', envelope)
+
+    expect(envelope.init.headers).toEqual({
+      Authorization: `Basic ${Buffer.from('admin:пароль', 'utf-8').toString('base64')}`,
+    })
+  })
+
   it('injects apikey as header correctly', async () => {
     const authState = useAuthState('test-spec')
     authState.set({

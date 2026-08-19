@@ -39,6 +39,16 @@ export function getAuthStore(name: string): Ref<AuthCredential | undefined> {
   return store
 }
 
+/** Base64 for `user:pass` values; plain btoa throws on non-Latin1 input. */
+export function encodeBasicAuth(value: string): string {
+  const bytes = new TextEncoder().encode(value)
+  let binary = ''
+  for (const byte of bytes) {
+    binary += String.fromCharCode(byte)
+  }
+  return btoa(binary)
+}
+
 function hydrateAuthStore(name: string) {
   if (typeof sessionStorage === 'undefined') return
   if (hydratedStores.has(name)) return

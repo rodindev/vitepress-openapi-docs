@@ -70,6 +70,17 @@ describe('buildSnippets', () => {
     }
   })
 
+  it('encodes non-latin basic credentials as utf-8', () => {
+    const snippets = buildSnippets(op, {
+      baseUrl: 'https://api.example.com',
+      auth: { scheme: 'basic', value: 'admin:пароль' },
+    })
+    const encoded = Buffer.from('admin:пароль', 'utf-8').toString('base64')
+    for (const snippet of snippets) {
+      expect(snippet.code).toContain(`Basic ${encoded}`)
+    }
+  })
+
   it('emits a readable basic placeholder when the value is not yet set', () => {
     const snippets = buildSnippets(op, { auth: { scheme: 'basic' } })
     for (const snippet of snippets) {

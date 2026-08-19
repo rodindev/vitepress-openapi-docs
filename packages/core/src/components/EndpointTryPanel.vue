@@ -52,7 +52,7 @@ import type {
 import AuthControls from './AuthControls.vue'
 import SdkSnippets from './SdkSnippets.vue'
 import EndpointPlayground from './EndpointPlayground.vue'
-import { useAuthState, type AuthScheme } from '../runtime/auth'
+import { useAuthState, encodeBasicAuth, type AuthScheme } from '../runtime/auth'
 import { buildSnippets } from '../snippets/index'
 import { generateJsonBody } from '../runtime/example'
 import { jsonMedia } from '../parser/content-type'
@@ -179,7 +179,7 @@ function injectAuth(envelope: { url: string; init: RequestInit }): void {
   if (cred.scheme === 'bearer' || cred.scheme === 'oauth2') {
     headers['Authorization'] = `Bearer ${cred.value}`
   } else if (cred.scheme === 'basic') {
-    headers['Authorization'] = `Basic ${btoa(cred.value)}`
+    headers['Authorization'] = `Basic ${encodeBasicAuth(cred.value)}`
   } else if (cred.scheme === 'apikey') {
     const keyIn = cred.apiKeyIn ?? 'header'
     const keyName = cred.headerName ?? props.headerName ?? 'X-API-Key'

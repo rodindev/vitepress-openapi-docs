@@ -5,6 +5,7 @@ import {
   type Snippet,
   type SnippetRequest,
 } from 'vue-api-playground'
+import { encodeBasicAuth } from '../runtime/auth'
 import type { ParsedOperation } from '../parser/types'
 
 export type { Snippet, SnippetRequest, SnippetLanguage } from 'vue-api-playground'
@@ -40,7 +41,7 @@ export function buildSnippets(
       headers['Authorization'] =
         options.auth.value === undefined
           ? 'Basic <BASE64(USERNAME:PASSWORD)>'
-          : `Basic ${btoa(value)}`
+          : `Basic ${encodeBasicAuth(value)}`
     } else if (scheme === 'apikey') {
       const keyName = options.auth.headerName ?? 'X-API-Key'
       const keyIn = options.auth.apiKeyIn ?? 'header'
