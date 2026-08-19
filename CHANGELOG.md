@@ -2,6 +2,18 @@
 
 All notable changes to `vitepress-openapi-docs` and `create-vitepress-openapi-docs`.
 
+## 1.8.1
+
+### Fixed
+
+- Credential state is shared across every component reading the same spec: typing in one auth panel updates Try-It requests and snippets everywhere immediately, values persist on input instead of on blur/Enter, and storage is read on mount so server and client render the same markup.
+- Basic auth values encode as UTF-8 before base64 (RFC 7617), so non-Latin1 credentials (e.g. Cyrillic) no longer throw while typing. Passwords with U+0080-U+00FF characters now send UTF-8 bytes where they previously sent Latin1.
+
+### Changed
+
+- The scaffold template's mock spec is synced to v2.0.1.
+- Runtime dependency bumps: dompurify to `^3.4.11`, `@clack/prompts` to `^1.5.1`.
+
 ## 1.8.0
 
 ### Added
